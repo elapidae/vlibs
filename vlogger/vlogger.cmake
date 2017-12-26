@@ -15,5 +15,8 @@ FILE( GLOB SOURCES_VLOGGER "${VLIBS_PATH}/vlogger/*.cpp" )
 set ( HEADERS ${HEADERS} ${HEADERS_VLOGGER} )
 set ( SOURCES ${SOURCES} ${SOURCES_VLOGGER} )
 
+set ( INC_ALL ${INC_ALL} ${HEADERS_VLOGGER} )
+set ( SRC_ALL ${SRC_ALL} ${SOURCES_VLOGGER} )
+
 message( "vlogger included" )
 

@@ -9,6 +9,7 @@ isEmpty(qi_vlogger) {
     include($$VLibs_Dir/varg/varg.pri)
     include($$VLibs_Dir/vsignal/vsignal.pri)
     include($$VLibs_Dir/json11/json11.pri)
+    include($$VLibs_Dir/vdatetime/vdatetime.pri)
 
     INCLUDEPATH += $$VLibs_Dir/vlogger
 

@@ -27,6 +27,10 @@ static string i2s(int i, uint len = 2)
 
 
 //=======================================================================================
+VDateTime::VDateTime()
+    : _timestamp( system_clock::from_time_t(0) )
+{}
+//=======================================================================================
 VDateTime::VDateTime( const VDateTime::time_point_t &tp )
     : _timestamp( tp )
 {}
@@ -46,14 +50,14 @@ void VDateTime::_set_cstyle_time() const
 string VDateTime::str_iso() const
 {
     auto tse = _timestamp.time_since_epoch();
-    auto ms = duration_cast<milliseconds>(tse).count() % 1000;
+    auto ms = duration_cast<chrono::milliseconds>(tse).count() % 1000;
 
     _set_cstyle_time();
 
 
     char buffer[32];
     auto res_size = strftime( buffer, sizeof buffer, "%F %T", _cstyle_time );
-    assert(res_size < 30);
+    (void)(res_size); assert(res_size < 30);
 
     return varg( buffer, '.', i2s(ms, 3) ).str();
 
@@ -64,7 +68,23 @@ string VDateTime::str_iso() const
 //                 i2s(time->tm_hour),    ":",
 //                 i2s(time->tm_min),     ":",
 //                 i2s(time->tm_sec),     ".",
-//                 i2s(ms, 3) ).str();
+    //                 i2s(ms, 3) ).str();
+}
+//=======================================================================================
+string VDateTime::str_date() const
+{
+    auto y = year();
+    return varg (y, "-")
+                .with_zeroes(_cstyle_time->tm_mon + 1, 2)("-")
+                .with_zeroes(_cstyle_time->tm_mday, 2);
+}
+//=======================================================================================
+string VDateTime::str_time() const
+{
+    auto h = hour();
+    return varg( h, "-")
+                 .with_zeroes(_cstyle_time->tm_min, 2)("-")
+                 .with_zeroes(_cstyle_time->tm_sec, 2);
 }
 //=======================================================================================
 int VDateTime::year() const
@@ -73,9 +93,20 @@ int VDateTime::year() const
     return _cstyle_time->tm_year + 1900;
 }
 //=======================================================================================
+int VDateTime::hour() const
+{
+    _set_cstyle_time();
+    return _cstyle_time->tm_hour;
+}
+//=======================================================================================
 VDateTime VDateTime::now()
 {
     return VDateTime( system_clock::now() );
+}
+
+VDateTime VDateTime::from_time_t( time_t t )
+{
+    return VDateTime( chrono::seconds(t) );
 }
 //=======================================================================================
 bool VDateTime::set_system_time() const
@@ -96,9 +127,29 @@ bool VDateTime::set_system_time() const
     return 0 == settimeofday( &new_sys_time, &cur_sys_zone );
 }
 //=======================================================================================
+bool VDateTime::operator <(const VDateTime &rhs) const
+{
+    return _timestamp < rhs._timestamp;
+}
+//=======================================================================================
+bool VDateTime::operator >(const VDateTime &rhs) const
+{
+    return _timestamp > rhs._timestamp;
+}
+//=======================================================================================
+VDateTime::time_point_t::duration VDateTime::duration() const
+{
+    return _timestamp - system_clock::from_time_t(0);
+}
+//=======================================================================================
 int64_t VDateTime::seconds() const
 {
     return duration_cast<chrono::seconds>(_timestamp.time_since_epoch()).count();
+}
+//=======================================================================================
+int64_t VDateTime::milliseconds() const
+{
+    return duration_cast<chrono::milliseconds>(_timestamp.time_since_epoch()).count();
 }
 //=======================================================================================
 int64_t VDateTime::microseconds() const
@@ -106,3 +157,14 @@ int64_t VDateTime::microseconds() const
     return duration_cast<chrono::microseconds>(_timestamp.time_since_epoch()).count();
 }
 //=======================================================================================
+int64_t VDateTime::nanoseconds() const
+{
+    return duration_cast<chrono::nanoseconds>(_timestamp.time_since_epoch()).count();
+}
+//=======================================================================================
+
+
+VDateTime operator -(const VDateTime &lhs, const VDateTime &rhs)
+{
+    return VDateTime( VDateTime::time_point_t(lhs.time_point() - rhs.time_point()) );
+}

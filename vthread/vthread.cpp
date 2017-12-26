@@ -9,12 +9,12 @@
 #include "vthreadqueue/vsemaphorequeue.h"
 #include "impl/vthreadqueueregistrator_impl.h"
 
-#include "vlogger.h"
+//#include "vlogger.h"
 
 // TODO: Обновить компилятор, он не умеет работать с исключениями между потоками.
 
 using namespace std;
-
+using namespace chrono;
 
 
 
@@ -156,10 +156,15 @@ public:
     std::future<void*> real_thread;
 };
 //=======================================================================================
-_VThread11::_VThread11()
-    : VThreadInterface()
+_VThread11::_VThread11( const std::string &label )
+    : VThreadInterface( label )
     , p( new Pimpl(std::async(std::launch::async, _run, this)) )
 {}
+//=======================================================================================
+//_VThread11::_VThread11( _VThread11::_Detached, const string &label )
+//    : VThreadInterface( label )
+//    , p( new Pimpl(std::async(std::launch::async, _run, this)) )
+//{}
 //=======================================================================================
 _VThread11::~_VThread11()
 {}
@@ -172,6 +177,7 @@ void _VThread11::_thread_get()
 //      VTHREAD 11 REALIZATION
 //=======================================================================================
 #else
+
 //=======================================================================================
 //      VTHREAD ON PTHREAD REALIZATION
 //=======================================================================================
@@ -218,7 +224,30 @@ void _VThreadP::_thread_get()
 //=======================================================================================
 //      VTHREAD ON PTHREAD REALIZATION
 //=======================================================================================
-
-
-
 #endif // VTHREAD_USE_PTHREAD
+
+
+
+//=======================================================================================
+TimeAccum::TimeAccum()
+    : _elapsed(0)
+{}
+//=======================================================================================
+void TimeAccum::start()
+{
+    _time = high_resolution_clock::now();
+}
+//=======================================================================================
+void TimeAccum::accumulate()
+{
+    auto now = high_resolution_clock::now();
+    _elapsed += duration_cast<nanoseconds>(now - _time).count();
+    _time = now;
+}
+//=======================================================================================
+int64_t TimeAccum::elapsed() const
+{
+    return _elapsed;
+}
+//=======================================================================================
+

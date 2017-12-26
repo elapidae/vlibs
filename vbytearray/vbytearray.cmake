@@ -12,5 +12,8 @@ FILE( GLOB SOURCES_VByteArray "${VLIBS_PATH}/vbytearray/*.cpp" )
 set ( HEADERS ${HEADERS} ${HEADERS_VByteArray} )
 set ( SOURCES ${SOURCES} ${SOURCES_VByteArray} )
 
+set ( INC_ALL ${INC_ALL} ${HEADERS_VByteArray} )
+set ( SRC_ALL ${SRC_ALL} ${SOURCES_VByteArray} )
+
 message( "VByteArray included..." )
 

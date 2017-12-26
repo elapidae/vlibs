@@ -32,6 +32,8 @@ public:
 
     bool empty() const;
 
+    void clear();
+
 private:
     std::queue<T>   _queue;
     std::mutex      _mutex;
@@ -76,6 +78,12 @@ template<class T>
 bool VSemaphoreQueue<T>::empty() const
 {
     return size() == 0;
+}
+
+template<class T>
+void VSemaphoreQueue<T>::clear()
+{
+    while (!empty()) pop();
 }
 //=======================================================================================
 //      IMPLEMENTATION

@@ -74,6 +74,13 @@ public:
 
     varg& operator()( const decltype(std::hex)& modifier );
 
+    // Соответствует спецификации %<field_width>d
+    varg& with_zeroes( int val, int field_width );
+
+    // Выводит число так, чтобы оно занимало не менее min_len символов, заполняя
+    // не значащие позиции символом leading_symbol.
+    //varg& spec( int val, int min_len, char leading_symbol = '0' );
+
     std::string str() const;
     operator std::string() const;
 

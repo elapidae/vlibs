@@ -1,6 +1,7 @@
 #include "varg.h"
 
 #include <iostream>
+#include <assert.h>
 
 using namespace std;
 
@@ -23,6 +24,26 @@ varg::varg()
     // Выставление значений по умолчанию.
     p->stream << std::boolalpha << std::showbase;
 }
+//=======================================================================================
+varg &varg::with_zeroes( int val, int field_width )
+{
+    assert(field_width >= 0);
+    string spec = varg("%0", field_width, 'd').str();
+
+    char buf[32];
+    std::snprintf( buf, sizeof buf, spec.c_str(), val );
+    p->stream << buf;
+    return *this;
+}
+//=======================================================================================
+//varg &varg::spec(int val, int min_len, char leading_symbol)
+//{
+//    bool negative = val < 0;
+//    val = negative ? -val : val;
+//    auto str = varg(val).str();
+//    int real_len = str.size() + negative ? 1 : 0;
+//    int leading_count = min_len - real_len;
+//}
 //=======================================================================================
 stringstream &varg::_stream()
 {

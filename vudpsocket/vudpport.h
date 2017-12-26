@@ -23,6 +23,8 @@ public:
 
     bool write_datagram( const VByteArray &datagram , const VHostAddress &addr );
 
+    int handle() const { return _handle; }
+
 private:
     int _handle = 0;
     int _last_errno = 0;

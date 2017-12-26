@@ -4,10 +4,14 @@ isEmpty(qi_vthread) {
         qi_vthread = 1;
         isEmpty(qi_not_print_pri_messages): message("=== vthread appended ===")
 
+        !contains(CONFIG, qt) {
+            LIBS += -pthread
+            QMAKE_CXXFLAGS += -pthread
+        }
+
 	isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
 
 	include( $$VLibs_Dir/vsignal/vsignal.pri )
-
 
         INCLUDEPATH += $$VLibs_Dir/vthread
 
@@ -23,6 +27,9 @@ isEmpty(qi_vthread) {
 
         HEADERS     += $$VLibs_Dir/vthread/vthread.h
         SOURCES     += $$VLibs_Dir/vthread/vthread.cpp
+
+        HEADERS     += $$VLibs_Dir/vthread/vapplication.h
+        SOURCES     += $$VLibs_Dir/vthread/vapplication.cpp
 
         HEADERS     += $$VLibs_Dir/vthread/impl/vthreadqueueregistrator_impl.h
         SOURCES     += $$VLibs_Dir/vthread/impl/vthreadqueueregistrator_impl.cpp

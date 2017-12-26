@@ -5,14 +5,15 @@
 #include <string>
 #include <functional>
 
+#include <chrono>
+
 #include "varg.h"
-//#include "vsignal.h"
 
 
 //=======================================================================================
 // Пользование:
 //      ...
-//      trace  ( vlog("я далеко послала шесть с половиной байт.")                     );
+//      trace  ( vlog("я далеко послала", "шесть с половиной байт.")                  );
 //
 //      deb    ( vlog("предназначено только для вывода в консоль, для разработки.")   );
 //
@@ -23,7 +24,8 @@
 //      fatal  ( vlog("экстерминатус -- скорее всего, программа не консистентна.")
 //                   ("Сейчас бросается исключение, надо бы обсудить с коллективом.") );
 //      ...
-//---------------------------------------------------------------------------------------
+//      Можно писать через запятую, как удобнее.
+//=======================================================================================
 
 
 
@@ -38,7 +40,8 @@ void vdeb     ( const VLog &log );
 void vtrace   ( const VLog &log );
 void vrunlog  ( const VLog &log );
 void vwarning ( const VLog &log );
-void vfatal   ( const VLog &log );        // Бросает исключение VLogException(log);
+void vfatal   ( const VLog &log );          // Бросает исключение VLogException(log);
+void vassert  ( bool ok, const VLog &log ); // Бросает исключение если флаг !ok.
 
 //=======================================================================================
 //          LOGS CONTROL INTERFACE
@@ -54,6 +57,22 @@ void vfatal   ( const VLog &log );        // Бросает исключение
 class VLog
 {
 public:
+    // Вообще, этому здесь не место...
+    using  SysTime = decltype(std::chrono::system_clock::now());
+    static SysTime now() { return std::chrono::system_clock::now(); }
+    // Вообще, этому здесь не место...
+    using  SteadyTime = decltype( std::chrono::high_resolution_clock::now() );
+    static SteadyTime steady_now() { return std::chrono::high_resolution_clock::now(); }
+
+    template<class D> static int64_t nsec( const D &dur )
+    { return std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count(); }
+
+    template<class D> static int64_t usec( const D &dur )
+    { return std::chrono::duration_cast<std::chrono::microseconds>(dur).count(); }
+
+    template<class D> static int64_t msec( const D &dur )
+    { return std::chrono::duration_cast<std::chrono::milliseconds>(dur).count(); }
+
 
     enum class Type
     {
