@@ -15,5 +15,9 @@ set ( INC_ALL ${INC_ALL} ${HEADERS_SQLITE3PP} )
 set ( SRC_ALL ${SRC_ALL} ${SOURCES_SQLITE3PP} )
 
 
+set ( SQLITE3_TARGET_LIBS "-lsqlite3" )
+set ( TARGET_LIBS ${TARGET_LIBS} ${SQLITE3_TARGET_LIBS} )
+
+
 message( "sqlite3pp has included..." )
 
