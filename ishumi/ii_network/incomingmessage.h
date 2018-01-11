@@ -27,10 +27,10 @@ namespace ii
 
         const VByteArray &bin() const;
 
-        int meta_int    ( const std::string &label ) const;
-        int meta_double ( const std::string &label ) const;
-        int meta_string ( const std::string &label ) const;
-        int meta_bool   ( const std::string &label ) const;
+        int         meta_int    ( const std::string &label ) const;
+        double      meta_double ( const std::string &label ) const;
+        std::string meta_string ( const std::string &label ) const;
+        bool        meta_bool   ( const std::string &label ) const;
 
         const json11::Json::object & meta_root() const;
         const json11::Json::object & meta_object ( const std::string &label ) const;

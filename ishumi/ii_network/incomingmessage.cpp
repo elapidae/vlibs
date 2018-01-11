@@ -1,5 +1,7 @@
 #include "incomingmessage.h"
 
+#include "vlogger.h"
+
 using namespace ii;
 using namespace std;
 using namespace std::chrono;
@@ -48,6 +50,16 @@ int32_t IncomingMessage::msg_id() const
 const VByteArray &IncomingMessage::bin() const
 {
     return _bin;
+}
+//=======================================================================================
+string IncomingMessage::meta_string(const string &label) const
+{
+    return meta_root().at(label).string_value();
+}
+//=======================================================================================
+const json11::Json::object &IncomingMessage::meta_root() const
+{
+    return _obj;
 }
 //=======================================================================================
 //bool IncomingMessage::_is_fragmented() const
@@ -133,7 +145,10 @@ void IncomingMessage::PacketsReceiver::clean_expired()
     }
 
     for ( auto key: exp_keys )
+    {
+        vtrace(vlog("Msg with id", key, " has expired and will be kill."));
         _joiners.erase( key );
+    }
 }
 //=======================================================================================
 //void IncomingMessage::PacketsReceiver::_prepare_msg( IncomingMessage && msg,
