@@ -105,6 +105,11 @@ IncomingMessage::PacketsReceiver::PacketsReceiver(chrono::milliseconds expire_ti
     : _expire_time( expire_time )
 {}
 //=======================================================================================
+void IncomingMessage::PacketsReceiver::set_expire_time(milliseconds expire_time)
+{
+    _expire_time = expire_time;
+}
+//=======================================================================================
 void IncomingMessage::PacketsReceiver::append( const VByteArray &packet )
 {
     clean_expired();

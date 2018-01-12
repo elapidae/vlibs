@@ -126,6 +126,8 @@ namespace ii
         PacketsReceiver( std::chrono::milliseconds expire_time
                                                     = std::chrono::milliseconds(2000) );
 
+        void set_expire_time( std::chrono::milliseconds expire_time );
+
         void append( const VByteArray &packet );
 
         void clean_expired();

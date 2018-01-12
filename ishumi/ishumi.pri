@@ -8,9 +8,10 @@ isEmpty(qi_ishumi) {
     isEmpty(Ishumi_Dir): error("Need Ishumi_Dir correct path.")
 
 
-#    include($$VLibs_Dir/varg/varg.pri)
-#    include($$VLibs_Dir/vsignal/vsignal.pri)
-#    include($$VLibs_Dir/json11/json11.pri)
+    include($$VLibs_Dir/vbytearray/vbytearray.pri)
+    include($$VLibs_Dir/vlogger/vlogger.pri)
+    include($$VLibs_Dir/vsignal/vsignal.pri)
+    include($$VLibs_Dir/json11/json11.pri)
 #    include($$VLibs_Dir/vdatetime/vdatetime.pri)
 
 
