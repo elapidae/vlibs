@@ -124,7 +124,7 @@ namespace ii
         VSignal<IncomingMessage> received;
 
         PacketsReceiver( std::chrono::milliseconds expire_time
-                                                    = std::chrono::milliseconds(2000) );
+                                                    = std::chrono::milliseconds(9000) );
 
         void set_expire_time( std::chrono::milliseconds expire_time );
 

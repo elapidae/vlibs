@@ -52,6 +52,11 @@ const VByteArray &IncomingMessage::bin() const
     return _bin;
 }
 //=======================================================================================
+int IncomingMessage::meta_int(const string &label) const
+{
+    return meta_root().at(label).int_value();
+}
+//=======================================================================================
 string IncomingMessage::meta_string(const string &label) const
 {
     return meta_root().at(label).string_value();

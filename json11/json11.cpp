@@ -26,6 +26,9 @@
 #include <cstdio>
 #include <limits>
 
+#include <stdio.h>
+#include <sstream>
+
 namespace json11 {
 
 static const int max_depth = 200;
@@ -616,9 +619,12 @@ struct JsonParser final {
 
             while (in_range(str[i], '0', '9'))
                 i++;
-        }
-
-        return std::strtod(str.c_str() + start_pos, nullptr);
+        }        
+        auto b = str.c_str();
+        std::stringstream ss( std::string(b + start_pos, b + i) );
+        double d; ss >> d;
+        return d;
+        //return std::strtod(str.c_str() + start_pos, nullptr);
     }
 
     /* expect(str, res)

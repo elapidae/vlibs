@@ -33,9 +33,6 @@ public:
 
     ~VKeyFile() = default;
 
-    void write_defaults_to( const std::string &fname ) const;
-    void print_defaults() const;
-
     str        get_string      ( const str &group, const str &key ) const;
     bool       get_bool        ( const str &group, const str &key ) const;
     int        get_int         ( const str &group, const str &key ) const;
@@ -60,6 +57,9 @@ public:
     void set_int_list    (const str &group, const str &key, const IntList    &val) const;
     void set_double_list (const str &group, const str &key, const DoubleList &val) const;
 
+    // Автор сомневается с необходимости этих методов.
+    void write_defaults_to( const std::string &fname ) const;
+    void print_defaults() const;
 
 private:
     class Pimpl; std::shared_ptr<Pimpl> p;
