@@ -15,15 +15,10 @@ VPolDBScan::VPolDBScan( VPolDBScan::pol_vector points,
 {
     assert(min_cluster_size > 0);
 
-//    auto start_now = VDateTime::now();
-
-    //vtrace(vlog("BEGIN"));
     std::sort( points.begin(), points.end(), _angle_cmp );
 
-    //vtrace(vlog(1));
     while ( !points.empty() )
     {
-        //vtrace(vlog("b while"));
         pol_vector cluster;
         cluster.push_back( points.back() );
         points.pop_back();
@@ -48,9 +43,6 @@ VPolDBScan::VPolDBScan( VPolDBScan::pol_vector points,
         else
             _missed.insert( _missed.end(), cluster.begin(), cluster.end() );
     } // while ( !points.empty() )
-
-//    auto elapsed = VDateTime::now() - start_now;
-//    vtrace(vlog("pol db scan elapsed = ", elapsed.milliseconds(), "ms"));
 }
 //=======================================================================================
 const VPolDBScan::pol_vector &VPolDBScan::missed() const
