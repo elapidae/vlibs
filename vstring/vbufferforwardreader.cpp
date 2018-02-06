@@ -1,19 +1,25 @@
 #include "vbufferforwardreader.h"
 
 VBufferForwardReader::VBufferForwardReader( const std::string &buf )
-    : _buffer   ( buf.data() )
-    , _remained ( buf.size() )
+    : VBufferForwardReader( buf.data(), buf.size() )
 {}
 
 VBufferForwardReader::VBufferForwardReader( const char *buf, size_t size )
-    : _buffer   ( buf )
+    : _buffer   ( buf  )
     , _remained ( size )
 {}
 
 std::string VBufferForwardReader::take_str( size_t sz )
 {
-    if ( _remained < int(sz) )
+    if ( _remained < sz )
         throw std::out_of_range( "VBufferForwardReader::take_str(): not enouth data" );
+
+    auto res = std::string( _buffer, _buffer + sz );
+
+    _buffer   += sz;
+    _remained -= sz;
+
+    return res;
 }
 
 int VBufferForwardReader::remained() const
