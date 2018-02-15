@@ -35,6 +35,10 @@ template<typename T>
 class VDecartPoint
 {
 public:
+
+    static VDecartPoint<T> from_back_LE( VByteArray * arr );
+    void to_back_LE( VByteArray * arr ) const;
+
     class Vector;
 
     T x, y;
@@ -60,6 +64,8 @@ class VDecartPoint<T>::Vector : public std::vector<VDecartPoint<T>>
 {
 public:
     typename VPolarPoint<T>::Vector to_polar() const;
+
+    VDecartPoint<T> average_center() const;
 };
 //=======================================================================================
 using VDecPoint = VDecartPoint<float>;
@@ -79,7 +85,9 @@ template<typename T>
 class VPolarPoint
 {
 public:
-    class Vector;
+
+    static VPolarPoint<T> from_back_LE( VByteArray * arr );
+    void to_back_LE( VByteArray * arr ) const;
 
     T distance, angle;
 
@@ -90,17 +98,18 @@ public:
     T distance_to( const VPolarPoint &rhs ) const;
 
     VDecartPoint<T> to_decart() const;
+
+    class Vector : public std::vector<VPolarPoint<T>>
+    {
+    public:
+        typename VDecartPoint<T>::Vector to_decart() const;
+
+        // Сложность O(n).
+        VPolarPoint average_center() const;
+    };
 };
 //=======================================================================================
-template<typename T>
-class VPolarPoint<T>::Vector : public std::vector<VPolarPoint<T>>
-{
-public:
-    typename VDecartPoint<T>::Vector to_decart() const;
 
-    // Сложность O(n).
-    VPolarPoint average_center() const;
-};
 //=======================================================================================
 using VPolPoint = VPolarPoint<float>;
 //=======================================================================================
@@ -112,6 +121,22 @@ using VPolPoint = VPolarPoint<float>;
 
 //=======================================================================================
 //      IMPLEMENTATION VDecartPoint
+//=======================================================================================
+template<typename T>
+VDecartPoint<T> VDecartPoint<T>::from_back_LE( VByteArray *arr )
+{
+    auto y = arr->pop_back_little<T>();
+    auto x = arr->pop_back_little<T>();
+    return { x, y };
+}
+//=======================================================================================
+template<typename T>
+void VDecartPoint<T>::to_back_LE( VByteArray *arr ) const
+{
+    arr->push_back_little(x);
+    arr->push_back_little(y);
+}
+//=======================================================================================
 //=======================================================================================
 template<typename T>
 VDecartPoint<T>::VDecartPoint()
@@ -166,6 +191,21 @@ typename VPolarPoint<T>::Vector VDecartPoint<T>::Vector::to_polar() const
     return res;
 }
 //=======================================================================================
+template<typename T>
+VDecartPoint<T> VDecartPoint<T>::Vector::average_center() const
+{
+    if ( this->empty() ) return {NAN, NAN};
+
+    T sx = 0;
+    T sy = 0;
+    for (auto p: *this)
+    {
+        sx += p.x;
+        sy += p.y;
+    }
+    return { sx/this->size(), sy/this->size() };
+}
+//=======================================================================================
 //=======================================================================================
 template<typename T>
 VDecartPoint<T> operator - ( const VDecartPoint<T> &lhs, const VDecartPoint<T> &rhs )
@@ -183,6 +223,21 @@ VDecartPoint<T> operator - ( const VDecartPoint<T> &lhs, const VDecartPoint<T> &
 
 //=======================================================================================
 //      IMPLEMENTATION VPolarPoint
+//=======================================================================================
+template<typename T>
+VPolarPoint<T> VPolarPoint<T>::from_back_LE( VByteArray *arr )
+{
+    auto angle = arr->pop_back_little<T>();
+    auto dist  = arr->pop_back_little<T>();
+    return { dist, angle };
+}
+//=======================================================================================
+template<typename T>
+void VPolarPoint<T>::to_back_LE( VByteArray *arr ) const
+{
+    arr->push_back_little( distance );
+    arr->push_back_little( angle    );
+}
 //=======================================================================================
 template<typename T>
 VPolarPoint<T>::VPolarPoint()

@@ -1,5 +1,4 @@
-#include "vstring.h"
-
+#include "vstringref.h"
 
 #include <sstream>
 #include <algorithm>
@@ -8,23 +7,9 @@
 //=======================================================================================
 //      Init, ctors
 //=======================================================================================
-VString::VString() noexcept
-    : std::string()
+VStringRef::VStringRef(std::string *data) noexcept
+    : _data(data)
 {}
-//=======================================================================================
-VString::VString( std::string &&str ) noexcept
-    : std::string( std::move(str) )
-{}
-//=======================================================================================
-VString::VString( const std::string &str )
-    : std::string( str )
-{}
-//=======================================================================================
-void VString::_check_big_or_little_endian()
-{
-    static_assert( BYTE_ORDER == BIG_ENDIAN || BYTE_ORDER == LITTLE_ENDIAN,
-                   "Unknown byte order" );
-}
 //=======================================================================================
 //      Init, ctors
 //=======================================================================================
@@ -45,7 +30,7 @@ static int ch_from_hex(char ch)
     return -1;
 }
 //---------------------------------------------------------------------------------------
-VString VString::from_hex( const std::string &src )
+std::string VStringRef::from_hex( const std::string &src )
 {
     std::string res;
     res.resize( (src.size() + 1)/2 );
@@ -74,7 +59,7 @@ VString VString::from_hex( const std::string &src )
     return res.erase( 0, res.size() - real_res_size );
 }
 //---------------------------------------------------------------------------------------
-static VString _to_hex( const std::string &src, const char *hsyms, bool with_space )
+static std::string _to_hex(const std::string &src, const char *hsyms, bool with_space)
 {
     std::stringstream ss;
 
@@ -85,28 +70,28 @@ static VString _to_hex( const std::string &src, const char *hsyms, bool with_spa
     }
 
     auto res = ss.str();
-    if (with_space && !src.empty()) res.pop_back(); // delete last space.
+    if ( with_space && !src.empty() ) res.pop_back(); // delete last space.
     return res;
 }
 //=======================================================================================
-VString VString::tohex() const
+std::string VStringRef::tohex( const std::string &s )
 {
-    return _to_hex( *this, hexs_syms, false );
+    return _to_hex( s, hexs_syms, false );
 }
 //=======================================================================================
-VString VString::toHex() const
+std::string VStringRef::toHex( const std::string &s )
 {
-    return _to_hex( *this, Hexs_Syms, false );
+    return _to_hex( s, Hexs_Syms, false );
 }
 //=======================================================================================
-VString VString::to_hex() const
+std::string VStringRef::to_hex( const std::string &s )
 {
-    return _to_hex( *this, hexs_syms, true );
+    return _to_hex( s, hexs_syms, true );
 }
 //=======================================================================================
-VString VString::to_Hex() const
+std::string VStringRef::to_Hex( const std::string &s )
 {
-    return _to_hex( *this, Hexs_Syms, true );
+    return _to_hex( s, Hexs_Syms, true );
 }
 //=======================================================================================
 //      HEX
@@ -115,24 +100,19 @@ VString VString::to_Hex() const
 
 
 //=======================================================================================
-//      append, prepend, takes
+//      append, prepend
 //=======================================================================================
-void VString::prepend( const std::string &s )
+void VStringRef::prepend( const std::string &s )
 {
     return prepend( s.begin(), s.end() );
 }
 //=======================================================================================
-char VString::take_front()
+void VStringRef::append( const std::string &s )
 {
-    return take_front_LE<char>();
+    return append( s.begin(), s.end() );
 }
 //=======================================================================================
-char VString::take_back()
-{
-    return take_back_LE<char>();
-}
-//=======================================================================================
-//      append, prepend, takes
+//      append, prepend
 //=======================================================================================
 
 
@@ -140,75 +120,64 @@ char VString::take_back()
 //=======================================================================================
 //      chops
 //=======================================================================================
-void VString::chop_front( size_t n )
+void VStringRef::chop_front( size_t n )
 {
-    erase(0, n);
+    _data->erase(0, n);
 }
 //=======================================================================================
-void VString::chop_back( size_t n )
+void VStringRef::chop_back( size_t n )
 {
-    auto new_size = size() > n
-                        ? size() - n
+    auto new_size = _data->size() > n
+                        ? _data->size() - n
                         : 0;
 
-    resize( new_size );
+    _data->resize( new_size );
 }
 //=======================================================================================
 //      chops
 //=======================================================================================
 
 
-
 //=======================================================================================
 //      patterns finding
 //=======================================================================================
-bool VString::begins_with( const std::string &what ) const
+bool VStringRef::begins_with( const std::string &what ) const
 {
-    return find(what) == 0;
+    return _data->find(what) == 0;
 }
 //=======================================================================================
-bool VString::ends_with( const std::string &what ) const
+bool VStringRef::ends_with( const std::string &what ) const
 {
-    if ( what.size() > size() ) return false;
+    if ( what.size() > _data->size() ) return false;
 
-    return rfind(what) == size() - what.size();
+    return _data->rfind(what) == _data->size() - what.size();
 }
 //=======================================================================================
 //      patterns finding
 //=======================================================================================
-
 
 
 //=======================================================================================
 //      splitting
 //=======================================================================================
-std::vector<std::string> VString::split( char splitter ) const
+std::vector<std::string> VStringRef::split( char splitter ) const
 {
     std::vector<std::string> res;
 
-    auto cur = begin();
-    auto next = std::find( begin(), end(), splitter );
-    while ( cur != end() )
+    auto cur = _data->begin();
+    auto next = std::find( _data->begin(), _data->end(), splitter );
+    while ( cur != _data->end() )
     {
         res.push_back( {cur, next} );
-        if ( next == end() ) break;
+        if (next == _data->end()) break;
         cur = next + 1;
-        next = std::find( cur, end(), splitter );
+        next = std::find( cur, _data->end(), splitter );
     }
-    return res;
 
-//    auto cur2 = begin();
-//    do
-//    {
-//        auto next2 = std::find( cur2, end(), splitter );
-//        res.push_back( {cur2, next2} );
-//        if ( next2 == end() ) break;
-//        cur2 = next2 + 1;
-//    } while(1);
-//    return res;
+    return res;
 }
 //=======================================================================================
-std::vector<std::string> VString::split_without_empties( char splitter ) const
+std::vector<std::string> VStringRef::split_without_empties(char splitter) const
 {
     auto res = split( splitter );
     res.erase( std::remove(res.begin(), res.end(), std::string()), res.end() );

@@ -50,9 +50,12 @@ void Map2D_Widget::set_black_std_preset()
     scene_bottomright = QPointF(70, 20);
     clear_brush = Qt::black;
 
-    pen_grid_1m  = QPen( color_alpha(Qt::darkGray, 120), 1, Qt::DotLine);
-    pen_grid_5m  = QPen( color_alpha(Qt::darkGray, 130), 1.1);
-    pen_grid_10m = QPen( color_alpha(Qt::darkGray, 180), 1.2);
+//    pen_grid_1m  = QPen( color_alpha(Qt::darkGray, 120), 1, Qt::DotLine);
+//    pen_grid_5m  = QPen( color_alpha(Qt::darkGray, 130), 1.1);
+//    pen_grid_10m = QPen( color_alpha(Qt::darkGray, 180), 1.2);
+    pen_grid_1m  = QPen( color_alpha(Qt::green, 120), 1, Qt::DotLine);
+    pen_grid_5m  = QPen( color_alpha(Qt::green, 130), 1.1);
+    pen_grid_10m = QPen( color_alpha(Qt::green, 180), 1.2);
 
     pen_X_axis = QPen( color_alpha(Qt::white, 180), 2);
     pen_Y_axis = QPen( color_alpha(Qt::white, 180), 2);

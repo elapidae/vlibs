@@ -78,7 +78,6 @@ string VByteArray::to_hex() const
 //=======================================================================================
 static int ch_from_hex(char ch)
 {
-    // translate to lower case.
     if (ch >= 'A' && ch <= 'F') return 10 + ch - 'A';
     if (ch >= 'a' && ch <= 'f') return 10 + ch - 'a';
     if (ch >= '0' && ch <= '9') return ch - '0';

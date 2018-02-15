@@ -1,55 +1,38 @@
-#ifndef VSTRING_H
-#define VSTRING_H
+#ifndef VSTRINGREF_H
+#define VSTRINGREF_H
 
 #include <string>
 #include <vector>
 #include <stdexcept>
 
-//=======================================================================================
-/*  2018-02-02
- *
- *  VString  -- буфер для сырых данных. Также может использоваться для удобства, если
- * есть пожелания касательно добавления к-л функциональности, милости прошу.
- *
-*/
-//=======================================================================================
-
 
 
 
 //=======================================================================================
-//      VString
+//      VStringRef
 //=======================================================================================
-class VString : public std::string
+class VStringRef
 {
 public:
-    using vector = std::vector<VString>;
-
     //-----------------------------------------------------------------------------------
-    // Часть конструкторов приходится перегружать...
-    using std::string::string;
-    VString()                           noexcept;
-    VString( std::string &&str )        noexcept;
-    VString( const std::string &str );
-
-    VString( VString &&str )                    = default;
-    VString( const VString &str )               = default;
-    VString& operator = ( VString &&str )       = default;
-    VString& operator = ( const VString &str )  = default;
+    explicit VStringRef( std::string *data ) noexcept;
 
     //-----------------------------------------------------------------------------------
     // Нечувствительна к регистру, все символы, кроме набора hex игнорируются.
     // NB! При нечетном количестве годных символов, считается, что первый -- ноль.
-    static VString from_hex( const std::string &src );
+    static std::string from_hex( const std::string &src );
 
-    VString tohex () const;  // сплошным текстом, строчными.
-    VString toHex () const;  // сплошным текстом, Заглавными.
-    VString to_hex() const;  // с пробелами, строчными.
-    VString to_Hex() const;  // с пробелами, Заглавными.
+    // Сделаны статическими специально, чтобы не было сигнатурной перегрузки c VString.
+    static std::string tohex  ( const std::string &s );  // сплошным текстом, строчными.
+    static std::string toHex  ( const std::string &s );  // сплошным текстом, Заглавными.
+    static std::string to_hex ( const std::string &s );  // с пробелами, строчными.
+    static std::string to_Hex ( const std::string &s );  // с пробелами, Заглавными.
 
     //-----------------------------------------------------------------------------------
     void prepend ( const std::string &s );
-    template<typename It> void prepend ( It b, It e );  // Только для однобайтовых типов.
+    void append  ( const std::string &s );
+    template<typename It> void prepend ( It b, It e );   // Только для
+    template<typename It> void append  ( It b, It e );   // однобайтовых типов.
 
     //-----------------------------------------------------------------------------------
     template<typename T> void prepend_LE ( T val );
@@ -72,9 +55,6 @@ public:
     template<typename T> T take_back_LE();
     template<typename T> T take_back_BE();
 
-    char take_front();
-    char take_back();
-
     //-----------------------------------------------------------------------------------
     // удаление n символов с разных сторон.
     // Если размер меньше n, оставляет строку пустой.
@@ -90,24 +70,26 @@ public:
     std::vector<std::string> split_without_empties( char splitter ) const;
 
     //-----------------------------------------------------------------------------------
-    // Выворачивает наизнанку. Не особо касается этого класса, но может пригодится.
+    // Не особо касается этого класса, но может пригодится.
     template<typename T> static T reverse_T( T src );
     //-----------------------------------------------------------------------------------
 
 
 private:
+    std::string *_data;
+
     template<typename T> void _append_sys   ( const T &val );
     template<typename T> void _prepend_sys  ( const T &val );
 
     template<typename T> T _back_sys()   const;
     template<typename T> T _front_sys()  const;
 
-    static void _check_big_or_little_endian();
-    template<typename T> static void _check_that_arithmetic_and_1_2_4_8();
+    static inline void _check_big_or_little_endian();
+    template<typename T> static inline void _check_that_arithmetic_and_1_2_4_8();
     template<typename T> void _check_that_arithmetic_and_enough_size() const;
 };
 //=======================================================================================
-//      VString
+//      VStringRef
 //=======================================================================================
 
 
@@ -118,7 +100,7 @@ private:
 //      Public wrappers
 //=======================================================================================
 template<typename T>
-void VString::append_LE( T val )
+void VStringRef::append_LE( T val )
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -129,7 +111,7 @@ void VString::append_LE( T val )
 }
 //=======================================================================================
 template<typename T>
-void VString::append_BE( T val )
+void VStringRef::append_BE( T val )
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -140,7 +122,7 @@ void VString::append_BE( T val )
 }
 //=======================================================================================
 template<typename T>
-void VString::prepend_LE( T val )
+void VStringRef::prepend_LE( T val )
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -151,7 +133,7 @@ void VString::prepend_LE( T val )
 }
 //=======================================================================================
 template<typename T>
-void VString::prepend_BE( T val )
+void VStringRef::prepend_BE( T val )
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -163,7 +145,7 @@ void VString::prepend_BE( T val )
 //=======================================================================================
 //=======================================================================================
 template<typename T>
-T VString::back_BE() const
+T VStringRef::back_BE() const
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -174,7 +156,7 @@ T VString::back_BE() const
 }
 //=======================================================================================
 template<typename T>
-T VString::back_LE() const
+T VStringRef::back_LE() const
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -185,7 +167,7 @@ T VString::back_LE() const
 }
 //=======================================================================================
 template<typename T>
-T VString::front_BE() const
+T VStringRef::front_BE() const
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -196,7 +178,7 @@ T VString::front_BE() const
 }
 //=======================================================================================
 template<typename T>
-T VString::front_LE() const
+T VStringRef::front_LE() const
 {
     _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
@@ -210,21 +192,27 @@ T VString::front_LE() const
 //=======================================================================================
 //      Checking types
 //=======================================================================================
-template<typename T>
-void VString::_check_that_arithmetic_and_1_2_4_8()
+void VStringRef::_check_big_or_little_endian()
 {
-    static_assert( std::is_arithmetic<T>::value, "!std::is_arithmetic<T>::value" );
-    static_assert( sizeof(T) == 1 || sizeof(T) == 2 ||
-                   sizeof(T) == 4 || sizeof(T) == 8, "Strange size of arithmetic type" );
+static_assert( BYTE_ORDER == BIG_ENDIAN || BYTE_ORDER == LITTLE_ENDIAN,
+               "Unknown byte order" );
 }
 //=======================================================================================
 template<typename T>
-void VString::_check_that_arithmetic_and_enough_size() const
+void VStringRef::_check_that_arithmetic_and_1_2_4_8()
+{
+static_assert( std::is_arithmetic<T>::value, "!std::is_arithmetic<T>::value" );
+static_assert( sizeof(T) == 1 || sizeof(T) == 2 ||
+               sizeof(T) == 4 || sizeof(T) == 8, "Strange size of arithmetic type" );
+}
+//=======================================================================================
+template<typename T>
+void VStringRef::_check_that_arithmetic_and_enough_size() const
 {
     _check_that_arithmetic_and_1_2_4_8<T>();
 
-    if ( size() < sizeof(T) )
-        throw std::out_of_range("VString: remained size less than need T size.");
+    if ( _data->size() < sizeof(T) )
+        throw std::out_of_range("VStringRef: remained size less than need T size.");
 }
 //=======================================================================================
 //      Checking types
@@ -232,28 +220,33 @@ void VString::_check_that_arithmetic_and_enough_size() const
 //      append & prepend
 //=======================================================================================
 template<typename T>
-void VString::_append_sys( const T &val )
+void VStringRef::_append_sys( const T &val )
 {
     _check_that_arithmetic_and_1_2_4_8<T>();
 
     auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
-    append( ch, sizeof(T) );
+    _data->append( ch, sizeof(T) );
 }
 //=======================================================================================
 template<typename T>
-void VString::_prepend_sys( const T &val )
+void VStringRef::_prepend_sys( const T &val )
 {
     _check_that_arithmetic_and_1_2_4_8<T>();
 
-    auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
-    insert( 0, ch, sizeof(T) );
+    auto * ch = static_cast<char*>( static_cast<void*>(&val) );
+    _data->insert( 0, ch, sizeof(T) );
 }
 //=======================================================================================
 template<typename It>
-void VString::prepend( It b, It e )
+void VStringRef::prepend( It b, It e )
 {
-    static_assert( sizeof(*b) == 1, "sizeof(It::value_type) != 1" );
-    insert( begin(), b, e );
+    _data->insert( _data->begin(), b, e );
+}
+//=======================================================================================
+template<typename It>
+void VStringRef::append( It b, It e )
+{
+    _data->append( b, e );
 }
 //=======================================================================================
 //      append & prepend
@@ -261,7 +254,7 @@ void VString::prepend( It b, It e )
 //      front, back & pop_front, pop_back
 //=======================================================================================
 template<typename T>
-T VString::take_front_LE()
+T VStringRef::take_front_LE()
 {
     auto res = front_LE<T>();
     chop_front( sizeof(T) );
@@ -269,7 +262,7 @@ T VString::take_front_LE()
 }
 //=======================================================================================
 template<typename T>
-T VString::take_front_BE()
+T VStringRef::take_front_BE()
 {
     auto res = front_BE<T>();
     chop_front( sizeof(T) );
@@ -277,7 +270,7 @@ T VString::take_front_BE()
 }
 //=======================================================================================
 template<typename T>
-T VString::take_back_LE()
+T VStringRef::take_back_LE()
 {
     auto res = back_LE<T>();
     chop_back( sizeof(T) );
@@ -285,7 +278,7 @@ T VString::take_back_LE()
 }
 //=======================================================================================
 template<typename T>
-T VString::take_back_BE()
+T VStringRef::take_back_BE()
 {
     auto res = back_BE<T>();
     chop_back( sizeof(T) );
@@ -293,35 +286,34 @@ T VString::take_back_BE()
 }
 //=======================================================================================
 template<typename T>
-T VString::_front_sys() const
+T VStringRef::_front_sys() const
+{
+    _check_that_arithmetic_and_enough_size<T>();
+    T res;
+    auto *ch = static_cast<char*>(static_cast<void*>(&res));
+
+    std::copy( _data->begin(), _data->begin() + sizeof(T), ch );
+    return res;
+}
+//=======================================================================================
+template<typename T>
+T VStringRef::_back_sys() const
 {
     _check_that_arithmetic_and_enough_size<T>();
 
     T res;
     auto *ch = static_cast<char*>(static_cast<void*>(&res));
 
-    std::copy( begin(), begin() + sizeof(T), ch );
+    std::copy( _data->end() - sizeof(T), _data->end(), ch );
     return res;
 }
 //=======================================================================================
 template<typename T>
-T VString::_back_sys() const
-{
-    _check_that_arithmetic_and_enough_size<T>();
-
-    T res;
-    auto *ch = static_cast<char*>( static_cast<void*>(&res) );
-
-    std::copy( end() - sizeof(T), end(), ch );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::reverse_T( T val )
+T VStringRef::reverse_T( T val )
 {
     _check_that_arithmetic_and_1_2_4_8<T>();
 
-    auto *ch = static_cast<char*>( static_cast<void*>(&val) );
+    auto *ch = static_cast<char*>(static_cast<void*>(&val));
 
     constexpr auto tsize = sizeof(T);
     switch ( tsize )
@@ -340,4 +332,4 @@ T VString::reverse_T( T val )
 //=======================================================================================
 
 
-#endif // VSTRING_H
+#endif // VSTRINGREF_H

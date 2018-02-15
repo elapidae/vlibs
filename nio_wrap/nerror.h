@@ -47,7 +47,7 @@ private:
 //          void some_call_with_error( ..., NError *err )
 //          {
 //              _NErrorProxy err_proxy( err );
-//              g_some_call_with_error( lots_of_params.. , err_proxy.use() );
+//              g_some_call_with_error( lots_of_params.. , err_proxy );
 //              // Если была ошибка и ее принимают, NError будет правильно установлена,
 //              // иначе будет исключение NException( err->message ).
 //          }

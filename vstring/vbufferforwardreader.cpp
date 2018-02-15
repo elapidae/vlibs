@@ -22,7 +22,18 @@ std::string VBufferForwardReader::take_str( size_t sz )
     return res;
 }
 
+std::string VBufferForwardReader::take_byte_string()
+{
+    auto sz = take_u8();
+    return take_str( sz );
+}
+
 int VBufferForwardReader::remained() const
 {
     return _remained;
+}
+
+bool VBufferForwardReader::finished() const
+{
+    return remained() == 0;
 }

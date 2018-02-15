@@ -6,6 +6,8 @@ isEmpty(qi_vbytearray) {
 
     isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
 
+    CONFIG *= c++11
+
     INCLUDEPATH += $$VLibs_Dir/vbytearray
 
     HEADERS     += $$VLibs_Dir/vbytearray/vbytearray.h
