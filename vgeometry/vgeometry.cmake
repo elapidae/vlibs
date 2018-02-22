@@ -3,6 +3,7 @@
 message( "Include vgeometry..." )
 
 include( "${VLIBS_PATH}/vbytearray/vbytearray.cmake" )
+include( "${VLIBS_PATH}/vstring/vstring.cmake" )
 
 include_directories( "${VLIBS_PATH}/vgeometry/" )
 
