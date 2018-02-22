@@ -75,6 +75,7 @@ public:
     QPen scaled_pen( Qt::GlobalColor c ) const          { return scaled_pen(QPen(c)); }
 
     void set_zoom( float zoom );
+    void set_shift( const QPointF &p );
 
     //-----------------------------------------------------------------------------------
 private:

@@ -73,6 +73,12 @@ void Map2D_Widget::set_zoom(float zoom)
     repaint();
 }
 //=======================================================================================
+void Map2D_Widget::set_shift(const QPointF &p)
+{
+    _shifting = p;
+    repaint();
+}
+//=======================================================================================
 void Map2D_Widget::paintEvent(QPaintEvent*)
 {
     QPainter p( this );

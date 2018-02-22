@@ -1,5 +1,11 @@
 #include "vbufferforwardreader.h"
 
+#include <assert.h>
+
+using namespace std;
+
+
+
 VBufferForwardReader::VBufferForwardReader( const std::string &buf )
     : VBufferForwardReader( buf.data(), buf.size() )
 {}
@@ -36,4 +42,10 @@ int VBufferForwardReader::remained() const
 bool VBufferForwardReader::finished() const
 {
     return remained() == 0;
+}
+
+std::string VBufferForwardReader::show_str(size_t sz) const
+{
+    assert( sz <= size_t(remained()) );
+    return string( _buffer, sz );
 }
