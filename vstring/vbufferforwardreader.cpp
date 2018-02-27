@@ -34,7 +34,7 @@ std::string VBufferForwardReader::take_byte_string()
     return take_str( sz );
 }
 
-int VBufferForwardReader::remained() const
+uint VBufferForwardReader::remained() const
 {
     return _remained;
 }

@@ -71,9 +71,11 @@ public:
 
     T distance_to( const VPoint<T> & other ) const;
 
+    bool is_valid() const                           { return x() == x() && y() == y(); }
+
     // Конвертирует в указанный тип, если у типа есть соответствующий конструктор.
     template<typename Dst>
-    Dst convert_to_any() const { return {x(), y()}; }
+    Dst convert_to_any() const                      { return {x(), y()}; }
 
 
     class Vector : public std::vector<VPoint<T>>
@@ -133,6 +135,9 @@ public:
 
     T distance_to( const VPolarPoint & other )
     { return to_cartesian().distance_to(other.to_cartesian()); }
+
+    bool is_valid() const
+    { return distance() == distance() && angle() == angle(); }
 
     class Vector : public std::vector<VPolarPoint<T>>
     {
@@ -295,7 +300,7 @@ typename VPolarPoint<T>::Vector VPoint<T>::Vector::to_polar() const
     for ( auto && p: *this )
         res.push_back( p.to_polar() );
 
-    return std::move( res );
+    return res;
 }
 //=======================================================================================
 template<typename T>

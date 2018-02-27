@@ -30,7 +30,7 @@ public:
     explicit VBufferForwardReader( const std::string &buf );
     VBufferForwardReader( const char *buf, size_t size );
 
-    int  remained() const;
+    uint remained() const;
     bool finished() const;
 
     //-----------------------------------------------------------------------------------
