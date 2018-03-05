@@ -64,6 +64,9 @@ public:
     T distance()    const;
     T angle()       const;
 
+    T& ref_x() { return _x; }
+    T& ref_y() { return _y; }
+
     VPolarPoint<T> to_polar() const;
 
     const VPoint<T> & operator += ( const VPoint<T> &rhs );
@@ -74,8 +77,8 @@ public:
     bool is_valid() const                           { return x() == x() && y() == y(); }
 
     // Конвертирует в указанный тип, если у типа есть соответствующий конструктор.
-    template<typename Dst>
-    Dst convert_to_any() const                      { return {x(), y()}; }
+    //template<typename Dst>
+    //Dst convert_to_any() const                      { return {x(), y()}; }
 
 
     class Vector : public std::vector<VPoint<T>>
@@ -96,10 +99,16 @@ VPoint<T> operator + ( const VPoint<T> &lhs, const VPoint<T> &rhs );
 template<typename T>
 VPoint<T> operator - ( const VPoint<T> &lhs, const VPoint<T> &rhs );
 //=======================================================================================
-class VPointF : public VPoint<float>
-{
-public: using VPoint::VPoint;
-};
+
+using VPointF = VPoint<float>;
+//class VPointF : public VPoint<float>
+//{
+//public:
+//    using VPoint::VPoint;
+
+//    class Vector : public VPoint<float>::Vector
+//    { public: using VPoint<float>::Vector::Vector; };
+//};
 //=======================================================================================
 //      VPoint // Cartesian
 //=======================================================================================

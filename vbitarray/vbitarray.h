@@ -1,69 +1,74 @@
 #ifndef VBITARRAY_H
 #define VBITARRAY_H
 
-#include <stdint.h>
-#include <vector>
-#include <assert.h>
+#include <queue>
+#include <stdexcept>
 #include <string>
 
+
+//=======================================================================================
+/*  2018-01-29 revision.
+ *
+ *  VBitArray -- класс предназначен для парсинга коротких сообщений, в которых данные
+ *  содержаться в битовых полях длиной не более 31 бита, находящихся в произвольных
+ * позициях относительно байтовых границ.
+ *
+*/
+//=======================================================================================
+
+
+
+//=======================================================================================
 class VBitArray
 {
 public:
-    VBitArray();
+    enum _MostSignificant { MostSignificant, LeastSignificant };
 
-    template<typename It>
-    VBitArray( It b, const It &e )
-    {
-        static_assert( sizeof(*b) == 1, "not a byte format." );
+    explicit VBitArray();
+    VBitArray( const std::string &data_to_bits,
+               const _MostSignificant = MostSignificant );
 
-        while(b != e)
-        {
-            uint8_t ch = *b++;
-            for (int i = 8; i > 0; --i)
-            {
-//                _bits.push_back( ch & 0x80 );
-//                ch <<= 1;
-                _bits.push_back( ch & 0x01 );
-                ch >>= 1;
-            }
-        }
-    }
+    void push( char val, const _MostSignificant most = MostSignificant );
 
-    template<typename Container>
-    VBitArray( const Container &c )
-        : VBitArray( c.begin(), c.end() )
-    {}
+    int32_t  pop_i     ( int cnt );
+    int32_t  pop_i_dop ( int cnt );
+    uint32_t pop_u     ( int cnt );
+    uint32_t pop_u_dop ( int cnt );
 
-    VBitArray( const char *ch )
-        : VBitArray( std::string(ch) )
-    {}
-
-    template<typename Res>
-    Res pop_front(int count)
-    {
-        assert(int(_bits.size()) >= count && count > 0);
-
-        Res res = 0;
-
-        auto it = _bits.begin();
-
-        while (count--)
-        {
-            res <<= 1;
-            res |= *it++ ? 1 : 0;
-        }
-        return res;
-    }
-    int pop_front(int count)
-    {
-        return pop_front<int>(count);
-    }
-
+    bool empty()         const;
+    int  remained_bits() const;
+    bool front()         const;
 
 private:
-    std::vector<uint8_t> _bits;
+    template<typename T> T _pop_( int cnt, T initial );
+    void _check_cnt( int cnt ) const;
+    std::queue<uint8_t> _bools;
 };
+//=======================================================================================
 
+
+
+
+//=======================================================================================
+//      IMPLEMENTATION
+//=======================================================================================
+template<typename T>
+T VBitArray::_pop_( int cnt, T res )
+{
+    _check_cnt( cnt );
+
+    while ( cnt-- )
+    {
+        res <<= 1;
+        if ( _bools.front() )
+            res |= 1;
+        _bools.pop();
+    }
+    return res;
+}
+//=======================================================================================
+//      IMPLEMENTATION
+//=======================================================================================
 
 
 
