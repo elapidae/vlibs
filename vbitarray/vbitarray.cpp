@@ -1,8 +1,9 @@
+//=======================================================================================
 #include "vbitarray.h"
 
 
 /*
-    src     sign-norm   sign-dop     u-n    u-dop
+    src     sign-norm   sign-neg     u-n    u-neg
 
  00 000    0 000(0)     0 000(0)     0 t  0 000(0)
  00 001    0 001(1)     1 111(-1)    0 r  0 111(7)
@@ -45,26 +46,26 @@ void VBitArray::push( char val, const VBitArray::_MostSignificant most )
     } // for each bit.
 }
 //=======================================================================================
-int32_t VBitArray::pop_i( int cnt )
+int32_t VBitArray::pop_int( int cnt )
 {
     return _pop_( cnt, int32_t(front() ? -1 : 0) );
 }
 //=======================================================================================
-int32_t VBitArray::pop_i_dop( int cnt )
+int32_t VBitArray::pop_int_neg( int cnt )
 {
-    auto res = pop_i( cnt );
+    auto res = pop_int( cnt );
     int32_t sign_except = -(1 << (cnt - 1));
     return res == sign_except ? sign_except : -res;
 }
 //=======================================================================================
-uint32_t VBitArray::pop_u(int cnt)
+uint32_t VBitArray::pop_uint( int cnt )
 {
     return _pop_( cnt, uint32_t(0) );
 }
 //=======================================================================================
-uint32_t VBitArray::pop_u_dop( int cnt )
+uint32_t VBitArray::pop_uint_neg( int cnt )
 {
-    auto res = pop_u( cnt );
+    auto res = pop_uint( cnt );
     uint32_t max1_except = 1 << cnt;
     return res == 0 ? 0 : max1_except - res;
 }
@@ -92,19 +93,4 @@ void VBitArray::_check_cnt(int cnt) const
     if ( cnt > int(_bools.size()) )
         throw std::out_of_range("VBitArray: bits count less than need.");
 }
-//=======================================================================================
-//int32_t VBitArray::_pop( int cnt, bool in_dop_code )
-//{
-//    _check_cnt( cnt );
-
-//    int32_t res = in_dop_code ? -1 : 0;
-//    while (cnt--)
-//    {
-//        res <<= 1;
-//        if ( _bools.front() )
-//            res |= 1;
-//        _bools.pop();
-//    }
-//    return res;
-//}
 //=======================================================================================
