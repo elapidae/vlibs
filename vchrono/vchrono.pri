@@ -9,5 +9,9 @@ isEmpty(qi_vchrono) {
 
     HEADERS     += $$VLibs_Dir/vchrono/vchrono.h
     SOURCES     += $$VLibs_Dir/vchrono/vchrono.cpp
+
+    HEADERS     += $$VLibs_Dir/vchrono/vtimepoint.h
+    SOURCES     += $$VLibs_Dir/vchrono/vtimepoint.cpp
 }
+
 
