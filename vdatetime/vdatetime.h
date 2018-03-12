@@ -38,7 +38,7 @@ public:
     using duration_t = time_point_t::duration;
 
     static VDateTime now();
-    static VDateTime from_time_t(time_t t);
+    static VDateTime from_time_t( time_t t );
 
     VDateTime();
     explicit VDateTime( const time_point_t &tp );

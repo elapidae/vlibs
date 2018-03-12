@@ -139,7 +139,7 @@ bool VDateTime::operator >(const VDateTime &rhs) const
 //=======================================================================================
 VDateTime::time_point_t::duration VDateTime::duration() const
 {
-    return _timestamp - system_clock::from_time_t(0);
+    return _timestamp.time_since_epoch();
 }
 //=======================================================================================
 int64_t VDateTime::seconds() const
