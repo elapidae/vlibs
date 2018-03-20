@@ -1,26 +1,26 @@
 #ifndef VTIMEPOINT_H
 #define VTIMEPOINT_H
 
-#include <string>
+#include "varg.h"
 #include <chrono>
 #include <ctime>
-
+#include <iomanip>
 
 
 //=======================================================================================
 //      GENERAL TEMPLATE
 //=======================================================================================
 template<typename Clk, typename Derived>
-class _VTimePoint
+class _vTimePoint
 {
 public:
     using timepoint_t = typename Clk::time_point;
 
-    explicit _VTimePoint() {}
-    explicit _VTimePoint( const timepoint_t &tp ) : _tp(tp) {}
+    explicit _vTimePoint() {}
+    explicit _vTimePoint( const timepoint_t &tp ) : _tp(tp) {}
 
     template<typename Duration2>
-    explicit _VTimePoint( const Duration2 &d2 ); // Построение из любого duration.
+    explicit _vTimePoint( const Duration2 &d2 ); // Построение из любого duration.
 
     timepoint_t time_point() const { return _tp; }
 
@@ -29,12 +29,12 @@ public:
     std::chrono::milliseconds   milliseconds()  const;
     std::chrono::seconds        seconds()       const;
 
-    bool operator <  ( const _VTimePoint &rhs ) const;
-    bool operator >  ( const _VTimePoint &rhs ) const;
-    bool operator <= ( const _VTimePoint &rhs ) const;
-    bool operator >= ( const _VTimePoint &rhs ) const;
-    bool operator == ( const _VTimePoint &rhs ) const;
-    bool operator != ( const _VTimePoint &rhs ) const;
+    bool operator <  ( const _vTimePoint &rhs ) const;
+    bool operator >  ( const _vTimePoint &rhs ) const;
+    bool operator <= ( const _vTimePoint &rhs ) const;
+    bool operator >= ( const _vTimePoint &rhs ) const;
+    bool operator == ( const _vTimePoint &rhs ) const;
+    bool operator != ( const _vTimePoint &rhs ) const;
 
     template<typename Duration>
     Derived &operator -= ( const Duration &rhs );
@@ -43,8 +43,8 @@ public:
     // http://en.cppreference.com/w/cpp/chrono/c/strftime
     std::string str_format( const std::string &fmt ) const;
 
-    std::string str_iso() const
-    { return str_format("%Y-%m-%d %H:%M:%S"); }
+    std::string str_iso() const;
+    std::string str_iso_zzz() const;
 
     std::string str_iso_for_filenames() const
     { return str_format("%Y-%m-%d_T_%H_%M_%S"); }
@@ -61,10 +61,10 @@ private:
 //=======================================================================================
 //      System time point
 //=======================================================================================
-class VSystemTimePoint : public _VTimePoint<std::chrono::system_clock, VSystemTimePoint>
+class VSystemTimePoint : public _vTimePoint<std::chrono::system_clock, VSystemTimePoint>
 {
 public:
-    using _VTimePoint::_VTimePoint;
+    using _vTimePoint::_vTimePoint;
 
     static VSystemTimePoint now()
     { return VSystemTimePoint( std::chrono::system_clock::now() ); }
@@ -89,62 +89,62 @@ using VTimePoint = VSystemTimePoint;
 //=======================================================================================
 template<typename Clk, typename Derived>
 template<typename Duration2>
-_VTimePoint<Clk,Derived>::_VTimePoint( const Duration2 &d2 )
-    : _VTimePoint( timepoint_t(d2) )
+_vTimePoint<Clk,Derived>::_vTimePoint( const Duration2 &d2 )
+    : _vTimePoint( timepoint_t(d2) )
 {}
 //=======================================================================================
 template<typename Clk, typename Derived>
-std::chrono::microseconds _VTimePoint<Clk,Derived>::microseconds() const
+std::chrono::microseconds _vTimePoint<Clk,Derived>::microseconds() const
 {
     return std::chrono::
             duration_cast<std::chrono::microseconds>(_tp.time_since_epoch());
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-std::chrono::milliseconds _VTimePoint<Clk,Derived>::milliseconds() const
+std::chrono::milliseconds _vTimePoint<Clk,Derived>::milliseconds() const
 {
     return std::chrono::
             duration_cast<std::chrono::milliseconds>(_tp.time_since_epoch());
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-bool _VTimePoint<Clk,Derived>::operator < (const _VTimePoint<Clk,Derived> &rhs) const
+bool _vTimePoint<Clk,Derived>::operator < (const _vTimePoint<Clk,Derived> &rhs) const
 {
     return time_point() < rhs.time_point();
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-bool _VTimePoint<Clk,Derived>::operator > (const _VTimePoint<Clk,Derived> &rhs) const
+bool _vTimePoint<Clk,Derived>::operator > (const _vTimePoint<Clk,Derived> &rhs) const
 {
     return time_point() > rhs.time_point();
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-bool _VTimePoint<Clk,Derived>::operator <= (const _VTimePoint<Clk,Derived> &rhs) const
+bool _vTimePoint<Clk,Derived>::operator <= (const _vTimePoint<Clk,Derived> &rhs) const
 {
     return time_point() <= rhs.time_point();
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-bool _VTimePoint<Clk,Derived>::operator >= (const _VTimePoint<Clk,Derived> &rhs) const
+bool _vTimePoint<Clk,Derived>::operator >= (const _vTimePoint<Clk,Derived> &rhs) const
 {
     return time_point() >= rhs.time_point();
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-bool _VTimePoint<Clk,Derived>::operator == (const _VTimePoint<Clk,Derived> &rhs) const
+bool _vTimePoint<Clk,Derived>::operator == (const _vTimePoint<Clk,Derived> &rhs) const
 {
     return time_point() == rhs.time_point();
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-bool _VTimePoint<Clk,Derived>::operator != (const _VTimePoint<Clk,Derived> &rhs) const
+bool _vTimePoint<Clk,Derived>::operator != (const _vTimePoint<Clk,Derived> &rhs) const
 {
     return time_point() != rhs.time_point();
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-std::string _VTimePoint<Clk,Derived>::str_format(const std::string &fmt) const
+std::string _vTimePoint<Clk,Derived>::str_format(const std::string &fmt) const
 {
     auto tt = Clk::to_time_t(_tp);
     std::tm tm = *std::gmtime( &tt );
@@ -155,8 +155,22 @@ std::string _VTimePoint<Clk,Derived>::str_format(const std::string &fmt) const
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
+std::string _vTimePoint<Clk,Derived>::str_iso() const
+{
+    return str_format("%Y-%m-%d %H:%M:%S");
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
+std::string _vTimePoint<Clk,Derived>::str_iso_zzz() const
+{
+    return varg(str_iso(), ".")
+               (std::setfill('0'), std::setw(3), microseconds().count() % 1000);
+}
+//=======================================================================================
+//=======================================================================================
+template<typename Clk, typename Derived>
 template<typename Duration>
-Derived &_VTimePoint<Clk,Derived>::operator -= ( const Duration &rhs )
+Derived &_vTimePoint<Clk,Derived>::operator -= ( const Duration &rhs )
 {
     _tp -= rhs;
     return *this;
