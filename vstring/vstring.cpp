@@ -5,6 +5,7 @@
 #include <algorithm>
 
 
+
 //=======================================================================================
 //      Init, ctors
 //=======================================================================================
@@ -130,6 +131,16 @@ char VString::take_front()
 char VString::take_back()
 {
     return take_back_LE<char>();
+}
+//=======================================================================================
+void VString::append_dword_str_LE( const std::string &str )
+{
+    if ( str.size() > std::numeric_limits<uint32_t>::max() )
+        throw std::overflow_error("String is bigger 2^32.");
+
+    uint32_t sz = static_cast<uint32_t>( str.size() );
+    append_LE( sz );
+    append( str );
 }
 //=======================================================================================
 //      append, prepend, takes

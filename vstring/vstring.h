@@ -75,6 +75,10 @@ public:
     char take_front();
     char take_back();
 
+    void append_byte_str  ( const std::string &str ); // throw error if bigger 255
+    void append_word_str  ( const std::string &str ); // throw error if bigger 2^16
+    void append_dword_str_LE ( const std::string &str ); // throw error if bigger 2^32
+
     //-----------------------------------------------------------------------------------
     // удаление n символов с разных сторон.
     // Если размер меньше n, оставляет строку пустой.
