@@ -1,7 +1,7 @@
 #ifndef VTIMEPOINT_H
 #define VTIMEPOINT_H
 
-#include "varg.h"
+#include "vcat.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -94,6 +94,13 @@ _vTimePoint<Clk,Derived>::_vTimePoint( const Duration2 &d2 )
 {}
 //=======================================================================================
 template<typename Clk, typename Derived>
+std::chrono::nanoseconds _vTimePoint<Clk,Derived>::nanoseconds() const
+{
+    return std::chrono::
+            duration_cast<std::chrono::nanoseconds>(_tp.time_since_epoch());
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
 std::chrono::microseconds _vTimePoint<Clk,Derived>::microseconds() const
 {
     return std::chrono::
@@ -163,8 +170,8 @@ std::string _vTimePoint<Clk,Derived>::str_iso() const
 template<typename Clk, typename Derived>
 std::string _vTimePoint<Clk,Derived>::str_iso_zzz() const
 {
-    return varg(str_iso(), ".")
-               (std::setfill('0'), std::setw(3), microseconds().count() % 1000);
+    return vcat(str_iso(), ".")
+                           .field_width(3).fill_char('0')( microseconds().count()%1000 );
 }
 //=======================================================================================
 //=======================================================================================

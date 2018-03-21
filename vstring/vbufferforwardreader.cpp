@@ -34,7 +34,13 @@ std::string VBufferForwardReader::take_byte_string()
     return take_str( sz );
 }
 
-uint VBufferForwardReader::remained() const
+string VBufferForwardReader::take_dword_string_LE()
+{
+    auto sz = take_u32_LE();
+    return take_str( sz );
+}
+
+size_t VBufferForwardReader::remained() const
 {
     return _remained;
 }

@@ -30,7 +30,7 @@ public:
     explicit VBufferForwardReader( const std::string &buf );
     VBufferForwardReader( const char *buf, size_t size );
 
-    uint remained() const;
+    size_t remained() const;
     bool finished() const;
 
     //-----------------------------------------------------------------------------------
@@ -48,6 +48,8 @@ public:
     // Байтовая строка -- строка длиной не более 255 символов, начинается с размера.
     // [1 byte len] [len byte body]
     std::string take_byte_string();
+
+    std::string take_dword_string_LE();
 
     //-----------------------------------------------------------------------------------
 
