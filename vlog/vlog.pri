@@ -13,8 +13,10 @@ isEmpty(qi_vlog) {
     INCLUDEPATH += $$VLibs_Dir/vlog
 
     HEADERS     += $$VLibs_Dir/vlog/vlog.h
+
     HEADERS     += $$VLibs_Dir/vlog/vlog_pretty.h
-    
+    SOURCES     += $$VLibs_Dir/vlog/vlog_pretty.cpp
+
     HEADERS     += $$VLibs_Dir/vlog/vlogger.h
     SOURCES     += $$VLibs_Dir/vlog/vlogger.cpp
     

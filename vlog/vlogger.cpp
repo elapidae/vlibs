@@ -25,6 +25,12 @@ VLogger::~VLogger()
     execute( _entry );
 }
 //=======================================================================================
+VLogEntry VLogger::_get_cur_entry() const
+{
+    auto res = _entry;
+    res._set_msg( _cat );
+    return res;
+}
 //=======================================================================================
 void VLogger::_log_to_cout( const VLogEntry &entry )
 {
