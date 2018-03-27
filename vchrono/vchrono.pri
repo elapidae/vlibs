@@ -7,11 +7,12 @@ isEmpty(qi_vchrono) {
 
     INCLUDEPATH += $$VLibs_Dir/vchrono
 
-    HEADERS     += $$VLibs_Dir/vchrono/vchrono.h
-    SOURCES     += $$VLibs_Dir/vchrono/vchrono.cpp
+    #HEADERS     += $$VLibs_Dir/vchrono/vchrono.h
+    #SOURCES     += $$VLibs_Dir/vchrono/vchrono.cpp
 
     HEADERS     += $$VLibs_Dir/vchrono/vtimepoint.h
     SOURCES     += $$VLibs_Dir/vchrono/vtimepoint.cpp
-}
 
+    HEADERS     += $$VLibs_Dir/vchrono/vchrono_weeks.h
+}
 
