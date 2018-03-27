@@ -1,7 +1,7 @@
 #ifndef vcat_H
 #define vcat_H
 
-#include "vcat_iface.h"
+#include "_vcat_iface.h"
 #include <memory>
 
 //=======================================================================================
