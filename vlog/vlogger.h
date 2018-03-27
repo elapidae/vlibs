@@ -5,6 +5,7 @@
 
 
 //=======================================================================================
+class VLogError;
 namespace vlog
 {
     //===================================================================================
@@ -44,6 +45,9 @@ namespace vlog
 
         friend class _vcat_iface<VLogger>;
         template<typename T> void do_cat( const T& val ) { _cat.cat(val); }
+
+        friend class ::VLogError;
+        VLogEntry _get_cur_entry() const;
     };
     //===================================================================================
 } // vlog namespace

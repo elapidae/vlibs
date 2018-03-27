@@ -130,11 +130,11 @@ void VLogEntry::serialize( VString *dst ) const
     int64_t nts = _timestmap.nanoseconds().count();
 
     dst->append_LE( char_type() );
-    dst->append_dword_str_LE( _file );
+    dst->append_dword_string_LE( _file );
     dst->append_LE( _line );
-    dst->append_dword_str_LE( _func );
+    dst->append_dword_string_LE( _func );
     dst->append_LE( nts );
-    dst->append_dword_str_LE( message() );
+    dst->append_dword_string_LE( message() );
 }
 //=======================================================================================
 //      VLogEntry
