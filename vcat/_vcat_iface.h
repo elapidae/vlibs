@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <limits>
-#include <chrono>
+//#include <chrono>
 
 
 //=======================================================================================
@@ -54,19 +54,20 @@ public:
 
     //-----------------------------------------------------------------------------------
     //      chrono
-    D& cat        ( const std::chrono::seconds      &sec );
-    D& cat        ( const std::chrono::milliseconds &sec );
-    D& cat        ( const std::chrono::microseconds &sec );
-    D& cat        ( const std::chrono::nanoseconds  &sec );
+    //  UPD 27-03-2018 -- перенесены в vchrono
+    //D& cat        ( const std::chrono::seconds      &sec );
+    //D& cat        ( const std::chrono::milliseconds &sec );
+    //D& cat        ( const std::chrono::microseconds &sec );
+    //D& cat        ( const std::chrono::nanoseconds  &sec );
 
-    D& operator() ( const std::chrono::seconds      &sec );
-    D& operator<< ( const std::chrono::seconds      &sec );
-    D& operator() ( const std::chrono::milliseconds &sec );
-    D& operator<< ( const std::chrono::milliseconds &sec );
-    D& operator() ( const std::chrono::microseconds &sec );
-    D& operator<< ( const std::chrono::microseconds &sec );
-    D& operator() ( const std::chrono::nanoseconds  &sec );
-    D& operator<< ( const std::chrono::nanoseconds  &sec );
+    //D& operator() ( const std::chrono::seconds      &sec );
+    //D& operator<< ( const std::chrono::seconds      &sec );
+    //D& operator() ( const std::chrono::milliseconds &sec );
+    //D& operator<< ( const std::chrono::milliseconds &sec );
+    //D& operator() ( const std::chrono::microseconds &sec );
+    //D& operator<< ( const std::chrono::microseconds &sec );
+    //D& operator() ( const std::chrono::nanoseconds  &sec );
+    //D& operator<< ( const std::chrono::nanoseconds  &sec );
     //-----------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------
@@ -275,93 +276,93 @@ D& _vcat_iface<D>::nospace()
 //=======================================================================================
 //      chrono
 //=======================================================================================
-template< typename D >
-D& _vcat_iface<D>::cat( const std::chrono::seconds & sec )
-{
-    D& d = static_cast<D&>( *this );
-    cat("seconds[");
-    d.do_cat(sec.count());
-    d.do_cat(']');
-    return d;
-}
+//template< typename D >
+//D& _vcat_iface<D>::cat( const std::chrono::seconds & sec )
+//{
+//    D& d = static_cast<D&>( *this );
+//    cat("seconds[");
+//    d.do_cat(sec.count());
+//    d.do_cat(']');
+//    return d;
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::cat( const std::chrono::milliseconds &ms )
-{
-    D& d = static_cast<D&>( *this );
-    cat("milliseconds[");
-    d.do_cat(ms.count());
-    d.do_cat(']');
-    return d;
-}
+//template< typename D >
+//D& _vcat_iface<D>::cat( const std::chrono::milliseconds &ms )
+//{
+//    D& d = static_cast<D&>( *this );
+//    cat("milliseconds[");
+//    d.do_cat(ms.count());
+//    d.do_cat(']');
+//    return d;
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::cat( const std::chrono::microseconds &us )
-{
-    D& d = static_cast<D&>( *this );
-    cat("microseconds[");
-    d.do_cat(us.count());
-    d.do_cat(']');
-    return d;
-}
+//template< typename D >
+//D& _vcat_iface<D>::cat( const std::chrono::microseconds &us )
+//{
+//    D& d = static_cast<D&>( *this );
+//    cat("microseconds[");
+//    d.do_cat(us.count());
+//    d.do_cat(']');
+//    return d;
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::cat( const std::chrono::nanoseconds &ns )
-{
-    D& d = static_cast<D&>( *this );
-    cat("nanoseconds[");
-    d.do_cat(ns.count());
-    d.do_cat(']');
-    return d;
-}
+//template< typename D >
+//D& _vcat_iface<D>::cat( const std::chrono::nanoseconds &ns )
+//{
+//    D& d = static_cast<D&>( *this );
+//    cat("nanoseconds[");
+//    d.do_cat(ns.count());
+//    d.do_cat(']');
+//    return d;
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator() ( const std::chrono::seconds& sec )
-{
-    return cat( sec );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator() ( const std::chrono::seconds& sec )
+//{
+//    return cat( sec );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator<< ( const std::chrono::seconds& sec )
-{
-    return cat( sec );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator<< ( const std::chrono::seconds& sec )
+//{
+//    return cat( sec );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator() ( const std::chrono::milliseconds &ms )
-{
-    return cat( ms );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator() ( const std::chrono::milliseconds &ms )
+//{
+//    return cat( ms );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator<< ( const std::chrono::milliseconds &ms )
-{
-    return cat( ms );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator<< ( const std::chrono::milliseconds &ms )
+//{
+//    return cat( ms );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator() ( const std::chrono::microseconds &us )
-{
-    return cat( us );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator() ( const std::chrono::microseconds &us )
+//{
+//    return cat( us );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator<< ( const std::chrono::microseconds &us )
-{
-    return cat( us );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator<< ( const std::chrono::microseconds &us )
+//{
+//    return cat( us );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator() ( const std::chrono::nanoseconds  &ns )
-{
-    return cat( ns );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator() ( const std::chrono::nanoseconds  &ns )
+//{
+//    return cat( ns );
+//}
 //---------------------------------------------------------------------------------------
-template< typename D >
-D& _vcat_iface<D>::operator<< ( const std::chrono::nanoseconds  &ns )
-{
-    return cat( ns );
-}
+//template< typename D >
+//D& _vcat_iface<D>::operator<< ( const std::chrono::nanoseconds  &ns )
+//{
+//    return cat( ns );
+//}
 //=======================================================================================
 //          IMPLEMENTATION
 //=======================================================================================

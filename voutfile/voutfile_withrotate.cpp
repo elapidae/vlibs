@@ -28,7 +28,7 @@ VOutFile_WithRotate::VOutFile_WithRotate(const std::string &base_fname,
 //=======================================================================================
 void VOutFile_WithRotate::_reopen_file()
 {
-    std::cout << "------- " << _base_fname << std::endl;
+    //std::cout << "------- " << _base_fname << std::endl;
     _cur_file.reset( new VOutFile(_base_fname, VOutFile::OpenMode::Append) );
 
     if ( !_cur_file->is_open() || !_cur_file->is_good() )

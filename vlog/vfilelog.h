@@ -16,7 +16,7 @@ namespace vlog
         static std::string as_line_with_type( const VLogEntry &entry );
         static std::string as_line_without_type( const VLogEntry &entry );
 
-        // Запись незначащей строки в начало логгирования.
+        // Используется при записи незначащей строки в начало логгирования.
         static std::string start_line();
     };
     //===================================================================================

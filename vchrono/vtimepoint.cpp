@@ -50,5 +50,29 @@ namespace _priv
     //-----------------------------------------------------------------------------------
 } // _priv namespace
 //=======================================================================================
+std::ostream &operator <<(std::ostream &os, const std::chrono::seconds &val)
+{
+    os << "seconds(" << val.count() << ')';
+    return os;
+}
+//---------------------------------------------------------------------------------------
+std::ostream &operator <<(std::ostream &os, const std::chrono::milliseconds &val)
+{
+    os << "milliseconds(" << val.count() << ')';
+    return os;
+}
+//---------------------------------------------------------------------------------------
+std::ostream &operator <<(std::ostream &os, const std::chrono::microseconds &val)
+{
+    os << "microseconds(" << val.count() << ')';
+    return os;
+}
+//---------------------------------------------------------------------------------------
+std::ostream &operator <<(std::ostream &os, const std::chrono::nanoseconds &val)
+{
+    os << "nanoseconds(" << val.count() << ')';
+    return os;
+}
+//=======================================================================================
 //      vtimepoint.cpp
 //=======================================================================================

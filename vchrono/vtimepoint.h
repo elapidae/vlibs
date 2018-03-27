@@ -114,6 +114,18 @@ public:
 
 
 
+//=======================================================================================
+//      Streaming for std types.
+//=======================================================================================
+std::ostream & operator << ( std::ostream & os, const std::chrono::seconds      & val );
+std::ostream & operator << ( std::ostream & os, const std::chrono::milliseconds & val );
+std::ostream & operator << ( std::ostream & os, const std::chrono::microseconds & val );
+std::ostream & operator << ( std::ostream & os, const std::chrono::nanoseconds  & val );
+//=======================================================================================
+//      Streaming for std types.
+//=======================================================================================
+
+
 
 
 //=======================================================================================
