@@ -133,7 +133,27 @@ char VString::take_back()
     return take_back_LE<char>();
 }
 //=======================================================================================
-void VString::append_dword_str_LE( const std::string &str )
+void VString::append_byte_string( const std::string &str )
+{
+    if (str.size() > std::numeric_limits<uint8_t>::max() )
+        throw std::runtime_error("Byte string cannot be serialize, size > 255...");
+
+    uint8_t sz = static_cast<uint8_t>( str.size() );
+    append_LE( sz );
+    append( str.c_str(), sz );
+}
+//=======================================================================================
+void VString::append_word_string_LE(const std::string &str)
+{
+    if ( str.size() > std::numeric_limits<uint16_t>::max() )
+        throw std::runtime_error("Word string cannot be serialize, size > 2^16...");
+
+    uint16_t sz = static_cast<uint16_t>( str.size() );
+    append_LE( sz );
+    append( str.c_str(), sz );
+}
+//=======================================================================================
+void VString::append_dword_string_LE( const std::string &str )
 {
     if ( str.size() > std::numeric_limits<uint32_t>::max() )
         throw std::overflow_error("String is bigger 2^32.");

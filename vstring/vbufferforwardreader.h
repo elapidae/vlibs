@@ -37,47 +37,54 @@ public:
 
     template<typename T> T show_LE()  const;
     template<typename T> T show_BE()  const;
-    std::string show_str( size_t sz ) const;
+    std::string show_string( size_t sz ) const;
 
     //-----------------------------------------------------------------------------------
 
     template<typename T> T take_LE();
     template<typename T> T take_BE();
-    std::string take_str( size_t sz );
+    std::string take_string( size_t sz );
+
+
+    std::string show_byte_string     () const;
+    std::string show_word_string_LE  () const;
+    std::string show_dword_string_LE () const;
 
     // Байтовая строка -- строка длиной не более 255 символов, начинается с размера.
     // [1 byte len] [len byte body]
+    // То же самое с word и dword string:
+    // [2byte len] [body], [4byte len] [body]
     std::string take_byte_string();
-
+    std::string take_word_string_LE();
     std::string take_dword_string_LE();
 
     //-----------------------------------------------------------------------------------
 
-    char     show_ch()                      { return show_LE<char>();       }
-    int8_t   show_i8()                      { return show_LE<int8_t>();     }
-    uint8_t  show_u8()                      { return show_LE<uint8_t>();    }
+    char     show_ch()        const         { return show_LE<char>();       }
+    int8_t   show_i8()        const         { return show_LE<int8_t>();     }
+    uint8_t  show_u8()        const         { return show_LE<uint8_t>();    }
 
-    int16_t  show_i16_LE()                  { return show_LE<int16_t>();    }
-    int16_t  show_i16_BE()                  { return show_BE<int16_t>();    }
-    uint16_t show_u16_LE()                  { return show_LE<uint16_t>();   }
-    uint16_t show_u16_BE()                  { return show_BE<uint16_t>();   }
+    int16_t  show_i16_LE()    const         { return show_LE<int16_t>();    }
+    int16_t  show_i16_BE()    const         { return show_BE<int16_t>();    }
+    uint16_t show_u16_LE()    const         { return show_LE<uint16_t>();   }
+    uint16_t show_u16_BE()    const         { return show_BE<uint16_t>();   }
 
-    int32_t  show_i32_LE()                  { return show_LE<int32_t>();    }
-    int32_t  show_i32_BE()                  { return show_BE<int32_t>();    }
-    uint32_t show_u32_LE()                  { return show_LE<uint32_t>();   }
-    uint32_t show_u32_BE()                  { return show_BE<uint32_t>();   }
+    int32_t  show_i32_LE()    const         { return show_LE<int32_t>();    }
+    int32_t  show_i32_BE()    const         { return show_BE<int32_t>();    }
+    uint32_t show_u32_LE()    const         { return show_LE<uint32_t>();   }
+    uint32_t show_u32_BE()    const         { return show_BE<uint32_t>();   }
 
-    int64_t  show_i64_LE()                  { return show_LE<int64_t>();    }
-    int64_t  show_i64_BE()                  { return show_BE<int64_t>();    }
-    uint64_t show_u64_LE()                  { return show_LE<uint64_t>();   }
-    uint64_t show_u64_BE()                  { return show_BE<uint64_t>();   }
+    int64_t  show_i64_LE()    const         { return show_LE<int64_t>();    }
+    int64_t  show_i64_BE()    const         { return show_BE<int64_t>();    }
+    uint64_t show_u64_LE()    const         { return show_LE<uint64_t>();   }
+    uint64_t show_u64_BE()    const         { return show_BE<uint64_t>();   }
 
 
-    float    show_float_LE()                { return show_LE<float>();      }
-    float    show_float_BE()                { return show_BE<float>();      }
+    float    show_float_LE()  const         { return show_LE<float>();      }
+    float    show_float_BE()  const         { return show_BE<float>();      }
 
-    double   show_double_LE()               { return show_LE<double>();     }
-    double   show_double_BE()               { return show_BE<double>();     }
+    double   show_double_LE() const         { return show_LE<double>();     }
+    double   show_double_BE() const         { return show_BE<double>();     }
 
     //-----------------------------------------------------------------------------------
 
@@ -131,7 +138,7 @@ T VBufferForwardReader::show_LE() const
 
     auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
 
-    #if BYTE_ORDER == LITTLE_ENDIAN
+    #if   BYTE_ORDER == LITTLE_ENDIAN
     #elif BYTE_ORDER == BIG_ENDIAN
     res = VString::reverse_T( res );
     #else
