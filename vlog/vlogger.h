@@ -21,7 +21,7 @@ namespace vlog
                  const std::string &file, int32_t line, const std::string &func );
 
         //-------------------------------------------------------------------------------
-
+        // Здесь регистрируются обработчики, исполнители вхождений логов.
         static void add_executer( Executer e );
         static void clear_executers();
         static void execute( const VLogEntry &entry );

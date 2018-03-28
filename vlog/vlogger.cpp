@@ -16,7 +16,7 @@ VLogger::VLogger( VLogEntry::Type type,
                   const std::string &func )
     : _entry( type, file, line, func )
 {
-    _cat.space(); // Пробелы включены по умолчанию.
+    space();    // Пробелы включены по умолчанию.
 }
 //=======================================================================================
 VLogger::~VLogger()
