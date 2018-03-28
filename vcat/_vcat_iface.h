@@ -226,7 +226,9 @@ D& _vcat_iface<D>::hex()
 template< typename D >
 D& _vcat_iface<D>::precision( int p )
 {
-    return cat( std::setprecision(p) );
+    D& d = static_cast<D&>( *this );
+    d.do_cat( std::setprecision(p) );
+    return d;
 }
 //---------------------------------------------------------------------------------------
 template< typename D >
@@ -238,13 +240,17 @@ D& _vcat_iface<D>::max_precision()
 template< typename D >
 D& _vcat_iface<D>::fill_char( char ch )
 {
-    return cat( std::setfill(ch) );
+    D& d = static_cast<D&>( *this );
+    d.do_cat( std::setfill(ch) );
+    return d;
 }
 //---------------------------------------------------------------------------------------
 template< typename D >
 D& _vcat_iface<D>::field_width(int w)
 {
-    return cat( std::setw(w) );
+    D& d = static_cast<D&>( *this );
+    d.do_cat( std::setw(w) );
+    return d;
 }
 //---------------------------------------------------------------------------------------
 template< typename D >
