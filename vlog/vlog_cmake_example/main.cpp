@@ -79,11 +79,9 @@ int main( int, char **argv )
     vlog::VOneFileLog one_flog( vcat(argv[0], ".log"), 2500, 2 );
     one_flog.register_self(); // Он сам знает где и как регистрироваться.
 
-    // UDP: автор решает вопрос, но пока если папки не будет -- это не проблема логгера.
-    system("mkdir -p ./logs");
-
+    // UPD: Папка будет создана автоматически.
     // Будем вести историю максимум в двух файлах, размеры одного -- 1 кб.
-    vlog::VGroupFileLog group_flog( "./logs", 1000, 2 );
+    vlog::VGroupFileLog group_flog( "./logs-logs", 1000, 2 );
     group_flog.register_self();
 
     for (int i = 0; i <= 10; ++i)

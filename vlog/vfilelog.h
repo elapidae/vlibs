@@ -37,6 +37,7 @@ namespace vlog
         void register_self();
 
     private:
+        bool _dir_created;
         VOutFile_WithRotate
             _trace,
             _deb,

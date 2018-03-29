@@ -7,6 +7,7 @@ isEmpty(qi_vfilelog) {
     isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
 
     include($$VLibs_Dir/vlog/vlog.pri)
+    include($$VLibs_Dir/vdir/vdir.pri)
     include($$VLibs_Dir/voutfile/voutfile.pri)
     include($$VLibs_Dir/vthread/vthread.pri)
 

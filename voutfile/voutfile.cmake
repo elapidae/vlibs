@@ -9,8 +9,8 @@ include_directories( "${VLIBS_PATH}/voutfile/" )
 FILE( GLOB HEADERS_VOutFile "${VLIBS_PATH}/voutfile/voutfile.h"   )
 FILE( GLOB SOURCES_VOutFile "${VLIBS_PATH}/voutfile/voutfile.cpp" )
 
-FILE( GLOB HEADERS_VOutFile "${VLIBS_PATH}/voutfile/voutfile_withrotate.h"   )
-FILE( GLOB SOURCES_VOutFile "${VLIBS_PATH}/voutfile/voutfile_withrotate.cpp" )
+FILE( GLOB HEADERS_VOutFile ${HEADERS_VOutFile} "${VLIBS_PATH}/voutfile/voutfile_withrotate.h"   )
+FILE( GLOB SOURCES_VOutFile ${SOURCES_VOutFile} "${VLIBS_PATH}/voutfile/voutfile_withrotate.cpp" )
 
 set ( HEADERS ${HEADERS} ${HEADERS_VOutFile} )
 set ( SOURCES ${SOURCES} ${SOURCES_VOutFile} )

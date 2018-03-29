@@ -14,3 +14,4 @@ isEmpty(qi_voutfile) {
     HEADERS     += $$VLibs_Dir/voutfile/voutfile_withrotate.h
     SOURCES     += $$VLibs_Dir/voutfile/voutfile_withrotate.cpp
 }
+

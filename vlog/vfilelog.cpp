@@ -2,6 +2,7 @@
 
 #include "vtimepoint.h"
 #include "vlogger.h"
+#include "vdir.h"
 
 using namespace vlog;
 
@@ -34,8 +35,8 @@ std::string VFileLog::start_line()
 vlog::VGroupFileLog::VGroupFileLog( const std::string &path,
                                     long one_file_size,
                                     int rotate_files_count )
-
-    : _trace  ( vcat(path, "/trace.log"),   one_file_size, rotate_files_count )
+    : _dir_created( VDir::mkdir(path) )
+    , _trace  ( vcat(path, "/trace.log"),   one_file_size, rotate_files_count )
     , _deb    ( vcat(path, "/debug.log"),   one_file_size, rotate_files_count )
     , _runlog ( vcat(path, "/runlog.log"),  one_file_size, rotate_files_count )
     , _warn   ( vcat(path, "/warning.log"), one_file_size, rotate_files_count )
