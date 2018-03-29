@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "vlog.h"
-#include "vfilelog.h"
+#include "vfilelog_threaded.h"
 
 using namespace std;
 
@@ -41,11 +41,12 @@ int main( int, char **argv )
     double dd = 3.1415;
     float  ff = 2.718f;
     int    ii = 42;
+    std::chrono::milliseconds ms(12345); // и такое выводим`c...
 
     VDEBUG; // пустая строка
-    VDEBUG << dd << ff << ii;   // Одно
-    VDEBUG(dd, ff, ii);         // и то
-    VDEBUG(dd)(ff)(ii);         // же.
+    VDEBUG << dd << ff << ii << ms;   // Одно
+    VDEBUG(dd, ff, ii, ms);           // и то
+    VDEBUG(dd)(ff)(ii)(ms);           // же.
 
     // Примеры с манипуляторами вывода потока.
     double long_term_val = 1.0 / 3.0; // Значение с большим кол-вом знаков после запятой.
@@ -78,12 +79,14 @@ int main( int, char **argv )
     vlog::VOneFileLog one_flog( vcat(argv[0], ".log"), 2500, 2 );
     one_flog.register_self(); // Он сам знает где и как регистрироваться.
 
-    system("mkdir -p ./logs"); // если папки не будет -- это не проблема логгера.
+    // UDP: автор решает вопрос, но пока если папки не будет -- это не проблема логгера.
+    system("mkdir -p ./logs");
+
     // Будем вести историю максимум в двух файлах, размеры одного -- 1 кб.
     vlog::VGroupFileLog group_flog( "./logs", 1000, 2 );
     group_flog.register_self();
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i <= 10; ++i)
     {
         auto msg = vcat("Testing records in file: ", i)
                        (", timestamp ms = ", VTimePoint::now().milliseconds()).str();
