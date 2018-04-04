@@ -33,9 +33,10 @@ namespace vlog
 
         ~VLogger();
 
-        VLogger( VLogger && ) = default;
-        VLogger( const VLogger & ) = delete;
-        VLogger& operator = ( VLogger && ) = default;
+        VLogger( VLogger && )               = default;
+        VLogger& operator = ( VLogger && )  = default;
+
+        VLogger( const VLogger & )              = delete;
         VLogger& operator = ( const VLogger & ) = delete;
 
         //-------------------------------------------------------------------------------

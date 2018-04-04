@@ -4,14 +4,16 @@
 
 #include "vlog.h"
 
+//=======================================================================================
 #define vtrace   VTRACE
 #define vdebug   VDEBUG
 #define vdeb     VDEBUG
 #define vrunlog  VRUNLOG
 #define vwarning VWARNING
 #define vfatal   VFATAL
+//=======================================================================================
 
-
+//=======================================================================================
 class VLogError : public std::exception
 {
 public:
@@ -24,6 +26,7 @@ private:
     std::string     _what;
     vlog::VLogEntry _entry;
 };
+//=======================================================================================
 
 
 #endif // VLOG_PRETTY_H
