@@ -22,5 +22,9 @@ isEmpty(qi_vlog) {
     
     HEADERS     += $$VLibs_Dir/vlog/vlogentry.h
     SOURCES     += $$VLibs_Dir/vlog/vlogentry.cpp
+
+    HEADERS     += $$VLibs_Dir/vlog/vsyslogger.h
+    SOURCES     += $$VLibs_Dir/vlog/vsyslogger.cpp
 }
+
 
