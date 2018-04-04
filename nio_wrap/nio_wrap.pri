@@ -7,7 +7,7 @@ isEmpty(qi_nio_wrap) {
     isEmpty(VLibs_Dir): error("Need VLibs_Dir variable.")
     isEmpty(Nio_Dir): error("Need Nio_Dir variable.")
 
-    include($$VLibs_Dir/vlogger/vlogger.pri)
+    include($$VLibs_Dir/vlog/vlog.pri)
 
     CONFIG *= c++11
     CONFIG *= link_pkgconfig
