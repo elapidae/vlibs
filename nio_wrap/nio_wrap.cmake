@@ -50,9 +50,11 @@ set ( SRC_ALL ${SRC_ALL} ${SOURCES_NIO} ${SOURCES_NIO_IMPL} ${SOURCES_NIO_NETWOR
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread" )
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 
+
 include_directories("/usr/include/glib-2.0/")
 include_directories("/usr/include/glib-2.0/glib/")
 include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include")
+include_directories("/usr/lib/aarch64-linux-gnu/glib-2.0/include")
 # ---- glib-2.0 gio-2.0 connecting part -------------------------------------------------
 
 
