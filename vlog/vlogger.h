@@ -25,9 +25,11 @@ namespace vlog
         static void add_executer( Executer e );
         static void clear_executers();
         static void execute( const VLogEntry &entry );
+        static void exit_on_fatal( bool on );
 
         static void _log_to_cout( const VLogEntry &entry );
         static void _log_to_cerr( const VLogEntry &entry );
+        static void _do_exit_on_fatal( const VLogEntry &entry );
 
         //-------------------------------------------------------------------------------
 

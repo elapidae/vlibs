@@ -66,6 +66,8 @@ public:
     std::string str_iso_for_filenames() const
     { return str_format("%Y-%m-%d_T_%H_%M_%S"); }
 
+    std::string str_iso_zzz_for_filenames() const;
+
 private:
     typename Clk::time_point _tp;
 };
@@ -290,7 +292,7 @@ Derived _vTimePoint<Clk,Derived>::operator - ( const Derived &rhs ) const
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-std::string _vTimePoint<Clk,Derived>::str_format(const std::string &fmt) const
+std::string _vTimePoint<Clk,Derived>::str_format( const std::string &fmt ) const
 {
     auto tt = Clk::to_time_t(_tp);
     std::tm tm = *std::gmtime( &tt );
@@ -310,7 +312,7 @@ template<typename Clk, typename Derived>
 std::string _vTimePoint<Clk,Derived>::str_iso_zzz() const
 {
     return vcat( str_iso(), "." )
-                 .field_width(3).fill_char('0')( microseconds().count()%1000 );
+                 .field_width(3).fill_char('0')( milliseconds().count() % 1000 );
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
@@ -328,10 +330,16 @@ std::string _vTimePoint<Clk,Derived>::str_time() const
 template<typename Clk, typename Derived>
 std::string _vTimePoint<Clk,Derived>::str_time_zzz() const
 {
-    return vcat( str_time(), ".")
-                 .field_width(3).fill_char('0')( microseconds().count()%1000 );
+    return vcat( str_time(), "." )
+                 .field_width(3).fill_char('0')( milliseconds().count() % 1000 );
 }
 //=======================================================================================
+template<typename Clk, typename Derived>
+std::string _vTimePoint<Clk,Derived>::str_iso_zzz_for_filenames() const
+{
+    return vcat( str_iso_for_filenames(), '.' )
+                 .field_width(3).fill_char('0')( milliseconds().count() % 1000 );
+}
 //=======================================================================================
 //      IMPLEMENTATION
 //=======================================================================================

@@ -6,6 +6,8 @@ include( "${VLIBS_PATH}/vsignal/vsignal.cmake" )
 #include( "${VLIBS_PATH}/vlogger/vlogger.cmake" )
 
 #add_definitions( -DVTHREAD_USE_PTHREAD )
+#add_definitions( -pthread )
+link_libraries(pthread)
 
 include_directories( "${VLIBS_PATH}/vthread/" )
 

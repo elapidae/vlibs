@@ -8,6 +8,8 @@ isEmpty(qi_map2d_widget) {
 
     isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
 
+    include( $$VLibs_Dir/vsignal/vsignal.pri )
+
     INCLUDEPATH += $$VLibs_Dir/map2d_widget
 
     HEADERS     += $$VLibs_Dir/map2d_widget/map2d_widget.h

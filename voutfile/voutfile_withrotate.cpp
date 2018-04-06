@@ -10,7 +10,7 @@
 VOutFile_WithRotate::VOutFile_WithRotate()
 {}
 //=======================================================================================
-VOutFile_WithRotate::VOutFile_WithRotate(const std::string &base_fname,
+VOutFile_WithRotate::VOutFile_WithRotate( const std::string &base_fname,
                                           long one_file_size,
                                           int rotate_files_count )
     : _base_fname         ( base_fname         )

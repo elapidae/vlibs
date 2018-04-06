@@ -14,38 +14,32 @@ namespace _priv
     //-----------------------------------------------------------------------------------
     int _year_from_time_t( time_t tt )
     {
-        auto res = *localtime( &tt );
-        return res.tm_year + 1900;
+        return localtime(&tt)->tm_year + 1900;
     }
     //-----------------------------------------------------------------------------------
     int _month_from_time_t(time_t tt)
     {
-        auto res = *localtime( &tt );
-        return res.tm_mon;
+        return localtime(&tt)->tm_mon;
     }
     //-----------------------------------------------------------------------------------
     int _day_from_time_t(time_t tt)
     {
-        auto res = *localtime( &tt );
-        return res.tm_mday;
+        return localtime(&tt)->tm_mday;
     }
     //-----------------------------------------------------------------------------------
     int _hour_from_time_t(time_t tt)
     {
-        auto res = *localtime( &tt );
-        return res.tm_hour;
+        return localtime(&tt)->tm_hour;
     }
     //-----------------------------------------------------------------------------------
     int _minute_from_time_t(time_t tt)
     {
-        auto res = *localtime( &tt );
-        return res.tm_min;
+        return localtime(&tt)->tm_min;
     }
     //-----------------------------------------------------------------------------------
     int _second_from_time_t(time_t tt)
     {
-        auto res = *localtime( &tt );
-        return res.tm_sec;
+        return localtime(&tt)->tm_sec;
     }
     //-----------------------------------------------------------------------------------
 } // _priv namespace

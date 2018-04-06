@@ -13,7 +13,7 @@ public:
     enum class OpenMode { Truncate, Append };
 
     explicit VOutFile();
-    VOutFile( const std::string &fname, OpenMode mode = OpenMode::Append );
+    VOutFile( const std::string &fname, OpenMode mode = OpenMode::Truncate );
 
     bool is_open()   const;
     long size()      const;

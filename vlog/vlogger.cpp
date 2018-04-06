@@ -44,6 +44,13 @@ void VLogger::_log_to_cerr( const VLogEntry &entry )
          << entry.str_type() << ": " << entry.message() << endl;
 }
 //=======================================================================================
+static bool need_exit_on_fatal = true;
+void VLogger::_do_exit_on_fatal( const VLogEntry &entry )
+{
+    if ( !need_exit_on_fatal || !entry.is_fatal() ) return;
+    exit(1);
+}
+//=======================================================================================
 static vector<VLogger::Executer> executers = []()
 {
     vector<VLogger::Executer> res;
@@ -65,6 +72,13 @@ void VLogger::execute( const VLogEntry &entry )
 {
     for ( auto & e: executers )
         e( entry );
+
+    _do_exit_on_fatal( entry );
+}
+//=======================================================================================
+void VLogger::exit_on_fatal(bool on)
+{
+
 }
 //=======================================================================================
 //      VLogger
