@@ -3,31 +3,26 @@
 #include "vlog_pretty.h"
 
 //=======================================================================================
-VImage::Impl_Ptr VQImageImpl::make( QImage &&img )
-{
-    return std::make_shared<VQImageImpl>( std::move(img) );
-}
-//=======================================================================================
-VImage::Impl_Ptr VQImageImpl::make( const QImage &img )
-{
-    return std::make_shared<VQImageImpl>( img );
-}
-//=======================================================================================
 VQImageImpl::VQImageImpl( QImage &&img_ )
     : img( std::move(img_) )
 {
-    img.detach();
+    detach();
 }
 //=======================================================================================
 VQImageImpl::VQImageImpl( const QImage &img_ )
     : img( img_ )
 {
-    img.detach();
+    detach();
+}
+//=======================================================================================
+bool VQImageImpl::is_valid() const
+{
+    return img.isNull();
 }
 //=======================================================================================
 VImage::Format VQImageImpl::format() const
 {
-    switch (img.format())
+    switch ( img.format() )
     {
     case QImage::Format_Invalid:    return VImage::Format::Invalid;
     case QImage::Format_Grayscale8: return VImage::Format::Gray8;
@@ -64,9 +59,10 @@ const VImage::data_t *VQImageImpl::line( int row ) const
     return img.scanLine( row );
 }
 //=======================================================================================
-VImage::Impl_Ptr VQImageImpl::copy()
+void VQImageImpl::detach()
 {
-    return make( img );
+    if ( !img.isDetached() )
+        img.detach();
 }
 //=======================================================================================
 QImage &VQImageImpl::image()
