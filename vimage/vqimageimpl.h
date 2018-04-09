@@ -6,14 +6,13 @@
 
 
 //=======================================================================================
-class VQImageImpl final : public VImage::Impl
+class VQImageImpl final : public VImage
 {
 public:
-    static VImage::Impl_Ptr make( QImage && img );
-    static VImage::Impl_Ptr make( const QImage & img );
-
     explicit VQImageImpl( QImage && img );
     explicit VQImageImpl( const QImage & img );
+
+    virtual bool is_valid()                     const override;
 
     virtual VImage::Format format()             const override;
 
@@ -24,10 +23,17 @@ public:
     virtual const VImage::data_t* data()        const override;
     virtual const VImage::data_t* line(int row) const override;
 
-    virtual VImage::Impl_Ptr copy()                   override;
+    virtual void detach()                             override;
 
     QImage &image();
     const QImage &image() const;
+
+
+
+    VQImageImpl( VQImageImpl && ) = default;
+    VQImageImpl( const VQImageImpl & ) = default;
+    VQImageImpl& operator = ( VQImageImpl && ) = default;
+    VQImageImpl& operator = ( const VQImageImpl & ) = default;
 
 private:
     QImage img;
