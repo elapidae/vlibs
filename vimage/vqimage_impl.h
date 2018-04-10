@@ -6,11 +6,17 @@
 
 
 //=======================================================================================
-class VQImageImpl final : public VImage
+class VQImage_Impl final : public VImage
 {
 public:
-    explicit VQImageImpl( QImage && img );
-    explicit VQImageImpl( const QImage & img );
+    static QImage::Format format_to_QImageFormat( Format f );
+    static Format qImageFormat_to_format( QImage::Format f );
+
+
+    static VQImage_Impl copy_from( const VImage &src );
+
+    VQImage_Impl( QImage && img );
+    VQImage_Impl( const QImage & img );
 
     virtual bool is_valid()                     const override;
 
@@ -30,10 +36,10 @@ public:
 
 
 
-    VQImageImpl( VQImageImpl && ) = default;
-    VQImageImpl( const VQImageImpl & ) = default;
-    VQImageImpl& operator = ( VQImageImpl && ) = default;
-    VQImageImpl& operator = ( const VQImageImpl & ) = default;
+    VQImage_Impl( VQImage_Impl && ) = default;
+    VQImage_Impl( const VQImage_Impl & ) = default;
+    VQImage_Impl& operator = ( VQImage_Impl && ) = default;
+    VQImage_Impl& operator = ( const VQImage_Impl & ) = default;
 
 private:
     QImage img;

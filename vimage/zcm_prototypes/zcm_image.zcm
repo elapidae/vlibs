@@ -1,0 +1,12 @@
+
+struct ZCM_Image
+{ 
+    int32_t     width;
+    int32_t     height;
+    int32_t     bytes_per_line;
+
+    string      format;
+
+    int32_t     data_size;
+    byte        data[data_size];
+}

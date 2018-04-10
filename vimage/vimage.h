@@ -15,6 +15,9 @@ public:
         Gray8,
         RGB888
     };
+    static std::string format_to_string( Format f );
+    static Format      string_to_format( const std::string &s );
+
 
     virtual ~VImage() = default;
 
@@ -31,6 +34,8 @@ public:
     virtual const data_t* line(int row) const;
 
     virtual void detach() = 0;
+
+    int data_size() const;
 };
 //=======================================================================================
 
