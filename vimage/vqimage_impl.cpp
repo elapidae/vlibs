@@ -1,26 +1,60 @@
-#include "vqimageimpl.h"
+#include "vqimage_impl.h"
 
 #include "vlog_pretty.h"
 
 //=======================================================================================
-VQImageImpl::VQImageImpl( QImage &&img_ )
+QImage::Format VQImage_Impl::format_to_QImageFormat(VImage::Format f)
+{
+    switch( f )
+    {
+    case Format::Invalid: return QImage::Format_Invalid;
+    case Format::Gray8:   return QImage::Format_Grayscale8;
+    case Format::RGB888:  return QImage::Format_RGB888;
+    }
+    throw VLogError( vfatal << "Unknown vimage format:" << int(f) );
+}
+//=======================================================================================
+VImage::Format VQImage_Impl::qImageFormat_to_format( QImage::Format f )
+{
+    switch( f )
+    {
+    case QImage::Format_Invalid:    return Format::Invalid;
+    case QImage::Format_Grayscale8: return Format::Gray8;
+    case QImage::Format_RGB888:     return Format::RGB888;
+    default: break;
+    }
+    throw VLogError( vfatal << "Unknown vimage format:" << f );
+}
+//=======================================================================================
+VQImage_Impl VQImage_Impl::copy_from( const VImage &src )
+{
+    QImage img( src.data(),
+                src.width(),
+                src.height(),
+                src.bytes_per_line(),
+                format_to_QImageFormat(src.format()) );
+
+    return std::move( img );
+}
+//=======================================================================================
+VQImage_Impl::VQImage_Impl( QImage &&img_ )
     : img( std::move(img_) )
 {
     detach();
 }
 //=======================================================================================
-VQImageImpl::VQImageImpl( const QImage &img_ )
+VQImage_Impl::VQImage_Impl( const QImage &img_ )
     : img( img_ )
 {
     detach();
 }
 //=======================================================================================
-bool VQImageImpl::is_valid() const
+bool VQImage_Impl::is_valid() const
 {
     return img.isNull();
 }
 //=======================================================================================
-VImage::Format VQImageImpl::format() const
+VImage::Format VQImage_Impl::format() const
 {
     switch ( img.format() )
     {
@@ -34,43 +68,43 @@ VImage::Format VQImageImpl::format() const
     throw VLogError( vfatal << "Unknown type of QImage:" << img.format() );
 }
 //=======================================================================================
-int VQImageImpl::width() const
+int VQImage_Impl::width() const
 {
     return img.width();
 }
 //=======================================================================================
-int VQImageImpl::height() const
+int VQImage_Impl::height() const
 {
     return img.height();
 }
 //=======================================================================================
-int VQImageImpl::bytes_per_line() const
+int VQImage_Impl::bytes_per_line() const
 {
     return img.bytesPerLine();
 }
 //=======================================================================================
-const VImage::data_t * VQImageImpl::data() const
+const VImage::data_t * VQImage_Impl::data() const
 {
     return img.bits();
 }
 //=======================================================================================
-const VImage::data_t *VQImageImpl::line( int row ) const
+const VImage::data_t *VQImage_Impl::line( int row ) const
 {
     return img.scanLine( row );
 }
 //=======================================================================================
-void VQImageImpl::detach()
+void VQImage_Impl::detach()
 {
     if ( !img.isDetached() )
         img.detach();
 }
 //=======================================================================================
-QImage &VQImageImpl::image()
+QImage &VQImage_Impl::image()
 {
     return img;
 }
 //=======================================================================================
-const QImage &VQImageImpl::image() const
+const QImage &VQImage_Impl::image() const
 {
     return img;
 }
