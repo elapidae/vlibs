@@ -51,7 +51,7 @@ VQImage_Impl::VQImage_Impl( const QImage &img_ )
 //=======================================================================================
 bool VQImage_Impl::is_valid() const
 {
-    return img.isNull();
+    return !img.isNull();
 }
 //=======================================================================================
 VImage::Format VQImage_Impl::format() const
