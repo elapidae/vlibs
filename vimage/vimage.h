@@ -35,7 +35,8 @@ public:
     {
         Invalid,
         Gray8,
-        RGB888
+        RGB888,
+        BGR888
     };
 
     static std::string format_to_string( Format f );
