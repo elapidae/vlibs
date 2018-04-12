@@ -3,7 +3,7 @@
 #include "vlog_pretty.h"
 
 //=======================================================================================
-QImage::Format VQImage_Impl::format_to_QImageFormat(VImage::Format f)
+QImage::Format VQImage_Impl::format_to_QImageFormat( VImage::Format f )
 {
     switch( f )
     {
@@ -51,7 +51,7 @@ VQImage_Impl::VQImage_Impl( const QImage &img_ )
 //=======================================================================================
 bool VQImage_Impl::is_valid() const
 {
-    return img.isNull();
+    return !img.isNull();
 }
 //=======================================================================================
 VImage::Format VQImage_Impl::format() const
@@ -107,5 +107,56 @@ QImage &VQImage_Impl::image()
 const QImage &VQImage_Impl::image() const
 {
     return img;
+}
+//=======================================================================================
+
+
+
+//=======================================================================================
+VQImage_Ref_Impl::VQImage_Ref_Impl( const QImage *ptr )
+    : img( ptr )
+{}
+//=======================================================================================
+bool VQImage_Ref_Impl::is_valid() const
+{
+    return !img->isNull();
+}
+//=======================================================================================
+VImage::Format VQImage_Ref_Impl::format() const
+{
+    return VQImage_Impl::qImageFormat_to_format( img->format() );
+}
+//=======================================================================================
+int VQImage_Ref_Impl::width() const
+{
+    return img->width();
+}
+//=======================================================================================
+int VQImage_Ref_Impl::height() const
+{
+    return img->height();
+}
+//=======================================================================================
+int VQImage_Ref_Impl::bytes_per_line() const
+{
+    return img->bytesPerLine();
+}
+//=======================================================================================
+const VImage::data_t *VQImage_Ref_Impl::data() const
+{
+    return img->bits();
+}
+//=======================================================================================
+const VImage::data_t *VQImage_Ref_Impl::line(int row) const
+{
+    return img->scanLine( row );
+}
+//=======================================================================================
+void VQImage_Ref_Impl::detach()
+{}
+//=======================================================================================
+const QImage &VQImage_Ref_Impl::image() const
+{
+    return *img;
 }
 //=======================================================================================
