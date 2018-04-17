@@ -11,6 +11,7 @@ std::string VImage::format_to_string( VImage::Format f )
     case Format::Invalid:   return "Invalid";
     case Format::Gray8:     return "Gray8";
     case Format::RGB888:    return "RGB888";
+    case Format::BGR888:    return "BGR888";
     }
     throw std::logic_error("Unknown image format.");
 }
@@ -19,6 +20,7 @@ VImage::Format VImage::string_to_format( const std::string &s )
 {
     if ( s == "Gray8"  ) return Format::Gray8;
     if ( s == "RGB888" ) return Format::RGB888;
+    if ( s == "BGR888" ) return Format::BGR888;
 
     return Format::Invalid;
 }

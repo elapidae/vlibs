@@ -20,11 +20,11 @@ int VCVImage_Impl::format_to_VCVImageDepth(VImage::Format f)
 
 VCVImage_Impl VCVImage_Impl::copy_from( const VImage &src )
 {
-    cv::Mat img(src.height(), // rows
-                src.width(), // cols
-                format_to_VCVImageDepth(src.format()), // type (CV_DEPTH MACROS)
-                (void*) src.data(),
-                src.bytes_per_line());
+    cv::Mat img( src.height(), // rows
+                 src.width(), // cols
+                 format_to_VCVImageDepth(src.format()), // type (CV_DEPTH MACROS)
+                 const_cast<void*>(static_cast<const void*>(src.data())),
+                 src.bytes_per_line() );
 
     return std::move(VCVImage_Impl(img, src.format()));
 }

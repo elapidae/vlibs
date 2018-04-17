@@ -33,6 +33,8 @@ public:
                                OpenFlag flag = OpenFlag::ReadOnly,
                                NError *err = nullptr );
 
+    explicit NKeyFile();
+
     str  to_string( NError *err = nullptr ) const;
     bool to_file( const str &fname, NError *err = nullptr );
     //-------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ class VOutBitMessage
 public:
     explicit VOutBitMessage(uint bits );
 
-    void set(uint from, uint to, uint32_t val );
+    void set( uint from, uint to, uint32_t val );
 
     std::string result() const;
 

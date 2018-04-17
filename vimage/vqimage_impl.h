@@ -47,5 +47,32 @@ private:
 //=======================================================================================
 
 
+//=======================================================================================
+class VQImage_Ref_Impl final : public VImage
+{
+public:
+    VQImage_Ref_Impl( const QImage * ptr );
+
+    virtual bool is_valid()                     const override;
+
+    virtual VImage::Format format()             const override;
+
+    virtual int width()                         const override;
+    virtual int height()                        const override;
+    virtual int bytes_per_line()                const override;
+
+    virtual const VImage::data_t* data()        const override;
+    virtual const VImage::data_t* line(int row) const override;
+
+    virtual void detach()                             override;
+
+    const QImage &image() const;
+
+private:
+    const QImage *img;
+};
+//=======================================================================================
+
+
 
 #endif // VQIMAGEIMPL_H

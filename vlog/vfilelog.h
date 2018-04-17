@@ -51,12 +51,12 @@ namespace vlog
 
 
     //===================================================================================
-    //      One filelog -- создает один файл на все сообщения.
+    //      Common filelog -- создает один файл на все сообщения.
     //===================================================================================
-    class VOneFileLog : VFileLog
+    class VCommonFileLog : VFileLog
     {
     public:
-        VOneFileLog( const std::string &fname,
+        VCommonFileLog( const std::string &fname,
                      long one_file_size,
                      int  rotate_files_count );
 
@@ -68,7 +68,7 @@ namespace vlog
         VOutFile_WithRotate _file;
     };
     //===================================================================================
-    //      One filelog
+    //      Common filelog
     //===================================================================================
 } // vlog namespace
 //=======================================================================================

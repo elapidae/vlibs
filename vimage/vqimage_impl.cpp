@@ -10,6 +10,9 @@ QImage::Format VQImage_Impl::format_to_QImageFormat( VImage::Format f )
     case Format::Invalid: return QImage::Format_Invalid;
     case Format::Gray8:   return QImage::Format_Grayscale8;
     case Format::RGB888:  return QImage::Format_RGB888;
+    case Format::BGR888:
+        throw VLogError( vfatal << "Format GBR not supported by QImage... "
+                                   "May be use QImage::invertPixels(InvertMode)" );
     }
     throw VLogError( vfatal << "Unknown vimage format:" << int(f) );
 }

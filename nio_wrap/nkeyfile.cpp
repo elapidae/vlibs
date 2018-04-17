@@ -44,6 +44,10 @@ NKeyFile NKeyFile::from_data( const str &data, NKeyFile::OpenFlag flag, NError *
     return res;
 }
 //=======================================================================================
+NKeyFile::NKeyFile()
+    : p( g_key_file_new(), g_key_file_unref )
+{}
+//=======================================================================================
 NKeyFile::str NKeyFile::to_string( NError *err ) const
 {
     _NErrorProxy err_proxy( err );

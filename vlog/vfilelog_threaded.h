@@ -28,13 +28,13 @@ namespace vlog
         VThread _thread;
     };
     //===================================================================================
-    class VOneFileLog_Threaded final
+    class VCommonFileLog_Threaded final
     {
     public:
-        VOneFileLog_Threaded( const std::string &fname,
-                              long one_file_size,
-                              int  rotate_files_count );
-        ~VOneFileLog_Threaded();
+        VCommonFileLog_Threaded( const std::string &fname,
+                                 long one_file_size,
+                                 int  rotate_files_count );
+        ~VCommonFileLog_Threaded();
 
         void execute( const VLogEntry &entry );
 
@@ -43,7 +43,7 @@ namespace vlog
         int queued_entries() const;
 
     private:
-        std::unique_ptr<VOneFileLog> _log;
+        std::unique_ptr<VCommonFileLog> _log;
         VThread _thread;
     };
     //===================================================================================

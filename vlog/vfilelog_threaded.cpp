@@ -42,32 +42,32 @@ int VGroupFileLog_Threaded::queued_entries() const
 
 
 //=======================================================================================
-VOneFileLog_Threaded::VOneFileLog_Threaded( const std::string &fname,
+VCommonFileLog_Threaded::VCommonFileLog_Threaded( const std::string &fname,
                                             long one_file_size,
                                             int rotate_files_count )
 {
     _thread.finvoke( [=]()
     {
-        _log.reset( new VOneFileLog(fname, one_file_size, rotate_files_count) );
+        _log.reset( new VCommonFileLog(fname, one_file_size, rotate_files_count) );
     });
 }
 //=======================================================================================
-VOneFileLog_Threaded::~VOneFileLog_Threaded()
+VCommonFileLog_Threaded::~VCommonFileLog_Threaded()
 {
     _thread.finvoke( [this](){ _log.reset(); } );
 }
 //=======================================================================================
-void VOneFileLog_Threaded::execute( const VLogEntry &entry )
+void VCommonFileLog_Threaded::execute( const VLogEntry &entry )
 {
     _thread.finvoke( [=](){ if (_log) _log->execute(entry); } );
 }
 //=======================================================================================
-void VOneFileLog_Threaded::register_self()
+void VCommonFileLog_Threaded::register_self()
 {
     VLogger::add_executer( [this](const VLogEntry &e){ execute(e); } );
 }
 //=======================================================================================
-int VOneFileLog_Threaded::queued_entries() const
+int VCommonFileLog_Threaded::queued_entries() const
 {
     return _thread.queue_size();
 }

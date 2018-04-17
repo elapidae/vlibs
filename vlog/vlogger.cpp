@@ -1,7 +1,7 @@
 #include "vlogger.h"
 
 #include <iostream>
-
+#include "vlog_pretty.h"
 
 using namespace vlog;
 using namespace std;
@@ -48,7 +48,7 @@ static bool need_exit_on_fatal = true;
 void VLogger::_do_exit_on_fatal( const VLogEntry &entry )
 {
     if ( !need_exit_on_fatal || !entry.is_fatal() ) return;
-    exit(1);
+    throw VLogError( entry );
 }
 //=======================================================================================
 static vector<VLogger::Executer> executers = []()

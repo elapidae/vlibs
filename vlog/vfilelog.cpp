@@ -70,7 +70,7 @@ void VGroupFileLog::register_self()
     VLogger::add_executer( [this](const VLogEntry &e) { execute(e); });
 }
 //=======================================================================================
-VOneFileLog::VOneFileLog( const std::string &fname,
+VCommonFileLog::VCommonFileLog( const std::string &fname,
                           long one_file_size,
                           int rotate_files_count )
     : _file( fname, one_file_size, rotate_files_count )
@@ -79,12 +79,12 @@ VOneFileLog::VOneFileLog( const std::string &fname,
     _file.write( start_line() );
 }
 //=======================================================================================
-void VOneFileLog::execute( const VLogEntry &entry )
+void VCommonFileLog::execute( const VLogEntry &entry )
 {
     _file.write( as_line_with_type(entry) );
 }
 //=======================================================================================
-void VOneFileLog::register_self()
+void VCommonFileLog::register_self()
 {
     VLogger::add_executer( [this](const VLogEntry &e) { execute(e); });
 }
