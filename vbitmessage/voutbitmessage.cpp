@@ -11,14 +11,14 @@ VOutBitMessage::VOutBitMessage( uint bits )
 
 void VOutBitMessage::set( uint from, uint to, uint32_t val )
 {
-    assert( from <= to );           // Правильно указан диапазон.
-    assert( to < _data.size() );    // Не вылезаем за границы диапазона.
+    assert( from < to );           // Правильно указан диапазон.
+    assert( to <= _data.size() );    // Не вылезаем за границы диапазона.
 
     // маска первого нужного нам бита.
     uint32_t mask = 1 << (to - from);
 
     auto b = _data.begin() + from;
-    auto e = _data.begin() + to + 1;
+    auto e = _data.begin() + to;
     while ( b != e )
     {
         *b++ = val & mask ? 1 : 0;
