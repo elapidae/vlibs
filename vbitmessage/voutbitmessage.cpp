@@ -15,7 +15,7 @@ void VOutBitMessage::set( uint from, uint to, uint32_t val )
     assert( to <= _data.size() );    // Не вылезаем за границы диапазона.
 
     // маска первого нужного нам бита.
-    uint32_t mask = 1 << (to - from);
+    uint32_t mask = 1 << (to - from - 1);
 
     auto b = _data.begin() + from;
     auto e = _data.begin() + to;
