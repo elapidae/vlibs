@@ -9,6 +9,7 @@ isEmpty(qi_vimage_qt) {
     include( $$VLibs_Dir/vimage/vimage.pri )
     include( $$VLibs_Dir/vlog/vlog.pri )
 
-    HEADERS     += $$VLibs_Dir/vimage/vqimage_impl.h
-    SOURCES     += $$VLibs_Dir/vimage/vqimage_impl.cpp
+    HEADERS     += $$VLibs_Dir/vimage/vimage_qt.h
+    SOURCES     += $$VLibs_Dir/vimage/vimage_qt.cpp
 }
+

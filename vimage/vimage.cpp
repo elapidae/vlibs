@@ -9,26 +9,26 @@ std::string VImage::format_to_string( VImage::Format f )
     switch (f)
     {
     case Format::Invalid:   return "Invalid";
-    case Format::Gray8:     return "Gray8";
-    case Format::RGB888:    return "RGB888";
-    case Format::BGR888:    return "BGR888";
+    case Format::Gray_8:    return "Gray_8";
+    case Format::RGB_888:   return "RGB_888";
+    case Format::BGR_888:   return "BGR_888";
     }
     throw std::logic_error("Unknown image format.");
 }
 //=======================================================================================
 VImage::Format VImage::string_to_format( const std::string &s )
 {
-    if ( s == "Gray8"  ) return Format::Gray8;
-    if ( s == "RGB888" ) return Format::RGB888;
-    if ( s == "BGR888" ) return Format::BGR888;
+    if ( s == "Gray_8"  ) return Format::Gray_8;
+    if ( s == "RGB_888" ) return Format::RGB_888;
+    if ( s == "BGR_888" ) return Format::BGR_888;
 
     return Format::Invalid;
 }
 //=======================================================================================
 const VImage::data_t *VImage::line( int row ) const
 {
-    assert( row < height() );
-    return is_valid() ? data() + row * bytes_per_line() : nullptr;
+    if ( row >= height() ) throw std::out_of_range("VImage::line: row >= height()");
+    return data() + row * bytes_per_line();
 }
 //=======================================================================================
 int VImage::data_size() const

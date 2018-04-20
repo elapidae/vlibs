@@ -34,9 +34,9 @@ public:
     enum class Format
     {
         Invalid,
-        Gray8,
-        RGB888,
-        BGR888
+        Gray_8,
+        RGB_888,
+        BGR_888
     };
 
     static std::string format_to_string( Format f );
@@ -44,8 +44,6 @@ public:
 
 
     virtual ~VImage() = default;
-
-    virtual bool is_valid()         const = 0;
 
     virtual Format format()         const = 0;
 
@@ -55,11 +53,10 @@ public:
 
     virtual const data_t* data()    const = 0;
 
-    virtual const data_t* line(int row) const;
+    virtual const data_t* line(int row) const; // return data() + row * bytes_per_line()
 
-    virtual void detach() = 0;
-
-    virtual int data_size() const;      // here returns bytes_per_line() * heigth()
+    virtual int data_size() const;      // NB! here returns bytes_per_line() * heigth()
+                                        // If your system cut last row, override it!
 };
 //=======================================================================================
 

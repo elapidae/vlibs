@@ -152,11 +152,11 @@ bool VJpeg::save_to_buffer( const VImage &img,
 
     switch ( img.format() )
     {
-    case VImage::Format::Gray8:
+    case VImage::Format::Gray_8:
         cinfo.input_components = 1;
         cinfo.in_color_space = JCS_GRAYSCALE;
         break;
-    case VImage::Format::RGB888:
+    case VImage::Format::RGB_888:
         cinfo.input_components = 3;
         cinfo.in_color_space = JCS_RGB;
         break;

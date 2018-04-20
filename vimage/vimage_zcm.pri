@@ -8,20 +8,23 @@ isEmpty(qi_zcm_image) {
     include($$VLibs_Dir/vimage/vimage.pri)
     include($$VLibs_Dir/vzcm/vzcm.pri)
 
-    HEADERS += $$VLibs_Dir/vimage/z_image.h
+    HEADERS += $$VLibs_Dir/vimage/vimage_zcm.h
+    SOURCES += $$VLibs_Dir/vimage/vimage_zcm.cpp
+
+    #HEADERS += $$VLibs_Dir/vimage/z_image.h
     #HEADERS += $$VLibs_Dir/vimage/ZCM_Image.h
-    SOURCES += $$VLibs_Dir/vimage/z_image.cpp
+    #SOURCES += $$VLibs_Dir/vimage/z_image.cpp
 
-    vzcm_image_pre_target.target = vzcm_image
-    vzcm_image_pre_target.commands = \
-        cd $$system_path($$PWD/zcm_prototypes) &&   \
-        if [ ! -f ../ZCM_Image.hpp ]; then          \
-        zcm-gen -x zcm_image.zcm --cpp-hpath ..; fi
+    #vzcm_image_pre_target.target = vzcm_image
+    #vzcm_image_pre_target.commands = \
+    #    cd $$system_path($$PWD/zcm) &&              \
+    #    if [ ! -f ../ZCM_Image.hpp ]; then          \
+    #    zcm-gen -x zcm_image.zcm --cpp-hpath ..; fi
 
 
-    vzcm_image_pre_target.CONFIG = phony
-    QMAKE_EXTRA_TARGETS +=   vzcm_image_pre_target
-    PRE_TARGETDEPS      += $$vzcm_image_pre_target.target
-    first.depends       += $$vzcm_image_pre_target.target
+    #vzcm_image_pre_target.CONFIG = phony
+    #QMAKE_EXTRA_TARGETS +=   vzcm_image_pre_target
+    #PRE_TARGETDEPS      += $$vzcm_image_pre_target.target
+    #first.depends       += $$vzcm_image_pre_target.target
 }
 
