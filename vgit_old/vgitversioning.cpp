@@ -1,7 +1,7 @@
 #include "vgitversioning.h"
 
 #include "vcat.h"
-#include "vgit_catcher.h"
+#include "vgitcatch/vgit_catcher.h"
 #include "vstring.h"
 #include <iostream>
 
