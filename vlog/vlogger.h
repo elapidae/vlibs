@@ -22,14 +22,17 @@ namespace vlog
 
         //-------------------------------------------------------------------------------
         // Здесь регистрируются обработчики, исполнители вхождений логов.
+        // NB! throw_on_fatal(on) было удалено, от него больше вреда, чем пользы.
+        // Вместо подобных "трюков" следует "честно" бросать исключения.
+        // В vlog_pretty.h определен класс VLogError : public std::exception,
+        // которым можно пользоваться, например, так: throw VLogError( vfatal << "msg" );
         static void add_executer( Executer e );
         static void clear_executers();
         static void execute( const VLogEntry &entry );
-        static void exit_on_fatal( bool on );
+
 
         static void _log_to_cout( const VLogEntry &entry );
         static void _log_to_cerr( const VLogEntry &entry );
-        static void _do_exit_on_fatal( const VLogEntry &entry );
 
         //-------------------------------------------------------------------------------
 
