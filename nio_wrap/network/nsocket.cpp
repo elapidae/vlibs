@@ -100,7 +100,7 @@ NSocket::NSocket( GSocketFamily family,
                   GSocketType type,
                   GSocketProtocol protocol,
                   NError *err )
-    : NSocket( g_socket_new(family, type, protocol, _NErrorProxy(err)) )
+    : NSocket( g_socket_new(family, type, protocol, _n_error_proxy(err)) )
 {}
 //=======================================================================================
 NSocket::NSocket( NSocket::ConnType ctype, NError *err )
@@ -117,7 +117,7 @@ NSocket::~NSocket()
 bool NSocket::bind( const NSocketAddress &addr, bool allow_reuse, NError *err )
 {
     gboolean areuse = allow_reuse ? TRUE : FALSE;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_bind ( _g_socket, addr._g_socket_address, areuse, err_proxy );
 }
 //=======================================================================================
@@ -128,7 +128,7 @@ bool NSocket::bind(const string &addr, uint16_t port, bool allow_reuse, NError *
 //=======================================================================================
 bool NSocket::listen( NError *err )
 {
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_listen ( _g_socket, err_proxy );
 }
 //=======================================================================================
@@ -142,14 +142,14 @@ bool NSocket::listen( NError *err )
 bool NSocket::connect(const NSocketAddress &addr, NCancellable *cancel, NError *err)
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_connect( _g_socket, addr._g_socket_address, gcancel, err_proxy );
 }
 //=======================================================================================
 ssize_t NSocket::receive( char *buf, size_t size, NCancellable *cancel, NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_receive( _g_socket, buf, size, gcancel, err_proxy );
 }
 //=======================================================================================
@@ -175,7 +175,7 @@ ssize_t NSocket::receive_from( char *buf, size_t size, NSocketAddress *addr,
                                NCancellable *cancel, NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     GSocketAddress *gaddr = nullptr;
     auto res = g_socket_receive_from( _g_socket, &gaddr, buf, size, gcancel, err_proxy );
     *addr = gaddr;
@@ -185,7 +185,7 @@ ssize_t NSocket::receive_from( char *buf, size_t size, NSocketAddress *addr,
 ssize_t NSocket::send(const std::string &buffer, NCancellable *cancel, NError *err)
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_send( _g_socket, buffer.c_str(), buffer.size(), gcancel, err_proxy );
 }
 //=======================================================================================
@@ -194,7 +194,7 @@ ssize_t NSocket::send_to( const NSocketAddress &addr,
                           NCancellable *cancel, NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
 
     return g_socket_send_to( _g_socket, addr._g_socket_address,
                              msg, size,
@@ -216,7 +216,7 @@ NSource NSocket::create_source( GIOCondition cond, NCancellable *cancel )
 bool NSocket::join_multicast_group( const NInetAddress &group, bool source_specific,
                                     const char *iface, NError *err )
 {
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_join_multicast_group( _g_socket, group._g_inet_address,
                                           source_specific, iface, err_proxy );
 }
@@ -242,7 +242,7 @@ int NSocket::get_fd() const
 //=======================================================================================
 NSocketAddress NSocket::local_address( NError *err ) const
 {
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_socket_get_local_address( _g_socket, err_proxy );
 }
 //=======================================================================================

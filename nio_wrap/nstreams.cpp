@@ -18,7 +18,7 @@ ssize_t NInputStream::read( void *buffer, size_t count,
     static_assert( sizeof(gsize)  == sizeof(decltype(count)), "");
 
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     auto res = g_input_stream_read( _g_input_stream,
                                     buffer, count,
                                     gcancel, err_proxy );
@@ -31,7 +31,7 @@ NBytes NInputStream::read_bytes( size_t count, NCancellable *cancel, NError *err
     static_assert( sizeof(gsize)  == sizeof(decltype(count)), "");
 
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     auto bytes_ptr = g_input_stream_read_bytes( _g_input_stream,
                                                 count,
                                                 gcancel,
@@ -65,7 +65,7 @@ ssize_t NOutputStream::write( const void *buffer, size_t count,
     static_assert( sizeof(gsize)  == sizeof(decltype(count)), "");
 
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
 
     auto res = g_output_stream_write( _g_output_stream,
                                       buffer, count,

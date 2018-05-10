@@ -135,7 +135,7 @@ std::vector<T> NKeyFile::_get_any_simple_list( const std::string &group,
                                                const std::string &key,
                                                gFn fn, NError *err ) const
 {
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     gsize len;
     auto * ptr = fn( p.get(), group.c_str(), key.c_str(), &len, err_proxy );
 
