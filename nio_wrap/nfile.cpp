@@ -74,7 +74,7 @@ NFileOutputStream NFile::create( GFileCreateFlags flags,
                                  NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_file_create( p.get(), flags, gcancel, err_proxy );
 }
 //=======================================================================================
@@ -83,7 +83,7 @@ NFileOutputStream NFile::append( GFileCreateFlags flags,
                                  NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_file_append_to( p.get(), flags, gcancel, err_proxy );
 }
 //=======================================================================================
@@ -92,7 +92,7 @@ NFileOutputStream NFile::replace( GFileCreateFlags flags,
                                   NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     return g_file_replace( p.get(), nullptr, false, flags, gcancel, err_proxy );
 }
 //=======================================================================================
@@ -101,7 +101,7 @@ NFileInfo NFile::query_info( NCancellable *cancel, NError *err ) const
     // ???
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
 
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     auto res = g_file_query_info( p.get(),
                                   "*",
                                   G_FILE_QUERY_INFO_NONE,
@@ -114,7 +114,7 @@ NFileInputStream NFile::input( NCancellable *cancel, NError *err )
 {
     GCancellable *gcancel = cancel ? cancel->_g_cancellable : nullptr;
 
-    _NErrorProxy err_proxy( err );
+    _n_error_proxy err_proxy( err );
     auto res = g_file_read( p.get(), gcancel, err_proxy );
 
     return res;

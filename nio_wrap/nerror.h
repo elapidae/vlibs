@@ -34,7 +34,7 @@ private:
 //    friend class NInputStream;
 //    friend class NOutputStream;
 //    friend class NKeyFile;
-    friend class _NErrorProxy;
+    friend class _n_error_proxy;
     void _set( GError *err );
     static std::string _deb_msg( GError *err );
 };
@@ -52,11 +52,11 @@ private:
 //              // иначе будет исключение NException( err->message ).
 //          }
 //
-class _NErrorProxy final
+class _n_error_proxy final
 {
 public:
-    explicit _NErrorProxy( NError *err );
-    ~_NErrorProxy();
+    explicit _n_error_proxy( NError *err );
+    ~_n_error_proxy();
 
     void throw_if_need();
 
@@ -66,8 +66,8 @@ private:
     NError *_target;
     GError *_gerror = nullptr;
 
-    _NErrorProxy ( const _NErrorProxy & ) = delete;
-    _NErrorProxy & operator = ( const _NErrorProxy & ) = delete;
+    _n_error_proxy ( const _n_error_proxy & ) = delete;
+    _n_error_proxy & operator = ( const _n_error_proxy & ) = delete;
 };
 //=======================================================================================
 
