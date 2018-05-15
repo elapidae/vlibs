@@ -115,7 +115,11 @@ public:
     //-----------------------------------------------------------------------------------
     //      IMPLEMENTATION
     //-----------------------------------------------------------------------------------
+    NKeyFile_Schema() = default;
+
 private:
+    NKeyFile_Schema(const NKeyFile_Schema &) = delete;
+    NKeyFile_Schema& operator = (const NKeyFile_Schema &) = delete;
 
     struct _value
     {
