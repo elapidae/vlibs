@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <assert.h>
 
 using namespace std;
 
@@ -41,15 +42,15 @@ std::string VApp_Args_Parser::std_value( const std::string &name,
 {
     int i = 0;
     for ( i = 0; i < int(_args.size()); ++i )
-        if (name == _args[i])
+        if (name == _args.at(i))
             break;
 
     return i < int(_args.size()) - 1
-                    ? _args[i + 1]
+                    ? _args.at(i + 1)
                     : defval;
 }
 //=======================================================================================
-double VApp_Args_Parser::std_double(const string &name) const
+double VApp_Args_Parser::std_double( const string &name ) const
 {
     stringstream ss( std_value(name) );
     double res;
@@ -67,11 +68,12 @@ bool VApp_Args_Parser::has( const std::string &name ) const
 //=======================================================================================
 int VApp_Args_Parser::size() const
 {
-    return _args.size();
+    return static_cast<int>( _args.size() );
 }
 //=======================================================================================
-string VApp_Args_Parser::at(int pos) const
+string VApp_Args_Parser::at( int pos ) const
 {
-    return _args.at(pos);
+    assert( pos >= 0 );
+    return _args.at( static_cast<size_t>(pos) );
 }
 //=======================================================================================

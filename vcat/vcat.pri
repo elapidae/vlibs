@@ -12,6 +12,9 @@ isEmpty(qi_vcat) {
 
     HEADERS     += $$VLibs_Dir/vcat/vcat.h
     SOURCES     += $$VLibs_Dir/vcat/vcat.cpp
+
+    HEADERS     += $$VLibs_Dir/vcat/vcat_containers.h
 }
 #========================================================================================
+
 

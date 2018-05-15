@@ -52,7 +52,7 @@ bool VOutFile::rename( const string &from, const string &to )
     return 0 == std::rename( from.c_str(), to.c_str() );
 }
 //=======================================================================================
-bool VOutFile::exists(const string &fname)
+bool VOutFile::exists( const string &fname )
 {
     struct stat buffer;
     return stat(fname.c_str(), &buffer) == 0;

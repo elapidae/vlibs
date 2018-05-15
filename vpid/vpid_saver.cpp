@@ -6,7 +6,7 @@
 
 //=======================================================================================
 VPid_Saver::VPid_Saver( const std::string &path, const std::string &fname )
-    : _fname( path + fname )
+    : _fname( path + "/" + fname )
 {
     if ( path.empty() || fname.empty() )
         vfatal.nospace() << "Путь или имя файла для сохранения PID процесса пусты.";
@@ -21,5 +21,10 @@ VPid_Saver::VPid_Saver( const std::string &path, const std::string &fname )
 VPid_Saver::~VPid_Saver()
 {
     std::remove( _fname.c_str() );
+}
+//=======================================================================================
+__pid_t get_pid()
+{
+    return getpid();
 }
 //=======================================================================================

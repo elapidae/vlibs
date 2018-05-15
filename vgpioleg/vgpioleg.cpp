@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 #include "vfile.h"
-#include "varg.h"
+#include "vcat.h"
 
 
 using namespace std;
@@ -22,13 +22,13 @@ static void write_to( const std::string &fname, const std::string &what )
 
     if ( !f.open() )
     {
-        throw VGpioLeg::Exception( varg("Cannot open file '", fname, "'.") );
+        throw VGpioLeg::Exception( vcat("Cannot open file '", fname, "'.") );
     }
 
     auto written = f.write_str( what );
     if ( written != int(what.size()) )
     {
-        throw VGpioLeg::Exception( varg("Cannot write '", what, "' ")
+        throw VGpioLeg::Exception( vcat("Cannot write '", what, "' ")
                                        ("to file '", fname, "'.") );
     }
 }
@@ -53,7 +53,7 @@ VGpioLeg &VGpioLeg::unexport_leg()
 {
     try
     {
-        write_to( unexport_filename, varg(_leg) );
+        write_to( unexport_filename, vcat(_leg) );
     }
     catch( const Exception& )
     {}
@@ -62,14 +62,14 @@ VGpioLeg &VGpioLeg::unexport_leg()
 //=======================================================================================
 VGpioLeg &VGpioLeg::export_leg()
 {
-    write_to( export_filename, varg(_leg) );
+    write_to( export_filename, vcat(_leg) );
     return *this;
 }
 //=======================================================================================
 VGpioLeg &VGpioLeg::set_direction( VGpioLeg::Direction dir )
 {
     auto direction = dir == Direction::In ? "in" : "out";
-    write_to( varg(gpio_path)("gpio", _leg)("/direction"), direction );
+    write_to( vcat(gpio_path)("gpio", _leg)("/direction"), direction );
     return *this;
 }
 //=======================================================================================
@@ -86,7 +86,7 @@ VGpioLeg &VGpioLeg::direction_in()
 VGpioLeg &VGpioLeg::set_value( VGpioLeg::Value val )
 {
     auto value = val == Value::Low ? "0" : "1";
-    write_to( varg(gpio_path)("gpio", _leg)("/value"), value );
+    write_to( vcat(gpio_path)("gpio", _leg)("/value"), value );
     return *this;
 }
 //=======================================================================================

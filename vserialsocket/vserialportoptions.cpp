@@ -7,7 +7,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include "vlogger.h"
+#include "vlog_pretty.h"
 
 
 using namespace std;
@@ -144,7 +144,7 @@ VSerialPortOptions VSerialPortOptions::get_options( const string &portname, bool
     auto handle = ::open( portname.c_str(), O_RDONLY );
     if (handle < 0)
     {
-        vdeb( vlog(errno));
+        vdeb(errno);
         return {};
     }
 
