@@ -1,10 +1,11 @@
 #include "nkeyfile.h"
 
 #include <assert.h>
+#include <glib.h>
 #include "impl/nconvertinghelper.h"
 
-
 using namespace std;
+
 
 
 //=======================================================================================
@@ -48,7 +49,7 @@ NKeyFile::NKeyFile()
     : p( g_key_file_new(), g_key_file_unref )
 {}
 //=======================================================================================
-NKeyFile::str NKeyFile::to_string( NError *err ) const
+NKeyFile::str NKeyFile::to_data( NError *err ) const
 {
     _n_error_proxy err_proxy( err );
     auto *ch = g_key_file_to_data( p.get(), nullptr, err_proxy );
@@ -61,7 +62,7 @@ bool NKeyFile::to_file( const str &fname, NError *err )
     return g_key_file_save_to_file( p.get(), fname.c_str(), err_proxy );
 }
 //=======================================================================================
-void NKeyFile::set_list_separator(char sep)
+void NKeyFile::set_list_separator( char sep )
 {
     if (p) g_key_file_set_list_separator( p.get(), sep );
 }
@@ -93,8 +94,7 @@ string NKeyFile::get_start_group() const
 bool NKeyFile::has_key( const str &group, const str &key, NError *err ) const
 {
     _n_error_proxy err_proxy( err );
-    auto res = g_key_file_has_key( p.get(), group.c_str(), key.c_str(), err_proxy );
-    return res;
+    return g_key_file_has_key( p.get(), group.c_str(), key.c_str(), err_proxy );
 }
 //=======================================================================================
 NKeyFile::StringList NKeyFile::get_keys( const str &group, NError *err ) const
@@ -104,12 +104,8 @@ NKeyFile::StringList NKeyFile::get_keys( const str &group, NError *err ) const
     return n_convert_and_free( gkeys );
 }
 //=======================================================================================
-string NKeyFile::get_value( const str &group, const str &key, NError *err ) const
-{
-    _n_error_proxy err_proxy( err );
-    auto * val = g_key_file_get_value( p.get(), group.c_str(), key.c_str(), err_proxy );
-    return n_convert_and_free( val );
-}
+
+
 //=======================================================================================
 string NKeyFile::get_string( const str &group, const str &key, NError *err ) const
 {
@@ -190,15 +186,11 @@ NKeyFile::str NKeyFile::get_comment( const str &group, const str &key,
 }
 //=======================================================================================
 
+
 //=======================================================================================
-NKeyFile::str NKeyFile::safe_value(const str &group, const str &key, const str &defval) const
-{
-    NError err;
-    auto res = get_value( group, key, &err );
-    return err.has() ? defval : res;
-}
-//=======================================================================================
-NKeyFile::str NKeyFile::safe_string(const str &group, const str &key, const str &defval) const
+NKeyFile::str NKeyFile::safe_string( const str &group,
+                                     const str &key,
+                                     const str &defval ) const
 {
     NError err;
     auto res = get_string( group, key, &err );
@@ -240,6 +232,52 @@ double NKeyFile::safe_double(const str &group, const str &key, double defval) co
     return err.has() ? defval : res;
 }
 //=======================================================================================
+NKeyFile::StringList NKeyFile::safe_string_list( const NKeyFile::str &group,
+                                                 const NKeyFile::str &key,
+                                                 const StringList &defval ) const
+{
+    NError err;
+    auto res = get_string_list( group, key, &err );
+    return err.has() ? defval : res;
+}
+//=======================================================================================
+NKeyFile::BoolList NKeyFile::safe_bool_list( const NKeyFile::str &group,
+                                             const NKeyFile::str &key,
+                                             const BoolList &defval ) const
+{
+    NError err;
+    auto res = get_bool_list( group, key, &err );
+    return err.has() ? defval : res;
+}
+//=======================================================================================
+NKeyFile::IntList NKeyFile::safe_int_list( const NKeyFile::str &group,
+                                           const NKeyFile::str &key,
+                                           const IntList &defval ) const
+{
+    NError err;
+    auto res = get_int_list( group, key, &err );
+    return err.has() ? defval : res;
+}
+//=======================================================================================
+NKeyFile::DoubleList NKeyFile::safe_double_list( const NKeyFile::str &group,
+                                                 const NKeyFile::str &key,
+                                                 const DoubleList &defval ) const
+{
+    NError err;
+    auto res = get_double_list( group, key, &err );
+    return err.has() ? defval : res;
+}
+//=======================================================================================
+NKeyFile::str NKeyFile::safe_comment( const NKeyFile::str &group,
+                                      const NKeyFile::str &key,
+                                      const str &defval ) const
+{
+    NError err;
+    auto res = get_comment( group, key, &err );
+    return err.has() ? defval : res;
+}
+//=======================================================================================
+
 
 //=======================================================================================
 void NKeyFile::set_value( const str &group, const str &key, const str &val )
@@ -334,5 +372,11 @@ bool NKeyFile::remove_comment( const str &group, const str &key, NError *err )
 {
     _n_error_proxy eproxy( err );
     return g_key_file_remove_comment( p.get(), group.c_str(), key.c_str(), eproxy );
+}
+//=======================================================================================
+void NKeyFile::_g_free( void *ptr )
+{
+    assert( ptr );
+    g_free( ptr );
 }
 //=======================================================================================

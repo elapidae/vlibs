@@ -1,6 +1,9 @@
 #include "nerror.h"
 
+#include <glib.h>
 #include <sstream>
+#include <stdexcept>
+
 
 using namespace std;
 
@@ -43,7 +46,7 @@ int NError::code() const
     return p ? p->code : 0;
 }
 //=======================================================================================
-string NError::deb_msg() const
+string NError::debug_msg() const
 {
     return p ? _deb_msg( p.get() ) : string();
 }
@@ -60,7 +63,7 @@ NError::NError( GError *err )
     _set( err );
 }
 //=======================================================================================
-void NError::_set(GError *err)
+void NError::_set( GError *err )
 {
     if (err) p.reset( err, g_error_free );
     else     p.reset();
@@ -76,7 +79,7 @@ _n_error_proxy::~_n_error_proxy()
 {
     // Я знаю, что нельзя бросать исключения из деструктора, но здесь обратный случай,
     // когда класс используется для оповещения об ошибке.
-    if (_target)
+    if ( _target )
     {
         _target->_set( _gerror );
     }
