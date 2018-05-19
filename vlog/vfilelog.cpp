@@ -10,7 +10,7 @@ using namespace vlog;
 //=======================================================================================
 std::string VFileLog::as_line_with_type( const VLogEntry &entry )
 {
-    return vcat( entry.timestamp().str_iso_zzz(), '\t',
+    return vcat( entry.timestamp().str_datetime_zzz(), '\t',
                  '[', entry.filename(), ':', entry.line(), "]\t",
                  entry.str_type(), '\t',
                  entry.message(), '\n');
@@ -18,7 +18,7 @@ std::string VFileLog::as_line_with_type( const VLogEntry &entry )
 //=======================================================================================
 std::string VFileLog::as_line_without_type( const VLogEntry &entry )
 {
-    return vcat( entry.timestamp().str_iso_zzz(), '\t',
+    return vcat( entry.timestamp().str_datetime_zzz(), '\t',
                  '[', entry.filename(), ':', entry.line(), "]\t",
                  entry.message(), '\n');
 }
@@ -26,7 +26,7 @@ std::string VFileLog::as_line_without_type( const VLogEntry &entry )
 std::string VFileLog::start_line()
 {
     return vcat( "------------- BEGIN LOGGING ------------- ",
-                 VTimePoint::now().str_iso_zzz(),
+                 VTimePoint::now().str_datetime_zzz(),
                  " -----------------------\n");
 }
 //=======================================================================================
