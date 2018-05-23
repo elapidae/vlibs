@@ -1,4 +1,4 @@
-#include "vimage_opencv_dev1.h"
+#include "vimage_opencv.h"
 
 
 //=======================================================================================
@@ -7,7 +7,8 @@ cv::Mat VImage_OpenCV::convert( const VImage &other )
     int cv_color_format_flag = -1;
     int cv_data_size_type = CV_8U;
 
-    switch (other.format()) {
+    switch ( other.format() )
+    {
         case VImage::Format::Gray_8:
             cv_data_size_type = CV_8U;;
             break;
@@ -19,15 +20,14 @@ cv::Mat VImage_OpenCV::convert( const VImage &other )
             cv_color_format_flag = cv::COLOR_RGB2BGR;
             break;
         default:
-            throw( std::logic_error( "Invalid format can" ) );
+            throw std::logic_error( "Invalid format can" );
     }
 
-    cv::Mat result = cv::Mat(
-                other.height(), // rows
-                other.width(), // cols
-                cv_data_size_type, // type (CV_DEPTH MACROS)
-                const_cast<void*>(static_cast<const void*>(other.data())),
-                other.bytes_per_line() ).clone();
+    cv::Mat result = cv::Mat( other.height(),     // rows
+                              other.width(),      // cols
+                              cv_data_size_type,  // type (CV_DEPTH MACROS)
+                              const_cast<void*>(static_cast<const void*>(other.data())),
+                              static_cast<size_t>(other.bytes_per_line()) ).clone();
 
     if ( cv_color_format_flag > 0 )
     {
@@ -99,63 +99,36 @@ VImage::Format VImage_OpenCV::format() const
     return _fmt;
 }
 //=======================================================================================
-cv::Mat VImage_OpenCV::to_format( VImage::Format fmt ) const
+cv::Mat VImage_OpenCV::to_format( VImage::Format dst_fmt ) const
 {
-    cv::Mat result(_mat_ref);
-    if ( _fmt == VImage::Format::Gray_8 ) // Так или иначе получается длинно
-    {
-        switch ( fmt )
-        {
-            case VImage::Format::Gray_8:    // Здесь нужно использовать копирование?
-                break;
-            case VImage::Format::BGR_888:
-                cv::cvtColor(_mat_ref, result, cv::COLOR_GRAY2BGR);
-                break;
-            case VImage::Format::RGB_888:
-                cv::cvtColor(_mat_ref, result, cv::COLOR_GRAY2RGB);
-                break;
-            default:
-                throw(std::runtime_error( "Invalid color format for conversion." ));
-        }
-    }
-    if ( _fmt == VImage::Format::BGR_888 )
-    {
-        switch ( fmt )
-        {
-            case VImage::Format::Gray_8:
-                cv::cvtColor(_mat_ref, result, cv::COLOR_BGR2GRAY);
-                break;
-            case VImage::Format::BGR_888:
-                break;
-            case VImage::Format::RGB_888:
-                cv::cvtColor(_mat_ref, result, cv::COLOR_BGR2RGB);
-                break;
-            default:
-                throw(std::runtime_error( "Invalid color format for conversion." ));
-        }
-    }
-    if ( _fmt == VImage::Format::RGB_888 )
-    {
-        switch ( fmt )
-        {
-            case VImage::Format::Gray_8:
-                cv::cvtColor(_mat_ref, result, cv::COLOR_RGB2GRAY);
-                break;
-            case VImage::Format::BGR_888:
-                cv::cvtColor(_mat_ref, result, cv::COLOR_RGB2BGR);
-                break;
-            case VImage::Format::RGB_888:
-                break;
-            default:
-                throw(std::runtime_error( "Invalid color format for conversion." ));
-        }
-    }
-    else
-    {
-        throw std::logic_error( "Invalid color format in cv::Mat before conversion." );
-    }
+    if ( dst_fmt == _fmt ) return _mat_ref;
 
-    return result;
+    auto cvt_color = [this]( int dst_color )
+    {
+        cv::Mat result;
+        cv::cvtColor( _mat_ref, result, dst_color );
+        return result;
+    };
+
+    if ( _fmt == Format::Gray_8 )
+    {
+        if ( dst_fmt == Format::BGR_888 ) return cvt_color( cv::COLOR_GRAY2BGR );
+        if ( dst_fmt == Format::RGB_888 ) return cvt_color( cv::COLOR_GRAY2RGB );
+    } // Gray_8
+
+    if ( _fmt == Format::BGR_888 )
+    {
+        if ( dst_fmt == Format::Gray_8  ) return cvt_color( cv::COLOR_BGR2GRAY );
+        if ( dst_fmt == Format::RGB_888 ) return cvt_color( cv::COLOR_BGR2RGB  );
+    } // BGR_888
+
+    if ( _fmt == Format::RGB_888 )
+    {
+        if ( dst_fmt == Format::Gray_8  ) return cvt_color( cv::COLOR_RGB2GRAY );
+        if ( dst_fmt == Format::BGR_888 ) return cvt_color( cv::COLOR_RGB2BGR  );
+    } // RGB_888
+
+    throw std::logic_error( "Invalid color format in cv::Mat before conversion." );
 }
 //=======================================================================================
 int VImage_OpenCV::width() const
@@ -170,7 +143,7 @@ int VImage_OpenCV::height() const
 //=======================================================================================
 int VImage_OpenCV::bytes_per_line() const
 {
-    return _mat_ref.cols * _mat_ref.elemSize();
+    return  _mat_ref.cols * int(_mat_ref.elemSize());
 }
 //=======================================================================================
 const VImage::data_t *VImage_OpenCV::data() const

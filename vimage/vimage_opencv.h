@@ -2,9 +2,9 @@
 // vimage_opencv.h
 //=======================================================================================
 #ifndef VIMAGE_OPENCV_DEV1
-#define VIMAGE_OPENCV_DEV1
+#define VIMAGE_OPENCV
 
-// Правильно ли включение для cv::Mat?
+
 #include <opencv2/opencv.hpp>
 
 #include "vimage.h"
@@ -60,7 +60,7 @@ private:
 
 
 
-#endif // VIMAGE_OPENCV_DEV1
+#endif // VIMAGE_OPENCV
 //=======================================================================================
 // /vimage_opencv.h
 //=======================================================================================
