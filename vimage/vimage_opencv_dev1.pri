@@ -10,6 +10,6 @@ isEmpty(qi_vimage_opencv) {
     include( $$VLibs_Dir/vopencv/vopencv.pri )
     include( $$VLibs_Dir/vlog/vlog.pri )
 
-    HEADERS     += $$VLibs_Dir/vimage/vcvimage_impl.h
-    SOURCES     += $$VLibs_Dir/vimage/vcvimage_impl.cpp
+    HEADERS     += $$VLibs_Dir/vimage/vimage_opencv_dev1.h
+    SOURCES     += $$VLibs_Dir/vimage/vimage_opencv_dev1.cpp
 }
