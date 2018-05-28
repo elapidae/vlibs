@@ -16,6 +16,7 @@ public:
         ReadWrite
     };
 
+    [[deprecated]]
     VFile( const std::string &fname = std::string(), OpenMode mode = ReadOnly );
     virtual ~VFile();
 
