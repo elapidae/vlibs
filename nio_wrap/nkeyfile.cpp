@@ -138,6 +138,7 @@ uint64_t NKeyFile::get_uint64( const str &group, const str &key, NError *err ) c
 {
     using gtype = decltype(g_key_file_get_uint64(0,0,0,0));
     static_assert( is_same<uint64_t,gtype>::value, "" );
+
     _n_error_proxy err_proxy( err );
     return g_key_file_get_uint64( p.get(), group.c_str(), key.c_str(), err_proxy );
 }
@@ -162,19 +163,22 @@ NKeyFile::StringList NKeyFile::get_string_list( const str &group, const str &key
 NKeyFile::BoolList NKeyFile::get_bool_list( const str &group, const str &key,
                                             NError *err ) const
 {
-    return _get_any_simple_list<bool>( group, key, g_key_file_get_boolean_list, err );
+    return _get_any_simple_list<bool, gsize>( group, key,
+                                              g_key_file_get_boolean_list, err );
 }
 //=======================================================================================
 NKeyFile::IntList NKeyFile::get_int_list( const str &group, const str &key,
                                           NError *err ) const
 {
-    return _get_any_simple_list<int>( group, key, g_key_file_get_integer_list, err );
+    return _get_any_simple_list<int, gsize>( group, key,
+                                             g_key_file_get_integer_list, err );
 }
 //=======================================================================================
 NKeyFile::DoubleList NKeyFile::get_double_list( const str &group, const str &key,
                                                 NError *err ) const
 {
-    return _get_any_simple_list<double>( group, key, g_key_file_get_double_list, err );
+    return _get_any_simple_list<double, gsize>( group, key,
+                                                g_key_file_get_double_list, err );
 }
 //=======================================================================================
 NKeyFile::str NKeyFile::get_comment( const str &group, const str &key,
