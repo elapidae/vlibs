@@ -120,6 +120,9 @@ public:
 
     virtual int data_size() const;      // NB! here returns bytes_per_line() * heigth()
                                         // If your system cut last row, override it!
+
+    /// то же что и data_size(), только беззнаковое.
+    uint data_usize() const;
 };
 //=======================================================================================
 

@@ -36,3 +36,11 @@ int VImage::data_size() const
     return bytes_per_line() * height();
 }
 //=======================================================================================
+uint VImage::data_usize() const
+{
+    if ( data_size() < 0 )
+        throw std::logic_error( "VImage::data_size() < 0" );
+
+    return static_cast<uint>( data_size() );
+}
+//=======================================================================================
