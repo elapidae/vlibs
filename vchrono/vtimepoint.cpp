@@ -45,6 +45,21 @@ std::tm _vtimepoint_helper::_time_t_to_tm( time_t tt )
     return ptr ? *ptr : tm{0,0,0,0,0,0,0,0,0,0,0};
 }
 //=======================================================================================
+
+//=======================================================================================
+//  Кто-то где-то использует старый компилятор, не поддерживающий метод std::get_time().
+//  Для таких товарищей вместо преобразования будет исключение...
+#ifdef V_USE_STD_GET_TIME_ELPD
+  #undef V_USE_STD_GET_TIME_ELPD
+#endif
+
+#ifdef __GNUC__
+  #if __GNUC__ >= 5
+    #define V_USE_STD_GET_TIME_ELPD
+  #endif // __GNUC__ >= 5
+#endif // __GNUC__
+//---------------------------------------------------------------------------------------
+#ifdef V_USE_STD_GET_TIME_ELPD
 std::tm _vtimepoint_helper::_from_format( const std::string &dt, const std::string &fmt )
 {
     std::tm t = {};
@@ -52,6 +67,17 @@ std::tm _vtimepoint_helper::_from_format( const std::string &dt, const std::stri
     ss >> std::get_time( &t, fmt.c_str() );
     return ss.fail() ? tm{0,0,0,0,0,0,0,0,0,0,0} : t;
 }
+#else
+#warning "This revision does not implement VTimePoint::from_format()... :("
+std::tm from_format( const std::string &dt, const std::string &fmt )
+{
+    // Если спичит, давайте найдем как это делали в старом компиляторе, напишем.
+    throw std::logic_error( "_vtimepoint_helper::_from_format(dt,fmt) not implemented "
+                            "for this compiler. :(" );
+}
+#endif // V_USE_STD_GET_TIME_ELPD
+//=======================================================================================
+
 //=======================================================================================
 std::string _vtimepoint_helper::_str_format( time_t tt, const std::string &fmt )
 {
