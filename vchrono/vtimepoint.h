@@ -115,13 +115,13 @@ public:
     timepoint_t time_point() const;
     time_t      to_time_t()  const;
 
-    int year()          const;
-    int month()         const;
-    int day()           const;
-    int hour()          const;
-    int minute()        const;
-    int second()        const;
-    int millisecond()   const;
+    int year()          const;  //
+    int month()         const;  //  NB! 0..11
+    int day()           const;  //  NB! 1..31
+    int hour()          const;  //  NB! 0..23
+    int minute()        const;  //  NB! 0..59
+    int second()        const;  //  NB! 0..59
+    int millisecond()   const;  //  NB! 0..999
 
     std::chrono::nanoseconds    nanoseconds()   const;
     std::chrono::microseconds   microseconds()  const;

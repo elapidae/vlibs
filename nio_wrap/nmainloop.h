@@ -35,7 +35,7 @@ public:
 
     uint attach( const NSource &source );
 
-    //GMainContext *RAW() { return _g_main_context.get(); }
+    GMainContext *RAW() { return _g_main_context.get(); }
 
 private:
     friend class NMainLoop;

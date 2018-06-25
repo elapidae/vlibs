@@ -53,6 +53,8 @@ public:
     D& space();                  // Пробелы между аргументами, то же cat(vcat::Space).
     D& nospace();                // Отключает вывод пробелов, cat(vcat::NoSpace)
 
+    D& num( long long   val, int field_width, char fill = ' ' );
+//    D& num_d( long double val, int presition = std::numeric_limits<long double>::max() );
     //-----------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------
@@ -263,6 +265,14 @@ template< typename D >
 D& _vcat_iface<D>::nospace()
 {
     return cat( NoSpace );
+}
+//=======================================================================================
+//  2018-06-08 -- проба восстановить справедливость к достаточно важной функции: выводу
+// выровненных целых чисел.
+template< typename D >
+D& _vcat_iface<D>::num(long long val, int f_width, char fill_ch)
+{
+    return fill_char(fill_ch).field_width(f_width)(val);
 }
 //=======================================================================================
 //          IMPLEMENTATION
