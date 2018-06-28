@@ -13,6 +13,8 @@
 #include "viz.hpp"
 #include "profiler.hpp"
 
+#include "basler_gige_driver.h"
+
 #include <fstream>
 #include <zcm/zcm-cpp.hpp>
 
@@ -28,7 +30,7 @@
 Stereo_Handler::Stereo_Handler(
         VImageWidget *left_w, VImageWidget *right_w, VImageWidget *disp_w,
         const std::string video_output_folder_path,
-        const int pre_calibration_frames_count )
+        int pre_calibration_frames_count )
         :
           left_w( left_w ), right_w( right_w ), disp_w( disp_w ),
           video_output_path( video_output_folder_path ),
@@ -90,7 +92,8 @@ Stereo_Handler::Stereo_Handler(
     cv_calib::configure_calib_matrix( Q, leftMatX, leftMatY, rightMatX, rightMatY );
 }
 
-void Stereo_Handler::stereo_handle( const cv::Mat frame, const CAM_LOCATION location, const int64_t timestamp_ns )
+void Stereo_Handler::stereo_handle(
+        const cv::Mat frame, const CAM_LOCATION location, const int64_t timestamp_ns, bool syncronized )
 {
     int64 t0 = cv::getTickCount();
 
@@ -113,7 +116,7 @@ void Stereo_Handler::stereo_handle( const cv::Mat frame, const CAM_LOCATION loca
     }
 
     auto delay = fabs( last_left.timestamp_ns - last_right.timestamp_ns );
-    if ( delay >= 0.3 )
+    if ( delay >= 0.3 || !syncronized )
     {
         vdeb << "Delay is too big(" << delay << ").";
         profiler::print_delay( t0, "" );
@@ -232,36 +235,39 @@ void Stereo_Handler::stereo_handle( const cv::Mat frame, const CAM_LOCATION loca
     profiler::print_delay( t0, "Disparity calculated" );
 }
 
-void Stereo_Handler::left_handler( const zcm::ReceiveBuffer*, const std::string&, const ZCM_BaslerFrame *f )
+void Stereo_Handler::left_handler( const Basler_GigE_Driver::ReceivedFrame& f )
 {
-    VImage_ZCM<ZCM_Image> zimg( f->image );
+    auto fr2 = f.frame.convert_rgb24();
+    VImage_Basler basler_img( fr2 );
 
     // Конвертация для работы с кадром алгоритмами OpenCV
-    auto frame = VImage_OpenCV::convert( zimg );
+    auto frame = VImage_OpenCV::convert( basler_img );
     stereo_handle_thread.cinvoke(
                 this, &Stereo_Handler::stereo_handle,
-                frame, Stereo_Handler::CAM_LOCATION::LEFT, f->timestamp_ns );
+                frame, Stereo_Handler::CAM_LOCATION::LEFT, 1, f.freerun_synced );
 
     // Конвертация для вывода в графический интерфейс через Qt
-    auto img = VImage_Qt::convert( zimg );
+    auto img = VImage_Qt::convert( basler_img );
     img.detach();
     qt::vinvoke_queue( left_w, "set_image", Q_ARG( QImage, img ) );
 }
 
-void Stereo_Handler::right_handler( const zcm::ReceiveBuffer*, const std::string&, const ZCM_BaslerFrame *f )
+void Stereo_Handler::right_handler( const Basler_GigE_Driver::ReceivedFrame &f )
 {
-    VImage_ZCM<ZCM_Image> zimg( f->image );
+    auto fr2 = f.frame.convert_rgb24();
+    VImage_Basler basler_img( fr2 );
+//    cv::COLOR_BayerRG2BGR
 
     // Конвертация для работы с кадром алгоритмами OpenCV
-    auto frame = VImage_OpenCV::convert( zimg );
+    auto frame = VImage_OpenCV::convert( basler_img );
     stereo_handle_thread.cinvoke(
                 this, &Stereo_Handler::stereo_handle,
-                frame, Stereo_Handler::CAM_LOCATION::RIGHT, f->timestamp_ns);
+                frame, Stereo_Handler::CAM_LOCATION::RIGHT, 1, f.freerun_synced );
 
     // Конвертация для вывода в графический интерфейс через Qt
     // Был баг с конвертацией через временный объект VImage_OpenCV
     // Программа вылетала, конвертация цветов была верной, разобраться позже
-    auto img = VImage_Qt::convert( zimg );
+    auto img = VImage_Qt::convert( basler_img );
     img.detach();
     qt::vinvoke_queue( right_w, "set_image", Q_ARG( QImage, img ) );
 }

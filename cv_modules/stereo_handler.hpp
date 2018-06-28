@@ -9,6 +9,8 @@
 #include "vimage_qt.h"
 #include "qt_vinvoke.h"
 
+#include "basler_gige_driver.h"
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/ximgproc.hpp>
 #include <opencv2/viz/vizcore.hpp>
@@ -24,7 +26,7 @@ public:
     Stereo_Handler(
             VImageWidget *left_w, VImageWidget *right_w, VImageWidget *disp_w,
             const std::string video_output_path,
-            const int pre_calibration_frames_count = -1 );
+            int pre_calibration_frames_count = -1 );
 
     enum CAM_LOCATION
     {
@@ -40,11 +42,12 @@ public:
 
     // Метод проверяет наличие калибровочных матриц, наличие пары кадров, в случае успеха вычисляет карту глубины
     // картинки и выводит её на экран
-    void stereo_handle( const cv::Mat frame, const CAM_LOCATION location, const int64_t timestamp_ns );
+    void stereo_handle(
+            const cv::Mat frame, const CAM_LOCATION location, const int64_t timestamp_ns, bool syncronized = true );
 
     // Захват и сохранение кадров с камер
-    void left_handler ( const zcm::ReceiveBuffer*, const std::string&, const ZCM_BaslerFrame *f );
-    void right_handler( const zcm::ReceiveBuffer*, const std::string&, const ZCM_BaslerFrame *f );
+    void left_handler ( const Basler_GigE_Driver::ReceivedFrame &f );
+    void right_handler( const Basler_GigE_Driver::ReceivedFrame &f );
 
     // Функция создания калибровочных матриц из первых N кадров завхвата видеопотока
     // предполагается, что в случае создания экземпляра класса с данным ключем, в первых N кадрах
