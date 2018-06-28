@@ -14,13 +14,13 @@ isEmpty(qi_vgit2) {
     SOURCES     += $$VLibs_Dir/vgit/vgit.cpp
 
 
-    VGIT_REVCOUNT = $$system(cd $$system_path($$Main_Dir)    && \
+    VGIT_REVCOUNT = $$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git rev-list HEAD --count)
 
-    VGIT_HASH     = $$system(cd $$system_path($$Main_Dir)    && \
+    VGIT_HASH     = $$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git log -n 1 --pretty=format:\"%H\")
 
-    VGIT_BRANCH   = $$system(cd $$system_path($$Main_Dir)    && \
+    VGIT_BRANCH   = $$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git branch | awk \'{print \$2}\')
 
 

@@ -30,6 +30,16 @@ std::string VGit::revcount()
     return VGIT_CURRECT_RVCOUNT_BYEL;
 }
 //=======================================================================================
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdate-time"
+std::string VGit::compile_datetime()
+{
+    std::stringstream ss;
+    ss << __DATE__ << " " << __TIME__;
+    return ss.str();
+}
+#pragma GCC diagnostic pop
+//=======================================================================================
 std::string VGit::as_message(const std::string &query)
 {
     if ( query == "--vgit-hash" )       return hash();
@@ -37,7 +47,10 @@ std::string VGit::as_message(const std::string &query)
     if ( query == "--vgit-revcount" )   return revcount();
 
     std::stringstream ss;
-    ss << "hash=" << hash() << ", branch=" << branch() << ", revcount=" << revcount();
+    ss << "hash=" << hash()
+       << ", branch=" << branch()
+       << ", revcount=" << revcount() <<
+          ", ctime=" << compile_datetime();
     return ss.str();
 }
 //=======================================================================================

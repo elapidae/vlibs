@@ -11,6 +11,10 @@ public:
     static std::string branch();
     static std::string revcount();
 
+    // Метка времени компиляции.
+    // К git отношения не имеет, но где-то надо хранить...
+    static std::string compile_datetime();
+
     // принимает --vgit-branch, --vgit-hash, --vgit-revcount, --vgit-full
     // возвращает, соответственно. По умолчанию и при ошибках использует --vgit-full
     static std::string as_message( const std::string &query = "--vgit-full" );
