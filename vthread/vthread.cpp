@@ -105,9 +105,12 @@ void *VThreadInterface::_run(void *self_)
 
     //vtrace( vlog("Thread queue registered.") );
 
-    while ( !self->p->has_exception &&
+    while ( self->p &&
+            !self->p->has_exception &&
             !self->p->let_break )
     {
+        assert( self->_queue );
+
 //        try
 //        {
             auto func = self->_queue->pop();

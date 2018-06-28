@@ -7,7 +7,7 @@ using namespace std;
 
 //=======================================================================================
 //  Пример-затравка для пользовательской обработки логов.
-void my_log_executer( const vlog::VLogEntry &entry )
+void my_log_executer( const VLogEntry &entry )
 {
     // Ниже приведены содержания из точки логгирования.
     // Их следует использовать для составления собственных сообщений.
@@ -31,10 +31,11 @@ void my_log_executer( const vlog::VLogEntry &entry )
 }
 //=======================================================================================
 
-
 //=======================================================================================
 int main( int, char **argv )
 {
+    VDEBUG << VTimePoint::now().day();
+
     // По умолчанию будет выводить в консоль.
     VRUNLOG << "Hello World!";
 
@@ -53,35 +54,38 @@ int main( int, char **argv )
     VDEBUG << "------ precision example.";
     VDEBUG << long_term_val;                    // выведет мало знаков.
     VDEBUG.max_precision() << long_term_val;    // выведет максимальное кол-во знаков.
+
     VDEBUG << "------ fill & width example.";
     VDEBUG.fill_char('0').field_width(5) << 42; // 00042
+    VDEBUG.num(42, 5, '0');                     // то же самое, 00042
+                                                // специально заточено под эту задачу.
     VDEBUG << "------------------------------";
 
     // Вывод без пробелов между аргументами:
-    auto prog_name = VString(argv[0]).split('/').back(); // удаляем путь в программе.
+    auto prog_name = VString(argv[0]).split('/').back(); // удаляем путь к программе.
     VTRACE.nospace()( "My program name is '", prog_name, "'." );
 
     // Теперь будем логгировать в cerr, удалим всех исполнителей и добавим исполнитель,
     // который будет писать в cerr (vlog::VLogger::_log_to_cerr).
-    vlog::VLogger::clear_executers();
-    vlog::VLogger::add_executer( vlog::VLogger::_log_to_cerr );
+    VLogger::clear_executers();
+    VLogger::add_executer( VLogger::_log_to_cerr );
     VRUNLOG << "Hello World in cerr!";
 
     // регистрируем своего исполнителя.
-    vlog::VLogger::add_executer( my_log_executer );
+    VLogger::add_executer( my_log_executer );
     VWARNING("After register own executer.");
 
 
     // Удалим текущие логгеры и будем писать только в файлы.
-    vlog::VLogger::clear_executers();
+    VLogger::clear_executers();
 
     // Будем вести историю максимум в двух файлах, размеры одного -- 2.5 кб.
-    vlog::VOneFileLog one_flog( vcat(argv[0], ".log"), 2500, 2 );
+    VCommonFileLog one_flog( vcat(argv[0], ".log"), 2500, 2 );
     one_flog.register_self(); // Он сам знает где и как регистрироваться.
 
     system("mkdir -p ./logs"); // если папки не будет -- это не проблема логгера.
     // Будем вести историю максимум в двух файлах, размеры одного -- 1 кб.
-    vlog::VGroupFileLog group_flog( "./logs", 1000, 2 );
+    VGroupFileLog group_flog( "./logs", 1000, 2 );
     group_flog.register_self();
 
     for (int i = 0; i < 10; ++i)

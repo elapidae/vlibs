@@ -174,7 +174,7 @@ public:
 private:
     std::shared_ptr<GKeyFile> p;
 
-    template<typename T, typename gFn>
+    template<typename T, typename GSizeType, typename gFn>
     std::vector<T> _get_any_simple_list( const str &group, const str &key,
                                          gFn fn, NError *err = nullptr ) const;
     static void _g_free(void *ptr);
@@ -187,13 +187,13 @@ private:
 //=======================================================================================
 //      Implementation
 //=======================================================================================
-template<typename T, typename gFn>
+template<typename T, typename GSizeType, typename gFn>
 std::vector<T> NKeyFile::_get_any_simple_list( const std::string &group,
                                                const std::string &key,
                                                gFn fn, NError *err ) const
 {
     _n_error_proxy err_proxy( err );
-    unsigned long len;
+    GSizeType len;
     auto * ptr = fn( p.get(), group.c_str(), key.c_str(), &len, err_proxy );
 
     auto res = ptr ? std::vector<T>(ptr, ptr + len) : std::vector<T>();

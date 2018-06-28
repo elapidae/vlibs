@@ -115,13 +115,13 @@ public:
     timepoint_t time_point() const;
     time_t      to_time_t()  const;
 
-    int year()          const;
-    int month()         const;
-    int day()           const;
-    int hour()          const;
-    int minute()        const;
-    int second()        const;
-    int millisecond()   const;
+    int year()          const;  //
+    int month()         const;  //  NB! 0..11
+    int day()           const;  //  NB! 1..31
+    int hour()          const;  //  NB! 0..23
+    int minute()        const;  //  NB! 0..59
+    int second()        const;  //  NB! 0..59
+    int millisecond()   const;  //  NB! 0..999
 
     std::chrono::nanoseconds    nanoseconds()   const;
     std::chrono::microseconds   microseconds()  const;
@@ -134,6 +134,13 @@ public:
     bool operator >= ( const _vTimePoint &rhs ) const;
     bool operator == ( const _vTimePoint &rhs ) const;
     bool operator != ( const _vTimePoint &rhs ) const;
+
+    template<typename Duration> bool operator <  ( const Duration &rhs ) const;
+    template<typename Duration> bool operator >  ( const Duration &rhs ) const;
+    template<typename Duration> bool operator <= ( const Duration &rhs ) const;
+    template<typename Duration> bool operator >= ( const Duration &rhs ) const;
+    template<typename Duration> bool operator == ( const Duration &rhs ) const;
+    template<typename Duration> bool operator != ( const Duration &rhs ) const;
 
     template<typename Duration>
     Derived &operator -= ( const Duration &rhs );
@@ -162,7 +169,7 @@ public:
     std::string str_datetime_zzz_for_filenames() const;
 
 private:
-    typename Clk::time_point _tp;
+    timepoint_t _tp;
 };
 //=======================================================================================
 //      GENERAL TEMPLATE
@@ -359,6 +366,7 @@ std::chrono::seconds _vTimePoint<Clk,Derived>::seconds() const
             duration_cast<std::chrono::seconds>(_tp.time_since_epoch());
 }
 //=======================================================================================
+//=======================================================================================
 template<typename Clk, typename Derived>
 bool _vTimePoint<Clk,Derived>::operator < (const _vTimePoint<Clk,Derived> &rhs) const
 {
@@ -394,6 +402,49 @@ bool _vTimePoint<Clk,Derived>::operator != ( const _vTimePoint<Clk,Derived> &rhs
 {
     return time_point() != rhs.time_point();
 }
+//=======================================================================================
+template<typename Clk, typename Derived>
+template<typename Duration>
+bool _vTimePoint<Clk,Derived>::operator < (const Duration &rhs) const
+{
+    return time_point().time_since_epoch() < rhs;
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
+template<typename Duration>
+bool _vTimePoint<Clk,Derived>::operator > (const Duration &rhs) const
+{
+    return time_point().time_since_epoch() > rhs;
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
+template<typename Duration>
+bool _vTimePoint<Clk,Derived>::operator <= (const Duration &rhs) const
+{
+    return time_point().time_since_epoch() <= rhs;
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
+template<typename Duration>
+bool _vTimePoint<Clk,Derived>::operator >= (const Duration &rhs) const
+{
+    return time_point().time_since_epoch() >= rhs;
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
+template<typename Duration>
+bool _vTimePoint<Clk,Derived>::operator == (const Duration &rhs) const
+{
+    return time_point().time_since_epoch() == rhs;
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
+template<typename Duration>
+bool _vTimePoint<Clk,Derived>::operator != (const Duration &rhs) const
+{
+    return time_point().time_since_epoch() != rhs;
+}
+//=======================================================================================
 //=======================================================================================
 template<typename Clk, typename Derived>
 template<typename Duration>

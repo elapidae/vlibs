@@ -6,7 +6,7 @@
 
 
 using namespace std;
-using namespace vlog;
+//using namespace vlog;
 
 
 //=======================================================================================

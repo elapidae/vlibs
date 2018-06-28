@@ -14,13 +14,13 @@ isEmpty(qi_vgit2) {
     SOURCES     += $$VLibs_Dir/vgit/vgit.cpp
 
 
-    VGIT_REVCOUNT = $$system(cd $$system_path($$Main_Dir)    && \
+    VGIT_REVCOUNT = $$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git rev-list HEAD --count)
 
-    VGIT_HASH     = $$system(cd $$system_path($$Main_Dir)    && \
+    VGIT_HASH     = $$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git log -n 1 --pretty=format:\"%H\")
 
-    VGIT_BRANCH   = $$system(cd $$system_path($$Main_Dir)    && \
+    VGIT_BRANCH   = $$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git branch | awk \'{print \$2}\')
 
 
@@ -28,7 +28,11 @@ isEmpty(qi_vgit2) {
     DEFINES += VGIT_HASH_ELPD=\"$${VGIT_HASH}\"
     DEFINES += VGIT_BRANCH_ELPD=\"$${VGIT_BRANCH}\"
 
-    message(">>> Current git hash is $${VGIT_HASH}, branch: $${VGIT_BRANCH}")
+
+    message(">>> Current git hash: $${VGIT_HASH}, \
+                             branch: $${VGIT_BRANCH}, \
+                             revcount: $${VGIT_REVCOUNT}")
+
 
     VMAIN_O = $$system_path($$OUT_PWD/$$OBJECTS_DIR/main.o)
     VGIT_O  = $$system_path($$OUT_PWD/$$OBJECTS_DIR/vgit.o)

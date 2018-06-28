@@ -2,7 +2,7 @@
 
 #include "vlogger.h"
 
-using namespace vlog;
+//using namespace vlog;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
@@ -24,12 +24,12 @@ VGroupFileLog_Threaded::~VGroupFileLog_Threaded()
     _thread.finvoke( [this](){ _log.reset(); } );
 }
 //=======================================================================================
-void vlog::VGroupFileLog_Threaded::execute( const vlog::VLogEntry &entry )
+void VGroupFileLog_Threaded::execute( const VLogEntry &entry )
 {
     _thread.finvoke( [=](){ if (_log) _log->execute(entry); } );
 }
 //=======================================================================================
-void vlog::VGroupFileLog_Threaded::register_self()
+void VGroupFileLog_Threaded::register_self()
 {
     VLogger::add_executer( [this](const VLogEntry &e){ execute(e); } );
 }

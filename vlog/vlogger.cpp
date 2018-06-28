@@ -3,7 +3,7 @@
 #include <iostream>
 #include "vlog_pretty.h"
 
-using namespace vlog;
+//using namespace vlog;
 using namespace std;
 
 
@@ -19,17 +19,34 @@ VLogger::VLogger( VLogEntry::Type type,
     space();    // Пробелы включены по умолчанию.
 }
 //=======================================================================================
+VLogger::VLogger( VLogEntry::Type type,
+                  const string &file,
+                  int32_t line,
+                  const string &func,
+                  VLogger::_is_proxy )
+    : VLogger( type, file, line, func )
+{
+    _i_am_proxy = true;
+}
+//=======================================================================================
 VLogger::~VLogger()
 {
+    if ( _i_am_proxy ) return;
+
     _entry._set_msg( _cat );
     execute( _entry );
 }
 //=======================================================================================
-VLogEntry VLogger::_get_cur_entry() const
+VLogEntry VLogger::cur_entry() const
 {
     auto res = _entry;
     res._set_msg( _cat );
     return res;
+}
+//=======================================================================================
+VLogger::operator VLogEntry() const
+{
+    return cur_entry();
 }
 //=======================================================================================
 void VLogger::_log_to_cout( const VLogEntry &entry )

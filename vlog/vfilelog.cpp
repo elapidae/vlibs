@@ -4,7 +4,7 @@
 #include "vlogger.h"
 #include "vdir.h"
 
-using namespace vlog;
+//using namespace vlog;
 
 
 //=======================================================================================
@@ -32,9 +32,9 @@ std::string VFileLog::start_line()
 //=======================================================================================
 
 //=======================================================================================
-vlog::VGroupFileLog::VGroupFileLog( const std::string &path,
-                                    long one_file_size,
-                                    int rotate_files_count )
+VGroupFileLog::VGroupFileLog( const std::string &path,
+                              long one_file_size,
+                              int rotate_files_count )
     : _dir_created( VDir::mkdir(path) )
     , _trace  ( vcat(path, "/trace.log"),   one_file_size, rotate_files_count )
     , _deb    ( vcat(path, "/debug.log"),   one_file_size, rotate_files_count )
@@ -52,7 +52,7 @@ vlog::VGroupFileLog::VGroupFileLog( const std::string &path,
     _fatal.write  ( line );
 }
 //=======================================================================================
-void VGroupFileLog::execute( const vlog::VLogEntry &entry )
+void VGroupFileLog::execute( const VLogEntry &entry )
 {
     auto line = as_line_without_type( entry );
     switch ( entry.type() )
