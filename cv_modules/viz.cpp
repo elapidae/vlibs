@@ -6,7 +6,8 @@
 
 #include "ml.hpp"
 
-namespace cv_viz {
+namespace cv_viz
+{
     void create_height_projections(
             const cv::Mat &img, const cv::Mat &points, cv::Mat& out, const int map_size,
             const int cx, const int cy,
@@ -50,6 +51,7 @@ namespace cv_viz {
 
         cv::Mat ZX = cv::Mat::zeros( map_size+1, map_size+1, CV_8U );
 
+        // transform data to bird's eye
         for ( int i = 0; i < points.rows; i++ )
         {
             for ( int j = 0; j < points.cols; j++ )
@@ -79,10 +81,14 @@ namespace cv_viz {
             }
         }
 
+        // color map creation
         create_color_map( height_on_frame_mask, height_on_frame_mask );
+        vdeb << img.size() << img.type() << img.channels();
         cv::cvtColor( img, img, cv::COLOR_GRAY2BGR );
         cv::addWeighted( img, 0.5, height_on_frame_mask, 0.5, 0, img );
 
+
+        // color map transformation
         cv::circle( ZX, cv::Point( cx, map_size - cy ), 3, cv::Scalar( 255 ));
         cv::Mat rot_mat( 2, 3, CV_32FC1 );
         rot_mat = cv::getRotationMatrix2D( cv::Point( cx, map_size - cy ), alpha, 1 );
