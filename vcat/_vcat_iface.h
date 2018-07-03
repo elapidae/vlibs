@@ -8,6 +8,37 @@
 #include <iomanip>
 #include <limits>
 
+//=======================================================================================
+/*  UPD 2018-07-03  by Elapidae
+ *
+ *  TODO: сделать нормальное описание принципов работы для разработчиков.
+ *  Помогите автору с этим,, чтобы выстроить непротиворечивое описание,
+ *  необходимо "объяснить соседу" кухню класса.
+ *
+ *  Используется CRTP паттерн, наследуемый класс должен определяться ~ так:
+ *  class Derived : public _vcat_iface<Derived>
+ *  {
+ *      template<typename T>
+ *      void do_cat(T val)
+ *      {
+ *          // конкатекация с реальным std::ostream;
+ *          // сюда могут прилетать, в т.ч., модификаторы.
+ *          // Не будут прилетать доп. флаги (типа Space/NoSpace),
+ *          // вместо них прилетит пробел. Т.е. здесь будут "дисситилированные" данные.
+ *      }
+ *  };
+ *
+ *  В do_cat будут прилетать "очищенные" типы, логика установки флагов и принятия решений
+ *  что писать остается в реализациях cat(...). Не используйте cat(...) для проксирования
+ *  интерфейса.
+ *
+ *  Все методы проксируют вызовы на методы cat(...), которые уже принимают решение
+ *  что, как и зачем писать. Передают в испольнителя do_cat(T) из кода наследника.
+ *
+**/
+//=======================================================================================
+
+
 
 
 //=======================================================================================
@@ -16,7 +47,7 @@
 template<typename D>
 class _vcat_iface
 {
-    using _std_modifier_t = decltype(std::hex);
+    using _std_modifier_type_ = decltype(std::hex);
 
 public:
     //-----------------------------------------------------------------------------------
@@ -53,7 +84,7 @@ public:
     D& space();                  // Пробелы между аргументами, то же cat(vcat::Space).
     D& nospace();                // Отключает вывод пробелов, cat(vcat::NoSpace)
 
-    D& num( long long   val, int field_width, char fill = ' ' );
+    D& num( long long val, int field_width, char fill = ' ' );
 //    D& num_d( long double val, int presition = std::numeric_limits<long double>::max() );
     //-----------------------------------------------------------------------------------
 
@@ -63,9 +94,9 @@ public:
     // Перегрузки нужны, чтобы при этих модификаторах был вызван специфичный код.
     enum   _space   { Space    };
     enum   _nospace { NoSpace  };
-    D& cat          ( _std_modifier_t );
-    D& operator()   ( _std_modifier_t );
-    D& operator<<   ( _std_modifier_t );
+    D& cat          ( _std_modifier_type_ );
+    D& operator()   ( _std_modifier_type_ );
+    D& operator<<   ( _std_modifier_type_ );
     D& cat          ( _space   );
     D& operator()   ( _space   );
     D& operator<<   ( _space   );
@@ -148,7 +179,7 @@ D& _vcat_iface<D>::operator << ( const T& val )
 }
 //=======================================================================================
 template< typename D >
-D& _vcat_iface<D>::cat ( _std_modifier_t modifier )
+D& _vcat_iface<D>::cat ( _std_modifier_type_ modifier )
 {
     D& d = static_cast<D&>( *this );
     d.do_cat( modifier );
@@ -156,13 +187,13 @@ D& _vcat_iface<D>::cat ( _std_modifier_t modifier )
 }
 //---------------------------------------------------------------------------------------
 template< typename D >
-D& _vcat_iface<D>::operator << ( _std_modifier_t modifier )
+D& _vcat_iface<D>::operator << ( _std_modifier_type_ modifier )
 {
     return cat( modifier );
 }
 //---------------------------------------------------------------------------------------
 template< typename D >
-D& _vcat_iface<D>::operator()( _std_modifier_t modifier )
+D& _vcat_iface<D>::operator()( _std_modifier_type_ modifier )
 {
     return cat( modifier );
 }
