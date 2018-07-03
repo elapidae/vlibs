@@ -45,7 +45,7 @@ public:
     //-----------------------------------------------------------------------------------
     //  Кухня настройки логгирования.
 
-    using Executer = std::function<void(const VLogEntry &entry)>;
+    using Executer = std::function< void(const VLogEntry &entry) >;
 
     static void add_executer( Executer e );
     static void clear_executers();
@@ -85,7 +85,7 @@ private:
 
     friend class VError;
     friend class _vcat_iface<VLogger>;
-    template<typename T> void do_cat( const T& val ) { _stream << val; }
+    template<typename T> void do_cat( T&& val ) { _stream << std::forward<T>(val); }
 
     VLogger( VLogger && )                   = delete;
     VLogger( const VLogger & )              = delete;

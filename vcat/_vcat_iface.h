@@ -53,18 +53,18 @@ public:
     //-----------------------------------------------------------------------------------
 
     template< typename T >
-    D& operator()( const T& val );
+    D& operator()( T&& val );
 
     template< typename T, typename ... Ts >
-    D& operator()( const T& val, const Ts& ... args );
+    D& operator()( T&& val, Ts&& ... args );
 
     //-----------------------------------------------------------------------------------
 
     template< typename T >
-    D& operator << ( const T& val );
+    D& operator << ( T&& val );
 
     template< typename T >
-    D& cat ( const T& val );
+    D& cat ( T&& val );
 
     //-----------------------------------------------------------------------------------
 
@@ -85,7 +85,6 @@ public:
     D& nospace();                // Отключает вывод пробелов, cat(vcat::NoSpace)
 
     D& num( long long val, int field_width, char fill = ' ' );
-//    D& num_d( long double val, int presition = std::numeric_limits<long double>::max() );
     //-----------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------
@@ -109,7 +108,7 @@ protected:
     _vcat_iface();
 
     template< typename ... Ts >
-    explicit _vcat_iface( const Ts& ... args );
+    explicit _vcat_iface( Ts&& ... args );
 
     ~_vcat_iface() = default;
 
@@ -136,21 +135,22 @@ _vcat_iface<D>::_vcat_iface()
 //=======================================================================================
 template< typename D >
 template< typename ... Ts >
-_vcat_iface<D>::_vcat_iface( const Ts& ... args )
+_vcat_iface<D>::_vcat_iface( Ts&& ... args )
     : _vcat_iface()
 {
-    operator()( args... );
+    operator()( std::forward<Ts>(args)... );
 }
 //=======================================================================================
 template< typename D >
 template< typename T >
-D& _vcat_iface<D>::cat( const T& val )
+D& _vcat_iface<D>::cat( T&& val )
 {
     D& d = static_cast<D&>( *this );
+
     if ( !_is_first_arg && _with_spaces )
         d.do_cat(' ');
 
-    d.do_cat( val );
+    d.do_cat( std::forward<T>(val) );
     _is_first_arg = false;
 
     return d;
@@ -158,24 +158,24 @@ D& _vcat_iface<D>::cat( const T& val )
 //=======================================================================================
 template< typename D >
 template< typename T >
-D& _vcat_iface<D>::operator()( const T& val )
+D& _vcat_iface<D>::operator()( T&& val )
 {
-    return cat( val );
+    return cat( std::forward<T>(val) );
 }
 //=======================================================================================
 template< typename D >
 template< typename T, typename ... Ts >
-D& _vcat_iface<D>::operator()( const T& val, const Ts& ... args )
+D& _vcat_iface<D>::operator()( T&& val, Ts&& ... args )
 {
-    cat( val );
-    return operator()( args... );
+    cat( std::forward<T>(val) );
+    return operator()( std::forward<Ts>(args)... );
 }
 //=======================================================================================
 template< typename D >
 template< typename T >
-D& _vcat_iface<D>::operator << ( const T& val )
+D& _vcat_iface<D>::operator << ( T&& val )
 {
-    return cat( val );
+    return cat( std::forward<T>(val) );
 }
 //=======================================================================================
 template< typename D >
@@ -279,7 +279,7 @@ D& _vcat_iface<D>::fill_char( char ch )
 }
 //---------------------------------------------------------------------------------------
 template< typename D >
-D& _vcat_iface<D>::field_width(int w)
+D& _vcat_iface<D>::field_width( int w )
 {
     D& d = static_cast<D&>( *this );
     d.do_cat( std::setw(w) );
@@ -299,9 +299,9 @@ D& _vcat_iface<D>::nospace()
 }
 //=======================================================================================
 //  2018-06-08 -- проба восстановить справедливость к достаточно важной функции: выводу
-// выровненных целых чисел.
+//  выровненных целых чисел.
 template< typename D >
-D& _vcat_iface<D>::num(long long val, int f_width, char fill_ch)
+D& _vcat_iface<D>::num( long long val, int f_width, char fill_ch )
 {
     return fill_char(fill_ch).field_width(f_width)(val);
 }

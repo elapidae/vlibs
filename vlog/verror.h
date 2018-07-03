@@ -31,9 +31,9 @@ private:
     std::string _what;
 
     friend class _vcat_iface<VError>;
-    template<typename T> void do_cat( const T& val )
+    template<typename T> void do_cat( T&& val )
     {
-        _logger->do_cat( val );
+        _logger->do_cat( std::forward<T>(val) );
         auto entry = _logger->entry();
 
         _what = _preambul + entry.message() + '\n';
