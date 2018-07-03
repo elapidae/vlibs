@@ -1,7 +1,10 @@
 #include <iostream>
 
 #include "vlog.h"
+#include "vlog_pretty.h"
+
 #include "vfilelog.h"
+#include <thread>
 
 using namespace std;
 
@@ -12,32 +15,52 @@ void my_log_executer( const VLogEntry &entry )
     // Ниже приведены содержания из точки логгирования.
     // Их следует использовать для составления собственных сообщений.
 
-    entry.char_type();  // Однобуквенный код типа сообщения. { T, D, R, W, F }
-    entry.str_type();   // Трехбуквенный код типа сообщения { Trc, Dbg, Run, Wrn, Ftl }.
-    entry.type();       // Тип enum class vlog::VLogEntry::Type.
+    entry.timestamp();  // Метка времени создания вхождения.
+
+    entry.level_char();  // Однобуквенный код типа сообщения { T, D, R, W, F }.
+    entry.level_str();   // Трехбуквенный код типа сообщения { TRC, DBG, RUN, WRN, FLT }.
+    entry.level();       // Тип enum class vlog::VLogEntry::Type.
 
     entry.filename();   // Имя файла без пути до него.
     entry.filepath();   // Полное имя файла (то, что дает __FILE__).
     entry.line();       // Номер строки в исходнике __LINE__
-    entry.funcname();   // Что дает __FUNCTION__ (может надо будет __PRETTY_FUNCTION__?).
+    entry.function();   // Что дает __FUNCTION__ (ИМХО __PRETTY_FUNCTION__ -- не pretty).
 
     entry.message();    // Составленное сообщение.
 
-    entry.timestamp();  // Метка времени создания вхождения.
-
-    entry.is_fatal();   // Флаг неприятного сообщения. Может захотите сделать exit();
+    entry.is_trace();   //  Для быстрой проверки к-л уровня.
+    entry.is_debug();   //
+    entry.is_runlog();  //
+    entry.is_warning(); //
+    entry.is_fatal();   //
 
     cout << "my_log_executer: " << entry.message() << endl;
 }
 //=======================================================================================
 
+template<typename T>
+class TD;
+
+template<typename T>
+void test(T)
+{
+    //TD<T> ttt;
+}
+
+template<typename T>
+void f( T&& t )
+{
+    test( std::forward<T>(t) );
+    TD< decltype(std::forward<T>(t)) > ddd;
+}
+
+#include <vector>
+
 //=======================================================================================
 int main( int, char **argv )
 {
-    VDEBUG << VTimePoint::now().day();
-
     // По умолчанию будет выводить в консоль.
-    VRUNLOG << "Hello World!";
+    VRUNLOG << "Hello World!" << sizeof(VLogEntry) << sizeof(VTimePoint) << sizeof(string);
 
     double dd = 3.1415;
     float  ff = 2.718f;
@@ -45,6 +68,7 @@ int main( int, char **argv )
     std::chrono::milliseconds ms(12345); // и такое выводим`c...
 
     VDEBUG; // пустая строка
+    VDEBUG << "------- same syntax example.";
     VDEBUG << dd << ff << ii << ms;   // Одно
     VDEBUG(dd, ff, ii, ms);           // и то
     VDEBUG(dd)(ff)(ii)(ms);           // же.
@@ -62,13 +86,14 @@ int main( int, char **argv )
     VDEBUG << "------------------------------";
 
     // Вывод без пробелов между аргументами:
-    auto prog_name = VString(argv[0]).split('/').back(); // удаляем путь к программе.
+    //auto prog_name = VString(argv[0]).split('/').back(); // удаляем путь к программе.
+    string prog_name = argv[0];
     VTRACE.nospace()( "My program name is '", prog_name, "'." );
 
     // Теперь будем логгировать в cerr, удалим всех исполнителей и добавим исполнитель,
     // который будет писать в cerr (vlog::VLogger::_log_to_cerr).
     VLogger::clear_executers();
-    VLogger::add_executer( VLogger::_log_to_cerr );
+    VLogger::add_executer( VLogger::to_cerr );
     VRUNLOG << "Hello World in cerr!";
 
     // регистрируем своего исполнителя.
@@ -90,8 +115,8 @@ int main( int, char **argv )
 
     for (int i = 0; i < 10; ++i)
     {
-        auto msg = vcat("Testing records in file: ", i)
-                       (", timestamp ms = ", VTimePoint::now().milliseconds()).str();
+        string msg = vcat("Testing records in file: ", i)
+                         (", timestamp ms = ", VTimePoint::now().milliseconds());
         VTRACE   (msg);
         VDEBUG   (msg);
         VRUNLOG  (msg);
