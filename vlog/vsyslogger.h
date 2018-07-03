@@ -1,30 +1,16 @@
 #ifndef VSYSLOGGER_H
 #define VSYSLOGGER_H
 
-#include <memory>
 #include "vlogentry.h"
 
 //=======================================================================================
-namespace vlog
+class VSysLogger final
 {
-    //===================================================================================
-    class VSysLogger final
-    {
-    public:
-        static void open( const std::string &ident );
-        static void register_self();
-        static void execute( const VLogEntry &entry );
-
-//        explicit VSysLogger( const std::string &ident );
-//        ~VSysLogger();
-//        void register_self();
-//        void execute( const VLogEntry &entry );
-//    private:
-        // Зачем, см. описание [1] после класса.
-//        std::unique_ptr<char[]> _ident;
-    };
-    //===================================================================================
-} // namespace vlog
+public:
+    static void open( const std::string &ident );
+    static void register_self();
+    static void execute( const VLogEntry &entry );
+};
 //=======================================================================================
 
 

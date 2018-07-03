@@ -1,87 +1,102 @@
 #include "vlogger.h"
 
 #include <iostream>
+#include <vector>
+#include <mutex>
+
 #include "vlog_pretty.h"
 
-//using namespace vlog;
 using namespace std;
 
 
 //=======================================================================================
 //      VLogger
 //=======================================================================================
-VLogger::VLogger( VLogEntry::Type type,
-                  const std::string &file,
-                  int32_t line,
-                  const std::string &func )
-    : _entry( type, file, line, func )
+VLogger::VLogger( VLogEntry::Level  level,
+                  const char*       file,
+                  int32_t           line,
+                  const char*       func,
+                  _is_proxy         proxy )
+    : _stamp ( _stamp.now() )
+    , _level ( level )
+    , _file  ( file  )
+    , _line  ( line  )
+    , _func  ( func  )
+    , _i_am_proxy( proxy == _is_proxy::is_proxy ? true : false )
 {
     space();    // Пробелы включены по умолчанию.
-}
-//=======================================================================================
-VLogger::VLogger( VLogEntry::Type type,
-                  const string &file,
-                  int32_t line,
-                  const string &func,
-                  VLogger::_is_proxy )
-    : VLogger( type, file, line, func )
-{
-    _i_am_proxy = true;
 }
 //=======================================================================================
 VLogger::~VLogger()
 {
     if ( _i_am_proxy ) return;
 
-    _entry._set_msg( _cat );
-    execute( _entry );
+    execute( entry() );
 }
 //=======================================================================================
-VLogEntry VLogger::cur_entry() const
+VLogEntry VLogger::entry() const
 {
-    auto res = _entry;
-    res._set_msg( _cat );
-    return res;
+    return VLogEntry( _level, _stamp, _file, _line, _func, _stream.str() );
 }
 //=======================================================================================
 VLogger::operator VLogEntry() const
 {
-    return cur_entry();
+    return entry();
 }
 //=======================================================================================
-void VLogger::_log_to_cout( const VLogEntry &entry )
-{
-    cout << '[' << entry.filename() << ':' << entry.line() << "] >> "
-         << entry.str_type() << ": " << entry.message() << endl;
-}
-//---------------------------------------------------------------------------------------
-void VLogger::_log_to_cerr( const VLogEntry &entry )
-{
-    cerr << '[' << entry.filename() << ':' << entry.line() << "] >> "
-         << entry.str_type() << ": " << entry.message() << endl;
-}
+
+//=======================================================================================
+//      Настройка выполнения и обработка точек логгирования.
 //=======================================================================================
 static vector<VLogger::Executer> executers = []()
 {
     vector<VLogger::Executer> res;
-    res.push_back( &VLogger::_log_to_cout );
+    res.push_back( &VLogger::to_cout ); // Это логгер по умолчанию.
     return res;
 }();
-//---------------------------------------------------------------------------------------
-void VLogger::add_executer( VLogger::Executer e )
+//=======================================================================================
+void VLogger::add_executer( VLogger::Executer executer )
 {
-    executers.push_back( e );
+    executers.push_back( executer );
 }
-//---------------------------------------------------------------------------------------
+//=======================================================================================
 void VLogger::clear_executers()
 {
     executers.clear();
 }
-//---------------------------------------------------------------------------------------
+//=======================================================================================
 void VLogger::execute( const VLogEntry &entry )
 {
     for ( auto & e: executers )
         e( entry );
+}
+//=======================================================================================
+
+//=======================================================================================
+//      Стандартный вывод
+//=======================================================================================
+void VLogger::to_cout( const VLogEntry &entry )
+{
+    cout << entry.record().place_level_msg() << endl;
+}
+//=======================================================================================
+void VLogger::to_cerr( const VLogEntry &entry )
+{
+    cerr << entry.record().place_level_msg() << endl;
+}
+//=======================================================================================
+void VLogger::to_cout_mutexed( const VLogEntry &entry )
+{
+    static std::mutex mutex;
+    std::unique_lock<std::mutex> lock( mutex );
+    to_cout( entry );
+}
+//=======================================================================================
+void VLogger::to_cerr_mutexed( const VLogEntry &entry )
+{
+    static std::mutex mutex;
+    std::unique_lock<std::mutex> lock( mutex );
+    to_cerr( entry );
 }
 //=======================================================================================
 //      VLogger
