@@ -33,6 +33,7 @@ namespace cv_calib
     void read_calib_matrix_from_files( cv::Mat& mtx, const std::string file_name );
     void write_calib_matrix_from_files( cv::Mat& mtx, const std::string file_name );
     void configure_calib_matrix(
+            std::string path, cv::Size size,
             cv::Mat& Q,
             cv::Mat& leftMatX, cv::Mat& leftMatY,
             cv::Mat& rightMatX, cv::Mat& rightMatY);

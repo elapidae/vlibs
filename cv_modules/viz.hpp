@@ -2,13 +2,14 @@
 #define VIZ_HPP
 
 #include <opencv2/core.hpp>
+#include <list>
 
 // Пространство имён содержащее функции трансформации данных для более удобной визуализации
 namespace cv_viz
 {
     // Функция создания проекции трехмерных точек на плоскость XZ, значение пикселя является нормированным значением Y
     void create_height_projections(
-            const cv::Mat& img, const cv::Mat& points, cv::Mat &out, const int map_size = 600,
+            const cv::Mat& frame, const cv::Mat& points, const int map_size = 600,
             const int cx = 0, const int cy = 0,
             const int y_min = 0, const int y_max = 0,
             const double scale = 1, const double alpha = 0 );

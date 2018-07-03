@@ -28,4 +28,10 @@ isEmpty(qi_cv_modules) {
 
     HEADERS     += $$VLibs_Dir/cv_modules/ml.hpp
     SOURCES     += $$VLibs_Dir/cv_modules/ml.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/stereo_pair_builder.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/stereo_pair_builder.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/disparity_calculator.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/disparity_calculator.cpp
 }
