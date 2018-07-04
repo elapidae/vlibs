@@ -177,6 +177,7 @@ private:
 //=======================================================================================
 
 
+// Старый компилятор не умеет прокси конструкторов, пишем костыль.
 #define V_GNUC_VERSION_ELPD ((__GNUC__ * 100) + __GNUC_MINOR__)
 #if V_GNUC_VERSION_ELPD > 408       // версии компилятора выше 4.8
     #define V_GNUC_CAN_USE_CTOR_PROXY
@@ -271,7 +272,14 @@ public:
 
 
 //=======================================================================================
-//      Streaming for std types.
+//      Streaming for my and std types.
+//=======================================================================================
+template<typename Clk, typename Derived>
+std::ostream & operator << ( std::ostream & os, const _vTimePoint<Clk,Derived> & val )
+{
+    os << "TimePoint(" << val.str_datetime_zzz() << ")";
+    return os;
+}
 //=======================================================================================
 std::ostream & operator << ( std::ostream & os, const std::chrono::seconds      & val );
 std::ostream & operator << ( std::ostream & os, const std::chrono::milliseconds & val );

@@ -5,6 +5,7 @@
 
 #include "vfilelog.h"
 #include <thread>
+#include "verror.h"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ void my_log_executer( const VLogEntry &entry )
 }
 //=======================================================================================
 
+//=======================================================================================
+//      Тестовая секция.
 template<typename T>
 class TD;
 
@@ -54,14 +57,26 @@ void f( T&& t )
     TD< decltype(std::forward<T>(t)) > ddd;
 }
 
-#include <vector>
+static void fooo(const VTimePoint & tp)
+{
+    throw verror << tp;
+}
+//      Тестовая секция.
+//=======================================================================================
+
 
 //=======================================================================================
 int main( int, char **argv )
 {
+    // Тест на синтаксис штатного завершения программы по неисследованному исключению.
+    //try { fooo(VTimePoint::now()); }
+    //catch (const VError&) { return 0; }
+
+
     // По умолчанию будет выводить в консоль.
     VRUNLOG << "Hello World!" << sizeof(VLogEntry) << sizeof(VTimePoint) << sizeof(string);
 
+    //  Вводные примеры, определим пару простых переменных и плюнем ими в консоль.
     double dd = 3.1415;
     float  ff = 2.718f;
     int    ii = 42;
@@ -86,8 +101,7 @@ int main( int, char **argv )
     VDEBUG << "------------------------------";
 
     // Вывод без пробелов между аргументами:
-    //auto prog_name = VString(argv[0]).split('/').back(); // удаляем путь к программе.
-    string prog_name = argv[0];
+    string prog_name = VLogEntry::_extract_filename( argv[0] );
     VTRACE.nospace()( "My program name is '", prog_name, "'." );
 
     // Теперь будем логгировать в cerr, удалим всех исполнителей и добавим исполнитель,

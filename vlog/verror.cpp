@@ -18,7 +18,8 @@ std::shared_ptr<VLogger> make_logger( const char *file, int line, const char *fu
 VError::VError( const char *file, int line, const char *func )
     : _logger( make_logger(file, line, func) )
 {
-    _preambul = _logger->entry().place_func() + " ERROR: ";
+    _preambul = _logger->entry().place_func();
+    _logger->do_cat( "ERROR: " );
 }
 //=======================================================================================
 VError::~VError()
