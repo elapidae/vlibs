@@ -24,7 +24,11 @@ VLogger::VLogger( VLogEntry::Level  level,
     , _func  ( func  )
     , _i_am_proxy( proxy == _is_proxy::is_proxy ? true : false )
 {
-    space();    // Пробелы включены по умолчанию.
+    // Включаем поля по умолчанию.
+    _stream << std::showbase << std::boolalpha;
+
+    // Пробелы между выводимыми полями тоже включены по умолчанию.
+    space();
 }
 //=======================================================================================
 VLogger::~VLogger()

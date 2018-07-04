@@ -75,6 +75,7 @@ public:
 
     //-----------------------------------------------------------------------------------
 private:
+    void _init_default_modifiers();
     std::stringstream _stream;
 
     friend class _vcat_iface<vcat>;
@@ -90,8 +91,8 @@ private:
 //=======================================================================================
 template< typename ... Ts >
 vcat::vcat( Ts&& ... args )
-    : vcat()
 {
+    _init_default_modifiers();
     operator()( std::forward<Ts>(args)... );
 }
 //=======================================================================================
