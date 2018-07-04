@@ -6,8 +6,9 @@ isEmpty(qi_vjpeg) {
 
     isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
 
-    include( $$VLibs_Dir/vimage/vimage.pri )
     include( $$VLibs_Dir/vlog/vlog.pri )
+    include( $$VLibs_Dir/vimage/vimage.pri )
+    include( $$VLibs_Dir/vstring/vstring.pri )
     include( $$VLibs_Dir/voutfile/voutfile.pri )
 
     LIBS *= -ljpeg
