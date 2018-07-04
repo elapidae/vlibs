@@ -1,4 +1,8 @@
 
+
+
+
+#========================================================================================
 isEmpty(qi_vchrono) {
     qi_vchrono = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vchrono appended ===")
@@ -15,4 +19,5 @@ isEmpty(qi_vchrono) {
 
     HEADERS     += $$VLibs_Dir/vchrono/vchrono_weeks.h
 }
+#========================================================================================
 
