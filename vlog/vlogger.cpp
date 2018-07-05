@@ -55,7 +55,8 @@ VLogger::operator VLogEntry() const
 static vector<VLogger::Executer> executers = []()
 {
     vector<VLogger::Executer> res;
-    res.push_back( &VLogger::to_cout ); // Это логгер по умолчанию.
+    //res.push_back( &VLogger::to_cout ); // Это логгер по умолчанию.
+    res.push_back( &VLogger::to_cout_and_cerr ); // Это логгер по умолчанию.
     return res;
 }();
 //=======================================================================================
@@ -89,6 +90,14 @@ void VLogger::to_cerr( const VLogEntry &entry )
     cerr << entry.record().place_level_msg() << endl;
 }
 //=======================================================================================
+void VLogger::to_cout_and_cerr( const VLogEntry &entry )
+{
+    if ( entry.is_warning() || entry.is_fatal() )
+        to_cerr( entry );
+    else
+        to_cout( entry );
+}
+//=======================================================================================
 void VLogger::to_cout_mutexed( const VLogEntry &entry )
 {
     static std::mutex mutex;
@@ -101,6 +110,13 @@ void VLogger::to_cerr_mutexed( const VLogEntry &entry )
     static std::mutex mutex;
     std::unique_lock<std::mutex> lock( mutex );
     to_cerr( entry );
+}
+//=======================================================================================
+void VLogger::to_cout_and_cerr_mutexed(const VLogEntry &entry)
+{
+    static std::mutex mutex;
+    std::unique_lock<std::mutex> lock( mutex );
+    to_cout_and_cerr( entry );
 }
 //=======================================================================================
 //      VLogger

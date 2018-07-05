@@ -12,6 +12,8 @@
  *
  *  В задачу класса не входит пробрасывать исключения на обработку, не следует специально
  *  перехватывать его, основное предназначение -- сообщить о проблемном участке кода.
+ *  Можно в main() перехватить, чтобы просто выйти "return 200;", тогда появляется
+ *  эффект, что сообщение выводится два раза.
 **/
 //=======================================================================================
 
@@ -29,10 +31,13 @@ private:
     std::shared_ptr<VLogger> _logger;
     std::string _preambul;
     std::string _what;
+    std::shared_ptr<bool> _printed;
 
     friend class _vcat_iface<VError>;
     template<typename T> void do_cat( T&& val )
     {
+        if ( *_printed ) VWARNING << "Do not cat message after throw.";
+
         _logger->do_cat( std::forward<T>(val) );
         auto entry = _logger->entry();
 

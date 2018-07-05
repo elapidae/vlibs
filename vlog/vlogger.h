@@ -51,13 +51,15 @@ public:
     static void clear_executers();
     static void execute( const VLogEntry &entry );
 
-    //  Выводит в виде "[file.cpp:123] DBG message\n";
+    //  Выводят в виде "[file.cpp:123] DBG message\n";
     static void to_cout( const VLogEntry &entry );
     static void to_cerr( const VLogEntry &entry );
+    static void to_cout_and_cerr( const VLogEntry &entry ); // warnings & fatals -> cerr
 
     //  Иногда надо, НО! Не злоупотребляйте!
     static void to_cout_mutexed( const VLogEntry &entry );
     static void to_cerr_mutexed( const VLogEntry &entry );
+    static void to_cout_and_cerr_mutexed( const VLogEntry &entry );
 
     //-----------------------------------------------------------------------------------
     //  Внутренная кухня.
