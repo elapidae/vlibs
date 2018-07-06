@@ -12,7 +12,7 @@ std::string VFileLog::as_line_with_type( const VLogEntry &entry )
 {
     return vcat( entry.timestamp().str_datetime_zzz(), '\t',
                  '[', entry.filename(), ':', entry.line(), "]\t",
-                 entry.str_type(), '\t',
+                 entry.level_str(), '\t',
                  entry.message(), '\n');
 }
 //=======================================================================================
@@ -55,13 +55,13 @@ VGroupFileLog::VGroupFileLog( const std::string &path,
 void VGroupFileLog::execute( const VLogEntry &entry )
 {
     auto line = as_line_without_type( entry );
-    switch ( entry.type() )
+    switch ( entry.level() )
     {
-    case VLogEntry::Type::Trace:   _trace.write  ( line ); break;
-    case VLogEntry::Type::Dbg:     _deb.write    ( line ); break;
-    case VLogEntry::Type::Runlog:  _runlog.write ( line ); break;
-    case VLogEntry::Type::Warning: _warn.write   ( line ); break;
-    case VLogEntry::Type::Fatal:   _fatal.write  ( line ); break;
+    case VLogEntry::Level::Trace:   _trace.write  ( line ); break;
+    case VLogEntry::Level::Dbg:     _deb.write    ( line ); break;
+    case VLogEntry::Level::Runlog:  _runlog.write ( line ); break;
+    case VLogEntry::Level::Warning: _warn.write   ( line ); break;
+    case VLogEntry::Level::Fatal:   _fatal.write  ( line ); break;
     }
 }
 //=======================================================================================
@@ -86,6 +86,7 @@ void VCommonFileLog::execute( const VLogEntry &entry )
 //=======================================================================================
 void VCommonFileLog::register_self()
 {
-    VLogger::add_executer( [this](const VLogEntry &e) { execute(e); });
+    auto e = std::bind( &VCommonFileLog::execute, this, std::placeholders::_1 );
+    VLogger::add_executer( e );
 }
 //=======================================================================================
