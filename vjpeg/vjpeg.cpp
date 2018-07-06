@@ -4,6 +4,7 @@
 #include <string.h>
 #include "voutfile.h"
 #include "vlog_pretty.h"
+#include "verror.h"
 
 #include <setjmp.h>
 extern "C"
@@ -232,7 +233,7 @@ std::string VJpeg::save_to_buffer( const VImage &img,
 {
     std::string res;
     auto ok = save_to_buffer( img, &res, quality, optimize, progressive );
-    if (!ok) throw VLogError(vfatal << "Error during jpeg coding.");
+    if (!ok) throw verror << "Error during jpeg coding.";
     return res;
 }
 //=======================================================================================

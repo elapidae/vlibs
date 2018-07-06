@@ -16,7 +16,8 @@ std::shared_ptr<VLogger> make_logger( const char *file, int line, const char *fu
 
 //=======================================================================================
 VError::VError( const char *file, int line, const char *func )
-    : _logger( make_logger(file, line, func) )
+    : _logger  ( make_logger(file, line, func) )
+    , _printed ( std::make_shared<bool>(false) )
 {
     _preambul = _logger->entry().place_func();
     _logger->do_cat( "ERROR: " );
@@ -24,8 +25,10 @@ VError::VError( const char *file, int line, const char *func )
 //=======================================================================================
 VError::~VError()
 {
-    // По удалению не получится, т.к. реализация делает копию и потом terminate().
+    if ( *_printed ) return;
+
     VLogger::execute( *_logger );
+    *_printed = true;
 }
 //=======================================================================================
 const char *VError::what() const noexcept
