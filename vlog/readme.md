@@ -1,5 +1,8 @@
 # VLOG -- Логгирование действий в программах и модулях.
 
+UPD 20-07-2018 Этот файл был написан раньше, часть устарела. Но основная мысль осталась.
+
+
 ## Идеология и замысел
 Процесс непосредственно логгирования отделен от процесса вывода/записи/отправки логов.
 В том смысле, что при логгировании событий программист вообще не должен задумываться
@@ -9,7 +12,7 @@
 > Зачем?
 
 Чтобы можно было логгировать в модулях, без подключения библиотек логгирования,
-см. ["инверсия зависимостей"](https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF_%D0%B8%D0%BD%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8_%D0%B7%D0%B0%D0%B2%D0%B8%D1%81%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B5%D0%B9).
+см. ["инверсия зависимостей"](http://www.skipy.ru/architecture/module_design.html#principles).
 
 
 ## Процесс логгирования:
@@ -19,8 +22,9 @@ NB! В папке логгера вложены примеры для qt и cmak
 
 ***
 
-К проектам лог подключается достаточно сложно:
-* В qt :   
+К проектам лог подключается достаточно "сложно":
+
+* qt :
 ```
 VLibs_Dir = path/to/this/repo
 include( $$VLibs_Dir/vlog/vlog.pri )        # Здесь сама система сбора логов.
@@ -28,7 +32,7 @@ include( $$VLibs_Dir/vlog/vfilelog.pri )    # Здесь файловый лог
                                             # Если включен, vlog.pri не нужен.
 ```
 
-* В cmake (заголовки и исходные файлы будут добавлены в пары переменных
+* cmake (заголовки и исходные файлы будут добавлены в пары переменных
 `HEADERS, SOURCES` и продублированы в `INC_ALL, SRC_ALL`):
 ```
 set( VLIBS_PATH, "path/to/this/repo" )
@@ -39,7 +43,7 @@ include( "${VLIBS_PATH}/vlog/vfilelog.cmake" )
 
 Для логгирования необходимо включить в исходник:
 ```
-#define "vlog.h"
+#include "vlog.h"
 ```
 
 Логгирование производится через макросы:
@@ -61,8 +65,9 @@ include( "${VLIBS_PATH}/vlog/vfilelog.cmake" )
     double dd;
     string ss;
     float ff;
-    // будет работать при включении проекта vchrono и заголовка #define "vtimepoint.h"
-    chrono::milliseconds ms;    
+    
+    // будет работать при включении проекта vchrono и заголовка #include "vtimepoint.h"
+    chrono::milliseconds ms;
 
     VTRACE("text", ii, dd, ss, ms);
     VDEBUG("text")(ii)(dd, ss)(ms);
@@ -88,14 +93,13 @@ NB! Добавлен модификатор vcat::space, vcat::nospace, вклю
 
 ***
 Для себя, я сделал header "vlog_pretty.h", повторяющий те же макросы в нижнем регистре.
-Также в нем содержится class VLogError : public std::exception,
-который можно использовать для бросания исключений:
+Также есть class VError : public std::exception, который можно использовать для бросания исключений:
 ```
     if ( some_error )
-        throw VLogError( vfatal << "Some problem" );
+        throw verror << "Some problem";
 ```    
 Метод what(), кроме сообщения, будет содержать точку, где было брошено исключение в виде:
-[source.cpp:42] >> "Some problem";
+[source.cpp:42:function] >> "Some problem";
 
 ## "Под капотом". Процесс записи, пересылки, составления и обработки логов.
 
@@ -109,7 +113,7 @@ NB! Добавлен модификатор vcat::space, vcat::nospace, вклю
         using Executer = std::function< void(const VLogEntry & entry) >;
 ```
 По умолчанию, "из коробки", в исполнителях логов находится один, логгирующий данные
-в консоль (через метод `vlog::VLogger::_log_to_cout( const VLogEntry &entry )`);
+в консоль (через метод `VLogger::log_to_cout_cerr( const VLogEntry &entry )`);
 
 
 В классе `vlog::VLogger` есть статические методы:
@@ -151,7 +155,7 @@ void my_log_executer( const vlog::VLogEntry &entry )
     entry.filename();   // Имя файла без пути до него.
     entry.filepath();   // Полное имя файла (то, что дает __FILE__).
     entry.line();       // Номер строки в исходнике __LINE__
-    entry.funcname();   // Что дает __FUNCTION__ (может надо будет __PRETTY_FUNCTION__?).
+    entry.funcname();   // Что дает __PRETTY_FUNCTION__.
 
     entry.message();    // Составленное сообщение.
     entry.timestamp();  // Метка времени с места логгирования.
@@ -164,10 +168,10 @@ void my_log_executer( const vlog::VLogEntry &entry )
 int main( int, char **argv )
 {
     // Удалим текущие логгеры и будем писать только в файлы.
-    vlog::VLogger::clear_executers();
+    VLogger::clear_executers();
 
     // Сами будем логгировать...
-    vlog::VLogger::add_executer( my_log_executer );
+    VLogger::add_executer( my_log_executer );
 
     // Будем вести историю максимум в двух файлах, размеры одного -- 2.5 кб.
     vlog::VOneFileLog one_flog( vcat(argv[0], ".log"), 2500, 2 );
@@ -181,7 +185,7 @@ int main( int, char **argv )
     for (int i = 0; i < 10; ++i)
     {
         auto msg = vcat("Testing records in file: ", i)
-                       (", timestamp ms = ", VTimePoint::now().milliseconds()).str();
+                       (", timestamp = ", VTimePoint::now());
         VTRACE   (msg);
         VDEBUG   (msg);
         VRUNLOG  (msg);
@@ -194,7 +198,3 @@ int main( int, char **argv )
 }
 //=======================================================================================
 ```
-
-
-***
-За разъяснениями и дополнительной информацией -- пинайте Громцева.
