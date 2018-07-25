@@ -232,6 +232,9 @@ public:
     explicit VSystemTimePoint()                         : _base()   {}
     explicit VSystemTimePoint(const timepoint_t &tp)    : _base(tp) {}
     explicit VSystemTimePoint(time_t tt)                : _base(tt) {}
+
+    template<typename Duration2>
+    explicit VSystemTimePoint(const Duration2 &d2)      : _base(d2) {}
 };
 // By default, using system time.
 using VTimePoint = VSystemTimePoint;
@@ -249,6 +252,9 @@ public:
     explicit VSteadyTimePoint(const timepoint_t &tp)    : _base(tp) {}
     // нету, похоже...
     //explicit VSteadyTimePoint(time_t tt)                : _base(tt) {}
+
+    template<typename Duration2>
+    explicit VSteadyTimePoint(const Duration2 &d2)      : _base(d2) {}
 };
 //=======================================================================================
 //      Steady time point
@@ -264,6 +270,9 @@ public:
     explicit VHighResolutionTimePoint()                         : _base()   {}
     explicit VHighResolutionTimePoint(const timepoint_t &tp)    : _base(tp) {}
     explicit VHighResolutionTimePoint(time_t tt)                : _base(tt) {}
+
+    template<typename Duration2>
+    explicit VHighResolutionTimePoint(const Duration2 &d2)      : _base(d2) {}
 };
 //=======================================================================================
 //      High resolution time point
