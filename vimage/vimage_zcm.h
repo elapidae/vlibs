@@ -4,7 +4,7 @@
 
 #include "vimage.h"
 
-#include "basler_zcm.h"
+//#include "basler_zcm.h"
 
 
 template<typename AnyZcmImage>
