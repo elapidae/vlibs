@@ -6,7 +6,6 @@ set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 
 include( "${VLIBS_PATH}/vlog/vlog.cmake" )
 include( "${VLIBS_PATH}/vimage/vimage.cmake" )
-include( "${VLIBS_PATH}/vopencv/vopencv.cmake" )
 
 include_directories( "${VLIBS_PATH}/vimage/" )
 
