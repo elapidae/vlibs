@@ -4,8 +4,6 @@
 
 #include "vimage.h"
 
-//#include "basler_zcm.h"
-
 
 template<typename AnyZcmImage>
 class VImage_ZCM final : public VImage
