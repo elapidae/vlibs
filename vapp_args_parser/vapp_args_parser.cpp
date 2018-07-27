@@ -7,7 +7,7 @@
 using namespace std;
 
 //=======================================================================================
-VApp_Args_Parser::VApp_Args_Parser(int argc, char **argv)
+VApp_Args_Parser::VApp_Args_Parser(int argc, const char **argv)
 {
     _appname = argv[0];
     for (int i = 1; i < argc; ++i )
@@ -53,7 +53,7 @@ std::string VApp_Args_Parser::std_value( const std::string &name,
 double VApp_Args_Parser::std_double( const string &name ) const
 {
     stringstream ss( std_value(name) );
-    double res;
+    double res = 0;
     ss >> res;
     return res;
 }

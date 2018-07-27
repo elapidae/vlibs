@@ -4,6 +4,7 @@
 #include <string>
 
 
+//=======================================================================================
 class VGit
 {
 public:
@@ -21,9 +22,9 @@ public:
 
     // ищет параметры вида --vgit*, если найдет, печатает соответствующее сообщение
     // и выходит по exit(retcode);
-    static void print_and_exit_if_need( int argc, char **argv, int retcode = 0 );
+    static void print_and_exit_if_need( int argc, const char **argv, int retcode = 0 );
 };
-
+//=======================================================================================
 
 
 #endif // VGIT_H

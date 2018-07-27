@@ -3,11 +3,14 @@
 #include <unistd.h>
 #include "voutfile.h"
 #include "vlog_pretty.h"
+#include "vdir.h"
 
 //=======================================================================================
 VPid_Saver::VPid_Saver( const std::string &path, const std::string &fname )
     : _fname( path + "/" + fname )
 {
+    system( ("mkdir -p " + path).c_str() );
+
     if ( path.empty() || fname.empty() )
         vfatal.nospace() << "Путь или имя файла для сохранения PID процесса пусты.";
 
@@ -25,6 +28,6 @@ VPid_Saver::~VPid_Saver()
 //=======================================================================================
 __pid_t get_pid()
 {
-    return getpid();
+    return ::getpid();
 }
 //=======================================================================================
