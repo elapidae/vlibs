@@ -5,6 +5,7 @@
 #include "vstring.h"
 #include <vector>
 #include <algorithm>
+#include <ostream>
 
 //=======================================================================================
 /*
@@ -64,8 +65,8 @@ public:
     T distance()    const;
     T angle()       const;
 
-    T& ref_x() { return _x; }
-    T& ref_y() { return _y; }
+    T& ref_x();
+    T& ref_y();
 
     VPolarPoint<T> to_polar() const;
 
@@ -84,6 +85,8 @@ public:
     class Vector : public std::vector<VPoint<T>>
     {
     public:
+        using std::vector<VPoint<T>>::vector;
+
         typename VPolarPoint<T>::Vector to_polar() const;
         VPoint<T> average_center() const;
     };
@@ -99,16 +102,7 @@ VPoint<T> operator + ( const VPoint<T> &lhs, const VPoint<T> &rhs );
 template<typename T>
 VPoint<T> operator - ( const VPoint<T> &lhs, const VPoint<T> &rhs );
 //=======================================================================================
-
 using VPointF = VPoint<float>;
-//class VPointF : public VPoint<float>
-//{
-//public:
-//    using VPoint::VPoint;
-
-//    class Vector : public VPoint<float>::Vector
-//    { public: using VPoint<float>::Vector::Vector; };
-//};
 //=======================================================================================
 //      VPoint // Cartesian
 //=======================================================================================
@@ -159,15 +153,31 @@ private:
     T _distance, _angle;
 }; // VPolarPoint class
 //=======================================================================================
-class VPolarPointF : public VPolarPoint<float>
-{
-public: using VPolarPoint::VPolarPoint;
-};
+using VPolarPointF = VPolarPoint<float>;
 //=======================================================================================
 //      VPolarPoint
 //=======================================================================================
 
 
+//=======================================================================================
+//      Streaming
+//=======================================================================================
+template<typename T>
+std::ostream & operator << (std::ostream &os, const VPoint<T> &p )
+{
+    os << "(x=" << p.x() << ",y=" << p.y() << ")";
+    return os;
+}
+//=======================================================================================
+template<typename T>
+std::ostream & operator << (std::ostream &os, const VPolarPoint<T> &p )
+{
+    os << "(d=" << p.distance() << ",a=" << p.angle() << ")";
+    return os;
+}
+//=======================================================================================
+//      Streaming
+//=======================================================================================
 
 
 //=======================================================================================
@@ -253,6 +263,18 @@ template<typename T>
 T VPoint<T>::angle() const
 {
     return std::atan2( _y, _x ); // Здесь Y и X НЕ ПЕРЕПУТАНЫ. См. документацию к atan2.
+}
+//=======================================================================================
+template<typename T>
+T &VPoint<T>::ref_x()
+{
+    return _x;
+}
+//=======================================================================================
+template<typename T>
+T &VPoint<T>::ref_y()
+{
+    return _y;
 }
 //=======================================================================================
 template<typename T>

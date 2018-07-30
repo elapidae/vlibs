@@ -14,7 +14,9 @@ public:
 
     static QImage convert( const VImage &other );
 
-    VImage_Qt( const QImage &img );
+    // UPD: Нельзя забирать по const-ссылке, т.к. смогут запихать временный объект,
+    // а мы есть обертка...
+    VImage_Qt( const QImage *img );
 
     virtual Format format()         const override;
 
@@ -29,7 +31,7 @@ public:
     virtual int data_size() const override;
 
 private:
-    const QImage &_img;
+    const QImage *_img;
 };
 
 

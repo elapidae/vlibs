@@ -16,13 +16,15 @@ VDir::MkDirError VDir::mkdir_e( const std::string &dname, mode_t mode )
 
     if ( ::mkdir(dname.c_str(), mode) == 0 ) return MkDirError::NoError;
 
-    switch (errno)
+    auto err = errno;
+    switch (err)
     {
     case EACCES: return MkDirError::PermissionDenied;
     case EEXIST: return MkDirError::AlreadyExists;
     case EMLINK: return MkDirError::TooManyLinks;
     case ENOSPC: return MkDirError::NotEnoughRoom;
     case EROFS:  return MkDirError::ParentReadOnly;
+    case ENOENT: return MkDirError::NoSuchFileOrDirectory;
     default:
         throw std::runtime_error("Cannot define mkdir error type...");
     }
