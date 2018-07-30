@@ -3,10 +3,18 @@
 isEmpty(qi_vzcm) {
     qi_vzcm = 1;
 
+    LIBS += -lzcm -L/usr/local/lib
+
+    INCLUDEPATH += $$VLibs_Dir/vzcm
+
+    HEADERS += $$VLibs_Dir/vzcm/vzcm_subscriber.h
+    SOURCES += $$VLibs_Dir/vzcm/vzcm_subscriber.cpp
+}
+
+
+
 #include <zcm/zcm-cpp.hpp>
 
-    LIBS += -lzcm -L/usr/local/lib
-}
 
 #    vzcm_image_pre_target.target = vzcm_image
 #    vzcm_image_pre_target.commands = \
@@ -20,3 +28,4 @@ isEmpty(qi_vzcm) {
 #    QMAKE_EXTRA_TARGETS +=   vzcm_image_pre_target
 #    PRE_TARGETDEPS      += $$vzcm_image_pre_target.target
 #    first.depends       += $$vzcm_image_pre_target.target
+

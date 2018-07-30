@@ -71,6 +71,11 @@ int main( int, char **argv )
     // Тест на синтаксис штатного завершения программы по неисследованному исключению.
     //try { fooo(VTimePoint::now()); }
     //catch (const VError&) { return 0; }
+    //
+    // Так не работает:
+    //vdeb << VSteadyTimePoint::now()
+    // А так можно посмотреть аптайм.
+    //vdeb << VTimePoint(VSteadyTimePoint::now().microseconds());
 
 
     // По умолчанию будет выводить в консоль.
