@@ -21,7 +21,9 @@ public:
     enum class MkDirError
     {
         NoError,
-        PermissionDenied, AlreadyExists, TooManyLinks, NotEnoughRoom, ParentReadOnly
+        PermissionDenied, AlreadyExists, TooManyLinks, NotEnoughRoom, ParentReadOnly,
+        NoSuchFileOrDirectory   // Ошибка в документации не прописанная, но вполне себе
+                                // возникающая при отсутствии пути до создаваемой папки.
     };
     static MkDirError mkdir_e( const std::string &dname, uint32_t mode = 0755 );
 

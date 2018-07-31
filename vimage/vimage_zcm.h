@@ -4,8 +4,6 @@
 
 #include "vimage.h"
 
-#include "basler_zcm.h"
-
 
 template<typename AnyZcmImage>
 class VImage_ZCM final : public VImage
@@ -14,7 +12,7 @@ public:
 
     static AnyZcmImage convert( const VImage &other );
 
-    VImage_ZCM( const AnyZcmImage &img );
+    VImage_ZCM( const AnyZcmImage *img );
 
     virtual Format format()         const override;
 
@@ -25,7 +23,7 @@ public:
     virtual const data_t* data()    const override;
 
 private:
-    const AnyZcmImage & _img;
+    const AnyZcmImage * _img;
 };
 
 
@@ -52,38 +50,38 @@ AnyZcmImage VImage_ZCM<AnyZcmImage>::convert( const VImage &other )
 
 //=======================================================================================
 template<typename AnyZcmImage>
-VImage_ZCM<AnyZcmImage>::VImage_ZCM( const AnyZcmImage & img )
+VImage_ZCM<AnyZcmImage>::VImage_ZCM( const AnyZcmImage * img )
     : _img( img )
 {}
 //=======================================================================================
 template<typename AnyZcmImage>
 VImage::Format VImage_ZCM<AnyZcmImage>::format() const
 {
-    return VImage::string_to_format( _img.format );
+    return VImage::string_to_format( _img->format );
 }
 //=======================================================================================
 template<typename AnyZcmImage>
 int VImage_ZCM<AnyZcmImage>::width() const
 {
-    return _img.width;
+    return _img->width;
 }
 //=======================================================================================
 template<typename AnyZcmImage>
 int VImage_ZCM<AnyZcmImage>::height() const
 {
-    return _img.height;
+    return _img->height;
 }
 //=======================================================================================
 template<typename AnyZcmImage>
 int VImage_ZCM<AnyZcmImage>::bytes_per_line() const
 {
-    return _img.bytes_per_line;
+    return _img->bytes_per_line;
 }
 //=======================================================================================
 template<typename AnyZcmImage>
 const VImage::data_t *VImage_ZCM<AnyZcmImage>::data() const
 {
-    return _img.data.data();
+    return _img->data.data();
 }
 //=======================================================================================
 

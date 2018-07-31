@@ -8,6 +8,7 @@ isEmpty(qi_vpid) {
 
     include($$VLibs_Dir/vlog/vlog.pri)
     include($$VLibs_Dir/voutfile/voutfile.pri)
+    include($$VLibs_Dir/vdir/vdir.pri)
 
     INCLUDEPATH += $$VLibs_Dir/vpid
 

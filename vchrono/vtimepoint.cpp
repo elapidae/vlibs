@@ -32,7 +32,7 @@ const char *_vtimepoint_helper::fmt_time()
 }
 //=======================================================================================
 // Милый mktime считает, что время локальное, не UTC.
-// Еле нашел решение:
+// Еле нашел решение (которое "- timezone"):
 // http://qaru.site/questions/221156/stdmktime-and-timezone-info
 time_t _vtimepoint_helper::_tm_to_time_t( tm *tm )
 {

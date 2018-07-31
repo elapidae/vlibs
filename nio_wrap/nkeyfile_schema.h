@@ -146,9 +146,9 @@ private:
                      T* dst,                const T& def_val,
                      string_cref comment,   validator<T> validat );
 
-        void capture( const NKeyFile &kf ) const override;
+        void capture( const NKeyFile &kf )      const override;
         void save_defaults_into( NKeyFile *kf ) const override;
-        bool is_destination ( void *ptr ) const override;
+        bool is_destination ( void *ptr )       const override;
 
         T* const _dst ;
         T  const _def_val;
@@ -172,7 +172,7 @@ private:
 
     std::vector<_value_ptr> _values;
     std::string _cur_group;
-    void _check_uniqe( string_cref key, void *dst_ptr ) const;
+    void _check_unique( string_cref key, void *dst_ptr ) const;
 
     static string _group_key_str( string_cref group, string_cref key );
 };

@@ -5,19 +5,16 @@
 #include <string.h>
 
 
-using namespace vlog;
-
-
 //=======================================================================================
-static int to_syslog_type( VLogEntry::Type t )
+static int to_syslog_type( VLogEntry::Level t )
 {
     switch (t)
     {
-    case VLogEntry::Type::Trace:    return LOG_DEBUG;
-    case VLogEntry::Type::Dbg:      return LOG_INFO;
-    case VLogEntry::Type::Runlog:   return LOG_NOTICE;
-    case VLogEntry::Type::Warning:  return LOG_WARNING;
-    case VLogEntry::Type::Fatal:    return LOG_CRIT;
+    case VLogEntry::Level::Trace:    return LOG_DEBUG;
+    case VLogEntry::Level::Dbg:      return LOG_INFO;
+    case VLogEntry::Level::Runlog:   return LOG_NOTICE;
+    case VLogEntry::Level::Warning:  return LOG_WARNING;
+    case VLogEntry::Level::Fatal:    return LOG_CRIT;
     }
     throw std::logic_error("Unknown entry type.");
 }
@@ -38,36 +35,6 @@ void VSysLogger::register_self()
 //=======================================================================================
 void VSysLogger::execute( const VLogEntry &entry )
 {
-    syslog( to_syslog_type(entry.type()), "%s", entry.message().c_str() );
+    syslog( to_syslog_type(entry.level()), "%s", entry.message().c_str() );
 }
 //=======================================================================================
-
-
-
-//static bool log_opened = false;
-
-//VSysLogger::VSysLogger( const std::string &ident )
-//    : _ident( new char[ident.size() + 1] )
-//{
-//    if (!log_opened)
-//        openlog( ident.c_str(), LOG_CONS|LOG_PID|LOG_NDELAY, LOG_USER );
-//    else
-//        throw std::runtime_error();
-
-//    log_opened = true;
-//}
-
-//VSysLogger::~VSysLogger()
-//{
-//    closelog();
-//}
-
-//void VSysLogger::register_self()
-//{
-//    VLogger::add_executer( [this](const VLogEntry &e){ this->execute(e); } );
-//}
-
-//void VSysLogger::execute( const VLogEntry &entry )
-//{
-//    syslog( to_syslog_type(entry.type()), "%s", entry.message().c_str() );
-//}

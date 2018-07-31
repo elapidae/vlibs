@@ -40,9 +40,6 @@ void Stereo_pair_builder::make_pair( const Full_frame frame)
         vdeb << "Bad pictures in stereo pair builder";
         return;
     }
-    cv::imwrite(std::string("left")+std::to_string(index)+std::string(".png"), last_left.img);
-    cv::imwrite(std::string("right")+std::to_string(index)+std::string(".png"), last_right.img);
-    index ++;
     vdeb << "Stereo Pair created";
     vdeb << "Delay is" << delay << "\n";
 

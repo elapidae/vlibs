@@ -23,7 +23,7 @@ void NKeyFile_Schema::set_current_group( const std::string &group )
 }
 //=======================================================================================
 //  Проверяет, что такого ключа с текущей группой еще не добавляли.
-void NKeyFile_Schema::_check_uniqe( string_cref key , void *dst_ptr ) const
+void NKeyFile_Schema::_check_unique( string_cref key , void *dst_ptr ) const
 {
     for ( auto &v: _values )
     {
@@ -48,7 +48,7 @@ std::string NKeyFile_Schema::_group_key_str( string_cref group, string_cref key 
 void NKeyFile_Schema::append( string_cref key, bool *dst, bool defval,
                               string_cref comment )
 {
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_bool, &NKeyFile::set_bool,
                                   _cur_group, key, dst, defval, comment) );
 }
@@ -56,7 +56,7 @@ void NKeyFile_Schema::append( string_cref key, bool *dst, bool defval,
 void NKeyFile_Schema::append( string_cref key, int *dst, int defval,
                               string_cref comment, validator<int> validat )
 {
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_int, &NKeyFile::set_int,
                                   _cur_group, key, dst, defval, comment, validat) );
 }
@@ -64,7 +64,7 @@ void NKeyFile_Schema::append( string_cref key, int *dst, int defval,
 void NKeyFile_Schema::append( string_cref key, int64_t *dst, int64_t defval,
                               string_cref comment, validator<int64_t> validat )
 {
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_int64, &NKeyFile::set_int64,
                                   _cur_group, key, dst, defval, comment, validat) );
 }
@@ -72,7 +72,7 @@ void NKeyFile_Schema::append( string_cref key, int64_t *dst, int64_t defval,
 void NKeyFile_Schema::append( string_cref key, uint64_t *dst, uint64_t defval,
                               string_cref comment, validator<uint64_t> validat )
 {
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_uint64, &NKeyFile::set_uint64,
                                   _cur_group, key, dst, defval, comment, validat) );
 }
@@ -80,7 +80,7 @@ void NKeyFile_Schema::append( string_cref key, uint64_t *dst, uint64_t defval,
 void NKeyFile_Schema::append( string_cref key, double *dst, double defval,
                               string_cref comment, validator<double> validat )
 {
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_double, &NKeyFile::set_double,
                                   _cur_group, key, dst, defval, comment, validat) );
 }
@@ -88,7 +88,7 @@ void NKeyFile_Schema::append( string_cref key, double *dst, double defval,
 void NKeyFile_Schema::append( string_cref key, string *dst, string_cref defval,
                               string_cref comment )
 {
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_string, &NKeyFile::set_string,
                                   _cur_group, key, dst, defval, comment) );
 }
@@ -105,7 +105,7 @@ void NKeyFile_Schema::append( string_cref key, bool_list *dst, bool_list_cref de
     if ( defval.empty() )
         throw std::logic_error( msg_default_list_empty(_cur_group, key) );
 
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_bool_list, &NKeyFile::set_bool_list,
                                   _cur_group, key, dst, defval, comment) );
 }
@@ -116,7 +116,7 @@ void NKeyFile_Schema::append( string_cref key, int_list *dst, int_list_cref defv
     if ( defval.empty() )
         throw std::logic_error( msg_default_list_empty(_cur_group, key) );
 
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_int_list, &NKeyFile::set_int_list,
                                   _cur_group, key, dst, defval, comment) );
 }
@@ -127,7 +127,7 @@ void NKeyFile_Schema::append( string_cref key, double_list *dst, double_list_cre
     if ( defval.empty() )
         throw std::logic_error( msg_default_list_empty(_cur_group, key) );
 
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_double_list, &NKeyFile::set_double_list,
                                   _cur_group, key, dst, defval, comment) );
 }
@@ -138,7 +138,7 @@ void NKeyFile_Schema::append( string_cref key, string_list *dst, string_list_cre
     if ( defval.empty() )
         throw std::logic_error( msg_default_list_empty(_cur_group, key) );
 
-    _check_uniqe( key, dst );
+    _check_unique( key, dst );
     _values.push_back( _make_spec(&NKeyFile::get_string_list, &NKeyFile::set_string_list,
                                   _cur_group, key, dst, defval, comment) );
 }

@@ -11,5 +11,9 @@ isEmpty(qi_qcustomplot) {
 
     HEADERS     += $$VLibs_Dir/qcustomplot/qcustomplot.h
     SOURCES     += $$VLibs_Dir/qcustomplot/qcustomplot.cpp
+
+    HEADERS     += $$VLibs_Dir/qcustomplot/vcustomplot.h
+    SOURCES     += $$VLibs_Dir/qcustomplot/vcustomplot.cpp
 }
+
 

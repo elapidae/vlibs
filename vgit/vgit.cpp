@@ -54,7 +54,7 @@ std::string VGit::as_message(const std::string &query)
     return ss.str();
 }
 //=======================================================================================
-void VGit::print_and_exit_if_need(int argc, char **argv, int retcode)
+void VGit::print_and_exit_if_need(int argc, const char **argv, int retcode)
 {
     std::string vgit("--vgit");
     for ( int i = 1; i < argc; ++i )

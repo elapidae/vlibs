@@ -123,7 +123,7 @@ template< typename ... Args >
 template< typename Cls, typename Fn >
 void VSignal<Args...>::connect( Cls *cls, Fn fn )
 {
-    connect( [cls,fn](Args... args){ (cls->*fn)(args...); } );
+    connect( [cls,fn](const Args& ... args){ (cls->*fn)(args...); } );
 }
 //=======================================================================================
 //=======================================================================================

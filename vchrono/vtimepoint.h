@@ -43,7 +43,7 @@
  *      auto diff_ts = VTimePoint::now() - ts;
  *      ts -= VTimePoint::now();
  *
- *  TODO: пока не веедены операторы суммирования (были не нужны).
+ *  TODO: пока не введены операторы суммирования (не уверен, что они нужны).
  *
  *  Преобразования в строки:
  *      str_datetime()                      // yyyy-MM-dd hh:mm:ss
@@ -100,10 +100,12 @@ public:
 
     using timepoint_t = typename Clk::time_point;
 
+    static bool is_steady();
+
     static Derived now();
 
-    static Derived from_format  ( const std::string &dt,  const std::string &fmt );
-    static Derived from_datetime( const std::string &dt_str );
+    static Derived from_format  ( const std::string &dt, const std::string &fmt );
+    static Derived from_datetime( const std::string &dt ); // From "yyyy-MM-dd hh:mm:ss".
 
     explicit _vTimePoint();
     explicit _vTimePoint( const timepoint_t &tp );
@@ -147,7 +149,7 @@ public:
 
     Derived operator - (const Derived &rhs) const;
 
-    // Не работает, к сожалению.
+    // Не работает...
     //template<typename Duration>
     //Derived &operator += ( const Duration &rhs );
     //Derived operator + (const Derived &rhs) const;
@@ -156,16 +158,15 @@ public:
     // http://en.cppreference.com/w/cpp/chrono/c/strftime
     std::string str_format( const std::string &fmt ) const;
 
-    std::string str_datetime() const;
-    std::string str_datetime_zzz() const;
+    std::string str_datetime()                   const;
+    std::string str_datetime_zzz()               const;
 
-    std::string str_date() const;
+    std::string str_date()                       const;
 
-    std::string str_time() const;
-    std::string str_time_zzz() const;
+    std::string str_time()                       const;
+    std::string str_time_zzz()                   const;
 
-    std::string str_datetime_for_filename() const;
-
+    std::string str_datetime_for_filename()      const;
     std::string str_datetime_zzz_for_filenames() const;
 
 private:
@@ -176,12 +177,18 @@ private:
 //=======================================================================================
 
 
+// Старый компилятор не умеет прокси конструкторов, пишем костыль.
+#define V_GNUC_VERSION_ELPD ((__GNUC__ * 100) + __GNUC_MINOR__)
+#if V_GNUC_VERSION_ELPD > 408       // версии компилятора выше 4.8
+    #define V_GNUC_CAN_USE_CTOR_PROXY
+#endif
 
+#ifdef V_GNUC_CAN_USE_CTOR_PROXY
 //=======================================================================================
 //      System time point
 //=======================================================================================
 class VSystemTimePoint final : public _vTimePoint< std::chrono::system_clock,
-                                             VSystemTimePoint >
+                                                   VSystemTimePoint >
 {
 public:
     using _vTimePoint::_vTimePoint;
@@ -213,11 +220,75 @@ public:
 //=======================================================================================
 //      High resolution time point
 //=======================================================================================
+#else
+//=======================================================================================
+//      System time point
+//=======================================================================================
+class VSystemTimePoint final : public _vTimePoint< std::chrono::system_clock,
+                                                   VSystemTimePoint >
+{
+    using _base = _vTimePoint<std::chrono::system_clock, VSystemTimePoint>;
+public:
+    explicit VSystemTimePoint()                         : _base()   {}
+    explicit VSystemTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSystemTimePoint(time_t tt)                : _base(tt) {}
 
+    template<typename Duration2>
+    explicit VSystemTimePoint(const Duration2 &d2)      : _base(d2) {}
+};
+// By default, using system time.
+using VTimePoint = VSystemTimePoint;
+//=======================================================================================
+//      System time point
+//=======================================================================================
+//      Steady time point
+//=======================================================================================
+class VSteadyTimePoint : public _vTimePoint< std::chrono::steady_clock,
+                                             VSteadyTimePoint >
+{
+    using _base = _vTimePoint<std::chrono::steady_clock, VSteadyTimePoint>;
+public:
+    explicit VSteadyTimePoint()                         : _base()   {}
+    explicit VSteadyTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    // нету, похоже...
+    //explicit VSteadyTimePoint(time_t tt)                : _base(tt) {}
+
+    template<typename Duration2>
+    explicit VSteadyTimePoint(const Duration2 &d2)      : _base(d2) {}
+};
+//=======================================================================================
+//      Steady time point
+//=======================================================================================
+//      High resolution time point
+//=======================================================================================
+class VHighResolutionTimePoint : public _vTimePoint< std::chrono::high_resolution_clock,
+                                                     VHighResolutionTimePoint >
+{
+    using _base = _vTimePoint<std::chrono::high_resolution_clock,
+                              VHighResolutionTimePoint>;
+public:
+    explicit VHighResolutionTimePoint()                         : _base()   {}
+    explicit VHighResolutionTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VHighResolutionTimePoint(time_t tt)                : _base(tt) {}
+
+    template<typename Duration2>
+    explicit VHighResolutionTimePoint(const Duration2 &d2)      : _base(d2) {}
+};
+//=======================================================================================
+//      High resolution time point
+//=======================================================================================
+#endif // V_GNUC_CAN_USE_CTOR_PROXY
 
 
 //=======================================================================================
-//      Streaming for std types.
+//      Streaming for my and std types.
+//=======================================================================================
+template<typename Clk, typename Derived>
+std::ostream & operator << ( std::ostream & os, const _vTimePoint<Clk,Derived> & val )
+{
+    os << "TimePoint(" << val.str_datetime_zzz() << ")";
+    return os;
+}
 //=======================================================================================
 std::ostream & operator << ( std::ostream & os, const std::chrono::seconds      & val );
 std::ostream & operator << ( std::ostream & os, const std::chrono::milliseconds & val );
@@ -244,6 +315,12 @@ namespace _priv
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
+bool _vTimePoint<Clk,Derived>::is_steady()
+{
+    return Clk::is_steady;
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
 Derived _vTimePoint<Clk,Derived>::now()
 {
     return Derived( Clk::now() );
@@ -258,9 +335,9 @@ Derived _vTimePoint<Clk,Derived>::from_format( const std::string &dt,
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
-Derived _vTimePoint<Clk,Derived>::from_datetime( const std::string &dt_str )
+Derived _vTimePoint<Clk,Derived>::from_datetime( const std::string &dt )
 {
-    return from_format( dt_str, fmt_datetime() );
+    return from_format( dt, fmt_datetime() );
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
@@ -490,7 +567,7 @@ std::string _vTimePoint<Clk,Derived>::str_datetime() const
 template<typename Clk, typename Derived>
 std::string _vTimePoint<Clk,Derived>::str_datetime_zzz() const
 {
-    return vcat(str_datetime(), ".").field_width(3).fill_char('0')(millisecond());
+    return vcat(str_datetime())(".").num(millisecond(), 3, '0');
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
@@ -508,7 +585,7 @@ std::string _vTimePoint<Clk,Derived>::str_time() const
 template<typename Clk, typename Derived>
 std::string _vTimePoint<Clk,Derived>::str_time_zzz() const
 {
-    return vcat(str_time(), ".").field_width(3).fill_char('0')(millisecond());
+    return vcat(str_time())(".").num(millisecond(), 3, '0');
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
@@ -520,8 +597,7 @@ std::string _vTimePoint<Clk,Derived>::str_datetime_for_filename() const
 template<typename Clk, typename Derived>
 std::string _vTimePoint<Clk,Derived>::str_datetime_zzz_for_filenames() const
 {
-    return vcat(str_datetime_for_filename(), '.')
-               .field_width(3).fill_char('0')(millisecond());
+    return vcat(str_datetime_for_filename())('.').num(millisecond(), 3, '0');
 }
 //=======================================================================================
 //      IMPLEMENTATION

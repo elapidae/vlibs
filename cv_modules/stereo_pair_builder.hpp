@@ -59,7 +59,6 @@ public:
 private:
     // Структуры последних принятых кадров от левой и правой камеры соответственно
     Full_frame last_left, last_right;
-    int index = 0;
 };
 
 #endif // STEREO_PAIR_BUILDER_HPP
