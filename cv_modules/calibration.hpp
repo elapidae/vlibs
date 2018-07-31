@@ -1,13 +1,13 @@
 #ifndef CALIBRATION_HPP
 #define CALIBRATION_HPP
 
+#include <opencv2/core.hpp>
+
 #include <list>
 #include <vector>
 
 #include <string>
 #include <ios>
-
-#include <opencv2/core.hpp>
 
 // Пространство имён содержащее структуру данных для хранения параметров калибровки, а также функции
 // для непосредственной калибровки

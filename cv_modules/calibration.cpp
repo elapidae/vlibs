@@ -1,10 +1,10 @@
 #include "calibration.hpp"
 
+#include "vlog_pretty.h"
+
 #include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d.hpp>
-
-#include "vlog_pretty.h"
 
 namespace cv_calib {
     void use_calib_mtx_in_fs( cv::Mat &mtx, const std::string &file_name, std::_Ios_Openmode mode )
