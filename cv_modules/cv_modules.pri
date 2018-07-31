@@ -17,15 +17,30 @@ isEmpty(qi_cv_modules) {
     HEADERS     += $$VLibs_Dir/cv_modules/calibration.hpp
     SOURCES     += $$VLibs_Dir/cv_modules/calibration.cpp
 
-    HEADERS     += $$VLibs_Dir/cv_modules/stereo_handler.hpp
-    SOURCES     += $$VLibs_Dir/cv_modules/stereo_handler.cpp
-
     HEADERS     += $$VLibs_Dir/cv_modules/viz.hpp
     SOURCES     += $$VLibs_Dir/cv_modules/viz.cpp
 
-    HEADERS     += $$VLibs_Dir/cv_modules/profiler.hpp
-    SOURCES     += $$VLibs_Dir/cv_modules/profiler.cpp
-
     HEADERS     += $$VLibs_Dir/cv_modules/ml.hpp
     SOURCES     += $$VLibs_Dir/cv_modules/ml.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/stereo_pair_builder.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/stereo_pair_builder.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/disparity_calculator.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/disparity_calculator.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/clusterizator.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/clusterizator.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/dnn.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/dnn.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/projection_creator.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/projection_creator.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/data_agregator.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/data_agregator.cpp
+
+    HEADERS     += $$VLibs_Dir/cv_modules/range.hpp
+    SOURCES     += $$VLibs_Dir/cv_modules/range.cpp
 }
