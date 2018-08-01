@@ -1,13 +1,13 @@
 #ifndef CALIBRATION_HPP
 #define CALIBRATION_HPP
 
+#include <opencv2/core.hpp>
+
 #include <list>
 #include <vector>
 
 #include <string>
 #include <ios>
-
-#include <opencv2/core.hpp>
 
 // Пространство имён содержащее структуру данных для хранения параметров калибровки, а также функции
 // для непосредственной калибровки
@@ -33,6 +33,7 @@ namespace cv_calib
     void read_calib_matrix_from_files( cv::Mat& mtx, const std::string file_name );
     void write_calib_matrix_from_files( cv::Mat& mtx, const std::string file_name );
     void configure_calib_matrix(
+            std::string path, cv::Size size,
             cv::Mat& Q,
             cv::Mat& leftMatX, cv::Mat& leftMatY,
             cv::Mat& rightMatX, cv::Mat& rightMatY);

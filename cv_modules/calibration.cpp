@@ -1,10 +1,10 @@
 #include "calibration.hpp"
 
+#include "vlog_pretty.h"
+
 #include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d.hpp>
-
-#include "vlog_pretty.h"
 
 namespace cv_calib {
     void use_calib_mtx_in_fs( cv::Mat &mtx, const std::string &file_name, std::_Ios_Openmode mode )
@@ -208,39 +208,40 @@ namespace cv_calib {
     }
 
     void configure_calib_matrix(
+            std::string path, cv::Size size,
             cv::Mat& Q,
             cv::Mat& leftMatX, cv::Mat& leftMatY,
             cv::Mat& rightMatX, cv::Mat& rightMatY )
     {
         Q = cv::Mat_< float >( 4, 4 );
-        read_calib_matrix_from_files( Q, "Q.csv" );
+        read_calib_matrix_from_files( Q, path + "Q.csv" );
 
         cv::Mat distL = cv::Mat_< float >( 1, 5 );
         cv::Mat leftProjection = cv::Mat_< float >( 3, 4 );
         cv::Mat leftRectification = cv::Mat_< float >( 3, 3 );
         cv::Mat mtxL = cv::Mat_< float >( 3, 3 );
 
-        read_calib_matrix_from_files( distL, "distL.csv" );
-        read_calib_matrix_from_files( leftProjection, "leftProjection.csv" );
-        read_calib_matrix_from_files( leftRectification, "leftRectification.csv" );
-        read_calib_matrix_from_files( mtxL, "mtxL.csv" );
+        read_calib_matrix_from_files( distL, path + "distL.csv" );
+        read_calib_matrix_from_files( leftProjection, path + "leftProjection.csv" );
+        read_calib_matrix_from_files( leftRectification, path + "leftRectification.csv" );
+        read_calib_matrix_from_files( mtxL, path + "mtxL.csv" );
 
         cv::Mat distR = cv::Mat_< float >( 1, 5 );
         cv::Mat rightProjection = cv::Mat_< float >( 3, 4 );
         cv::Mat rightRectification = cv::Mat_< float >( 3, 3 );
         cv::Mat mtxR = cv::Mat_< float >( 3, 3 );
 
-        read_calib_matrix_from_files( distR, "distR.csv" );
-        read_calib_matrix_from_files( rightProjection, "rightProjection.csv" );
-        read_calib_matrix_from_files( rightRectification, "rightRectification.csv" );
-        read_calib_matrix_from_files( mtxR, "mtxR.csv" );
+        read_calib_matrix_from_files( distR, path + "distR.csv" );
+        read_calib_matrix_from_files( rightProjection, path + "rightProjection.csv" );
+        read_calib_matrix_from_files( rightRectification, path + "rightRectification.csv" );
+        read_calib_matrix_from_files( mtxR, path + "mtxR.csv" );
 
         // Вычисление параметров для оптического преобразование кадров перед вычислением карты глубин
         cv::initUndistortRectifyMap(
                     mtxL, distL, leftRectification, leftProjection,
-                    cv::Size( 2448, 2048 ), CV_32FC1, leftMatX, leftMatY );
+                    size, CV_32FC1, leftMatX, leftMatY );
         cv::initUndistortRectifyMap(
                     mtxR, distR, rightRectification, rightProjection,
-                    cv::Size( 2448, 2048 ), CV_32FC1, rightMatX, rightMatY );
+                    size, CV_32FC1, rightMatX, rightMatY );
     }
 }
