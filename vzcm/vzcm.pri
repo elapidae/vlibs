@@ -7,8 +7,7 @@ isEmpty(qi_vzcm) {
 
     INCLUDEPATH += $$VLibs_Dir/vzcm
 
-    HEADERS += $$VLibs_Dir/vzcm/vzcm_subscriber.h
-    SOURCES += $$VLibs_Dir/vzcm/vzcm_subscriber.cpp
+    HEADERS     += $$VLibs_Dir/vzcm/vzcm_subscriber.h
 }
 
 

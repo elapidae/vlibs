@@ -7,7 +7,7 @@
 using namespace std;
 
 //=======================================================================================
-VApp_Args_Parser::VApp_Args_Parser(int argc, const char **argv)
+VApp_Args_Parser::VApp_Args_Parser( int argc, const char * const * const argv )
 {
     _appname = argv[0];
     for (int i = 1; i < argc; ++i )

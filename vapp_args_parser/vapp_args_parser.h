@@ -8,7 +8,7 @@
 class VApp_Args_Parser
 {
 public:
-    VApp_Args_Parser( int argc, const char **argv );
+    VApp_Args_Parser( int argc, const char * const * const argv );
 
     std::string full_app_name() const;
     std::string app_name() const; // без пути.

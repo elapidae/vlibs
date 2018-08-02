@@ -6,32 +6,46 @@ isEmpty(qi_vgit2) {
 
     isEmpty(Main_Dir): error("Please, specify Main_Dir=$$PWD in your .pro file.")
 
-    #isEmpty(VLibs_Dir): error("Please, specify VLibs_Dir in your .pro file.")
-    #include( $$VLibs_Dir/vcat/vcat.pri )
 
     INCLUDEPATH += $$VLibs_Dir/vgit
     HEADERS     += $$VLibs_Dir/vgit/vgit.h
     SOURCES     += $$VLibs_Dir/vgit/vgit.cpp
 
 
-    VGIT_REVCOUNT = $$system(cd \"$$system_path($$Main_Dir)\"    && \
-                    git rev-list HEAD --count)
+    VGIT_REVCOUNT = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
+                    git rev-list HEAD --count)"
 
-    VGIT_HASH     = $$system(cd \"$$system_path($$Main_Dir)\"    && \
-                    git log -n 1 --pretty=format:\"%H\")
+    VGIT_HASH     = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
+                    git log -n 1 --pretty=format:\"%H\")"
 
-    VGIT_BRANCH   = $$system(cd \"$$system_path($$Main_Dir)\"    && \
-                    git branch | awk \'{print \$2}\')
+    VGIT_DATE     = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
+                    git log -n 1 --pretty=format:\"%ad\")"
+
+    VGIT_AUTHOR   = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
+                    git log -n 1 --pretty=format:\"%an\")"
+
+# Каменный цветочек не выходит, походу из-за кодировки.
+#    VGIT_COMMENT  = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
+#                    git log -n 1 --pretty=format:\"%s\")"
+
+    VGIT_BRANCH   = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
+                    git branch | awk \'{print \$2}\')"
 
 
     DEFINES += VGIT_REVCOUNT_ELPD=\"$${VGIT_REVCOUNT}\"
     DEFINES += VGIT_HASH_ELPD=\"$${VGIT_HASH}\"
+    DEFINES += VGIT_DATE_ELPD=\"$${VGIT_DATE}\"
+    DEFINES += VGIT_AUTHOR_ELPD=\"$${VGIT_AUTHOR}\"
+#    DEFINES += VGIT_COMMENT_ELPD=\"$${VGIT_COMMENT}\"
     DEFINES += VGIT_BRANCH_ELPD=\"$${VGIT_BRANCH}\"
-
 
     message(">>> Current git hash: $${VGIT_HASH}, \
                              branch: $${VGIT_BRANCH}, \
-                             revcount: $${VGIT_REVCOUNT}")
+                             revcount: $${VGIT_REVCOUNT}, \
+                             author: $${VGIT_AUTHOR}, \
+                             date: $${VGIT_DATE}\
+#                             comment: $${VGIT_COMMENT}\
+                             ")
 
 
     VMAIN_O = $$system_path($$OUT_PWD/$$OBJECTS_DIR/main.o)
