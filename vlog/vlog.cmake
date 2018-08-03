@@ -1,6 +1,6 @@
 
 
-message( "Include vlog (ver.2)..." )
+message( "Include vlog (ver.3)..." )
 
 include( "${VLIBS_PATH}/vcat/vcat.cmake" )
 include( "${VLIBS_PATH}/vstring/vstring.cmake" )
@@ -29,9 +29,8 @@ FILE( GLOB SOURCES_VLOGGER ${SOURCES_VLOGGER} "${VLIBS_PATH}/vlog/verror.cpp" )
 #FILE( GLOB SOURCES_VLOGGER "${VLIBS_PATH}/vlog/*.cpp" )
 
 
+set ( V_HEADERS ${V_HEADERS} ${HEADERS_VLOGGER} )
+set ( V_SOURCES ${V_SOURCES} ${SOURCES_VLOGGER} )
 
-set (INC_ALL ${INC_ALL} ${HEADERS_VLOGGER})
-set (SRC_ALL ${SRC_ALL} ${SOURCES_VLOGGER})
-
-message( "vlog (ver.2) included" )
+message( "vlog (ver.3) included" )
 
