@@ -273,12 +273,6 @@ KeyFile::str KeyFile::safe_comment( cstr group, cstr key, cstr defval ) const
 
 
 //=======================================================================================
-void KeyFile::set_value( cstr group, cstr key, cstr val )
-{
-    assert( p );
-    g_key_file_set_value( p.get(), group.c_str(), key.c_str(), val.c_str() );
-}
-//=======================================================================================
 void KeyFile::set_string( cstr group, cstr key, cstr val )
 {
     assert( p );

@@ -20,13 +20,14 @@ static str group_key_str( cstr group, cstr key )
 
 
 //=======================================================================================
-class KeyFile_Schema::_value
+class KeyFile_Schema::_field
 {
 public:
     str group;
     str key;
+    str comment;
 
-    virtual ~_value() = default;
+    virtual ~_field() = default;
 
     virtual void capture ( const KeyFile &kf )      const = 0;
     virtual void save_defaults_into ( KeyFile *kf ) const = 0;
@@ -39,7 +40,7 @@ public:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
 template<typename T, typename Getter, typename Setter>
-class Spec_Value : public KeyFile_Schema::_value
+class Spec_Field : public KeyFile_Schema::_field
 {
 public:
     void capture( const KeyFile &kf )      const override;
@@ -51,20 +52,18 @@ public:
 
     T* dst;
     T  def_val;
-
-    str comment;
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-void Spec_Value<T,Getter,Setter>::capture( const KeyFile &kf ) const
+void Spec_Field<T,Getter,Setter>::capture( const KeyFile &kf ) const
 {
     // Если захотим проверять на поле ошибку, то nullptr надо заменить на Error.
     *dst = (kf.*getter)(group, key, nullptr);
 }
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-void Spec_Value<T,Getter,Setter>::save_defaults_into( KeyFile *kf ) const
+void Spec_Field<T,Getter,Setter>::save_defaults_into( KeyFile *kf ) const
 {
     (kf->*setter)(group, key, def_val);
 
@@ -73,7 +72,7 @@ void Spec_Value<T,Getter,Setter>::save_defaults_into( KeyFile *kf ) const
 }
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-bool Spec_Value<T,Getter,Setter>::is_destination( void *ptr ) const
+bool Spec_Field<T,Getter,Setter>::is_destination( void *ptr ) const
 {
     return dst == ptr;
 }
@@ -83,9 +82,9 @@ bool Spec_Value<T,Getter,Setter>::is_destination( void *ptr ) const
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
 template<typename T, typename Getter, typename Setter>
-class Spec_Value_Validate : public Spec_Value<T,Getter,Setter>
+class Spec_Field_Validate : public Spec_Field<T,Getter,Setter>
 {
-    using Base = Spec_Value<T,Getter,Setter>;
+    using Base = Spec_Field<T,Getter,Setter>;
 public:
     void capture( const KeyFile &kf ) const override;
 
@@ -94,7 +93,7 @@ public:
 #pragma GCC diagnostic pop
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-void Spec_Value_Validate<T,Getter,Setter>::capture( const KeyFile &kf ) const
+void Spec_Field_Validate<T,Getter,Setter>::capture( const KeyFile &kf ) const
 {
     Base::capture( kf );
 
@@ -111,7 +110,7 @@ void Spec_Value_Validate<T,Getter,Setter>::capture( const KeyFile &kf ) const
 
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-static void fill_spec( Spec_Value<T,Getter,Setter> *spec,
+static void fill_spec( Spec_Field<T,Getter,Setter> *spec,
                        Getter   getter,     Setter   setter,
                        cstr     group,      cstr     key,
                        T*       dst,        const T& def_val,
@@ -142,13 +141,13 @@ static void fill_spec( Spec_Value<T,Getter,Setter> *spec,
 }
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-static KeyFile_Schema::_value_ptr make_spec (
+static KeyFile_Schema::_field_ptr make_spec (
                 Getter   getter,     Setter   setter,
                 cstr     group,      cstr     key,
                 T*       dst,        const T& def_val,
                 cstr     comment )
 {
-    using spec_type = Spec_Value<T, Getter, Setter>;
+    using spec_type = Spec_Field<T, Getter, Setter>;
     auto res = std::make_shared<spec_type>();
 
     fill_spec( res.get(), getter, setter, group, key, dst, def_val, comment );
@@ -159,7 +158,7 @@ static KeyFile_Schema::_value_ptr make_spec (
 
 //=======================================================================================
 template<typename T, typename Getter, typename Setter>
-static KeyFile_Schema::_value_ptr make_spec_validate (
+static KeyFile_Schema::_field_ptr make_spec_validate (
                 Getter   getter,     Setter   setter,
                 cstr     group,      cstr     key,
                 T*       dst,        const T& def_val,
@@ -169,7 +168,7 @@ static KeyFile_Schema::_value_ptr make_spec_validate (
     if ( !validator.is_ok(def_val) )
         throw verror( group_key_str(group,key), ": default value out of valid range!" );
 
-    using spec_validate_type = Spec_Value_Validate<T, Getter, Setter>;
+    using spec_validate_type = Spec_Field_Validate<T, Getter, Setter>;
     auto res = std::make_shared<spec_validate_type>();
 
     fill_spec( res.get(), getter, setter, group, key, dst, def_val, comment );

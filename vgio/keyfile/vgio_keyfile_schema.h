@@ -100,15 +100,15 @@ namespace vgio
         //-------------------------------------------------------------------------------
         KeyFile_Schema() = default;
 
-        class _value;
-        using _value_ptr = std::shared_ptr<_value>;
+        class _field;
+        using _field_ptr = std::shared_ptr<_field>;
 
     private:
         KeyFile_Schema(const KeyFile_Schema &) = delete;
         KeyFile_Schema& operator = (const KeyFile_Schema &) = delete;
 
         //-------------------------------------------------------------------------------
-        std::vector<_value_ptr> _values;
+        std::vector<_field_ptr> _values;
         std::string _cur_group;
 
         void _check_unique( cstr key, void *dst_ptr ) const;

@@ -134,13 +134,10 @@ namespace vgio
         str safe_comment( cstr group, cstr key, cstr defval ) const;
         //-------------------------------------------------------------------------------
 
-        void set_value  ( cstr group, cstr key, cstr val );
-        void set_string ( cstr group, cstr key, cstr val );
-        void set_bool   ( cstr group, cstr key, bool       val );
-        void set_int    ( cstr group, cstr key, int        val );
-        void set_long   ( cstr group, cstr key, int64_t    val );
-        void set_ulong  ( cstr group, cstr key, uint64_t   val );
-        void set_double ( cstr group, cstr key, double     val );
+        void set_string ( cstr group, cstr key, cstr    val );
+        void set_bool   ( cstr group, cstr key, bool    val );
+        void set_int    ( cstr group, cstr key, int     val );
+        void set_double ( cstr group, cstr key, double  val );
 
         void set_string_list ( cstr group, cstr key, const StringList &val );
         void set_bool_list   ( cstr group, cstr key, const BoolList   &val );
