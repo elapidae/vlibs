@@ -1,14 +1,27 @@
-# Этот CMake файл сгенерирован автоматически.
-# Вносить изменения можно между строк   !#<Start your code here" и "#> Stop your code here"
+#========================================================================================
+# {{vlib_name}}.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
 # Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
+
+
+#========================================================================================
 {% set vlib_name_upper = vlib_name|upper() %}
 if ( NOT  {{vlib_name_upper}}_INCLUDED )
     set ( {{vlib_name_upper}}_INCLUDED TRUE )
 
     message( "Include {{vlib_name}}..." )
 
-    #< Start your code here
-{{manual_code}}    #> Stop your code here
+    #<<< Start your code here -----------------------------------------------------------
+{{manual_code}}    #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_PATH}/{{vlib_name}}/")
 
@@ -20,3 +33,6 @@ if ( NOT  {{vlib_name_upper}}_INCLUDED )
     message( "{{vlib_name}} included" )
 
 endif()
+# {{vlib_name}}.cmake
+#========================================================================================
+
