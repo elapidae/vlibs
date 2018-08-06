@@ -11,8 +11,10 @@ using namespace std;
 //=======================================================================================
 static ios_base::openmode std_mode( VOutFile::OpenMode mode )
 {
-    if ( mode == VOutFile::OpenMode::Append   ) return ios_base::out|ios_base::app;
-    if ( mode == VOutFile::OpenMode::Truncate ) return ios_base::out|ios_base::trunc;
+    auto base = ios_base::out|ios_base::binary;
+
+    if ( mode == VOutFile::OpenMode::Append   )     return base|ios_base::app;
+    if ( mode == VOutFile::OpenMode::Truncate )     return base|ios_base::trunc;
 
     assert( false && "Unknown VOutFile::OpenMode" );
 }
@@ -21,8 +23,8 @@ static ios_base::openmode std_mode( VOutFile::OpenMode mode )
 
 
 //=======================================================================================
-VOutFile::VOutFile()
-{}
+//VOutFile::VOutFile()
+//{}
 //=======================================================================================
 VOutFile::VOutFile( const std::string &fname, VOutFile::OpenMode mode )
     : _s     ( fname, std_mode(mode) )
@@ -34,6 +36,10 @@ VOutFile::VOutFile( const std::string &fname, VOutFile::OpenMode mode )
 void VOutFile::write( const string & data )
 {
     _s.write( data.data(), static_cast<std::streamsize>(data.size()) );
+
+    if ( !_s.good() )
+        throw std::ios_base::failure( "File '" + _fname + "' is not good()." );
+
     _fast_size += data.size();
 }
 //=======================================================================================
@@ -68,7 +74,7 @@ bool VOutFile::is_good() const
     return _s.good();
 }
 //=======================================================================================
-long VOutFile::fast_size() const
+ulong VOutFile::fast_size() const
 {
     return _fast_size;
 }

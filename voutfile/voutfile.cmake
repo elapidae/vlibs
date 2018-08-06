@@ -1,22 +1,39 @@
+#========================================================================================
+# voutfile.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include VOutFile..." )
+#========================================================================================
 
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if ( NOT  VOUTFILE_INCLUDED )
+    set ( VOUTFILE_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/voutfile/" )
+    message( "Include voutfile..." )
 
-FILE( GLOB HEADERS_VOutFile "${VLIBS_PATH}/voutfile/voutfile.h"   )
-FILE( GLOB SOURCES_VOutFile "${VLIBS_PATH}/voutfile/voutfile.cpp" )
+    #<<< Start your code here -----------------------------------------------------------    
+    #   NB! Файл был отредактирован, перезапись может добавить ненужные поля.
 
-FILE( GLOB HEADERS_VOutFile ${HEADERS_VOutFile} "${VLIBS_PATH}/voutfile/voutfile_withrotate.h"   )
-FILE( GLOB SOURCES_VOutFile ${SOURCES_VOutFile} "${VLIBS_PATH}/voutfile/voutfile_withrotate.cpp" )
+    include( "${VLIBS_DIR}/c++11/c++11.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_VOutFile} )
-set ( SOURCES ${SOURCES} ${SOURCES_VOutFile} )
+    include_directories( "${VLIBS_DIR}/voutfile/")
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_VOutFile} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_VOutFile} )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/voutfile/voutfile.h") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/voutfile/voutfile.cpp") 
 
-message( "VOutFile included..." )
+    message( "voutfile included" )
 
+endif()
+# voutfile.cmake
+#========================================================================================

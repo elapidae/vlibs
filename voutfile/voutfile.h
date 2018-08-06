@@ -12,7 +12,7 @@ public:
 
     enum class OpenMode { Truncate, Append };
 
-    explicit VOutFile();
+    //explicit VOutFile();
     VOutFile( const std::string &fname, OpenMode mode = OpenMode::Truncate );
 
     bool is_open()   const;
@@ -21,7 +21,7 @@ public:
 
     // Отличается от реального размера тем, что "не замечает" ошибок, т.е. если
     // были проблемы с записью, он будет врать.
-    long fast_size() const;
+    ulong fast_size() const;
 
     const std::string filename() const;
 
@@ -39,7 +39,7 @@ public:
 private:
     std::ofstream _s;
     std::string   _fname;
-    long          _fast_size = -1;
+    ulong         _fast_size = 0;
 };
 //=======================================================================================
 
