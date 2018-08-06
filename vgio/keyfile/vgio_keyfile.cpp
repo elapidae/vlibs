@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <glib.h>
 #include "impl/vgio_converting_helper.h"
+#include "vlog_pretty.h"
 
 using namespace std;
 using namespace vgio;
@@ -10,40 +11,49 @@ using namespace vgio::_impl;
 
 
 //=======================================================================================
-static GKeyFileFlags kf_flags( KeyFile::OpenFlag flag )
+template<typename T, typename Fn>
+static T any_get_and_err( GKeyFile *kf, const string &g, const string &k, Fn fn,
+                          Error *err )
 {
-    auto gflags = flag == KeyFile::OpenFlag::ReadOnly
-                            ? G_KEY_FILE_NONE
-                            : G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS;
-
-    return static_cast<GKeyFileFlags>(gflags);
+    error_proxy eproxy( err );
+    auto res = fn( kf, g.c_str(), k.c_str(), eproxy );
+    eproxy.flush();
+    return res;
 }
 //=======================================================================================
 
 
 //=======================================================================================
-KeyFile KeyFile::from_file( cstr fname, KeyFile::OpenFlag flag , Error *err )
+static auto constexpr open_flag
+    = static_cast<GKeyFileFlags>(G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS);
+//=======================================================================================
+KeyFile KeyFile::from_file( cstr fname, Error *err )
 {
     KeyFile res;
 
     error_proxy err_proxy( err );
     auto ok = g_key_file_load_from_file( res.p.get(),
                                          fname.c_str(),
-                                         kf_flags(flag),
+                                         open_flag,
                                          err_proxy );
+
+    err_proxy.flush();
+
     if (!ok) res.p.reset();
     return res;
 }
 //=======================================================================================
-KeyFile KeyFile::from_data( cstr data, KeyFile::OpenFlag flag, Error *err )
+KeyFile KeyFile::from_data( cstr data, Error *err )
 {
     KeyFile res;
 
     error_proxy err_proxy( err );
     auto ok = g_key_file_load_from_data( res.p.get(),
                                          data.c_str(), data.size(),
-                                         kf_flags(flag),
+                                         open_flag,
                                          err_proxy );
+    err_proxy.flush();
+
     if (!ok) res.p.reset();
     return res;
 }
@@ -51,6 +61,7 @@ KeyFile KeyFile::from_data( cstr data, KeyFile::OpenFlag flag, Error *err )
 KeyFile::KeyFile()
     : p( g_key_file_new(), g_key_file_unref )
 {
+    assert( p );
     set_list_separator( _default_list_separator );
 }
 //=======================================================================================
@@ -64,14 +75,18 @@ KeyFile::str KeyFile::to_data( Error *err ) const
     assert( p );
     error_proxy err_proxy( err );
     auto *ch = g_key_file_to_data( p.get(), nullptr, err_proxy );
-    return convert_and_free( ch );
+    auto res = convert_and_free( ch );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 bool KeyFile::to_file( cstr fname, Error *err )
 {
     assert( p );
     error_proxy err_proxy( err );
-    return g_key_file_save_to_file( p.get(), fname.c_str(), err_proxy );
+    auto res = g_key_file_save_to_file( p.get(), fname.c_str(), err_proxy );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 void KeyFile::set_list_separator( char sep )
@@ -90,7 +105,7 @@ KeyFile::StringList KeyFile::get_groups() const
 {
     assert( p );
     char ** glist = g_key_file_get_groups( p.get(), nullptr );
-    return convert_and_free( glist );
+    return convert_and_free_list( glist );
 }
 //=======================================================================================
 string KeyFile::get_start_group() const
@@ -104,7 +119,9 @@ bool KeyFile::has_key( cstr group, cstr key, Error *err ) const
 {
     assert( p );
     error_proxy err_proxy( err );
-    return g_key_file_has_key( p.get(), group.c_str(), key.c_str(), err_proxy );
+    auto res = g_key_file_has_key( p.get(), group.c_str(), key.c_str(), err_proxy );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 KeyFile::StringList KeyFile::get_keys( cstr group, Error *err ) const
@@ -112,7 +129,9 @@ KeyFile::StringList KeyFile::get_keys( cstr group, Error *err ) const
     assert( p );
     error_proxy err_proxy( err );
     auto ** gkeys = g_key_file_get_keys( p.get(), group.c_str(), nullptr, err_proxy );
-    return convert_and_free( gkeys );
+    auto res = convert_and_free_list( gkeys );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 
@@ -123,14 +142,15 @@ string KeyFile::get_string( cstr group, cstr key, Error *err ) const
     assert( p );
     error_proxy err_proxy( err );
     auto * val = g_key_file_get_string( p.get(), group.c_str(), key.c_str(), err_proxy );
-    return convert_and_free( val );
+    auto res = convert_and_free( val );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 bool KeyFile::get_bool( cstr group, cstr key, Error *err ) const
 {
     assert( p );
-    error_proxy err_proxy( err );
-    return g_key_file_get_boolean( p.get(), group.c_str(), key.c_str(), err_proxy );
+    return any_get_and_err<bool>( p.get(), group, key, &g_key_file_get_boolean, err );
 }
 //=======================================================================================
 int KeyFile::get_int( cstr group, cstr key, Error *err ) const
@@ -139,8 +159,7 @@ int KeyFile::get_int( cstr group, cstr key, Error *err ) const
     using gtype = decltype( g_key_file_get_integer(nullptr,nullptr,nullptr,nullptr) );
     static_assert( is_same<int,gtype>::value, "" );
 
-    error_proxy err_proxy( err );
-    return g_key_file_get_integer( p.get(), group.c_str(), key.c_str(), err_proxy );
+    return any_get_and_err<int>( p.get(), group, key, &g_key_file_get_integer, err );
 }
 //=======================================================================================
 double KeyFile::get_double( cstr group, cstr key, Error *err ) const
@@ -149,8 +168,7 @@ double KeyFile::get_double( cstr group, cstr key, Error *err ) const
     using gtype = decltype(g_key_file_get_double(nullptr,nullptr,nullptr,nullptr) );
     static_assert( is_same<double,gtype>::value, "" );
 
-    error_proxy err_proxy( err );
-    return g_key_file_get_double( p.get(), group.c_str(), key.c_str(), err_proxy );
+    return any_get_and_err<double>( p.get(), group, key, &g_key_file_get_double, err );
 }
 //=======================================================================================
 KeyFile::StringList KeyFile::get_string_list( cstr group, cstr key, Error *err ) const
@@ -159,7 +177,9 @@ KeyFile::StringList KeyFile::get_string_list( cstr group, cstr key, Error *err )
     error_proxy err_proxy( err );
     auto ** ch = g_key_file_get_string_list( p.get(), group.c_str(), key.c_str(),
                                              nullptr, err_proxy );
-    return convert_and_free( ch );
+    auto res = convert_and_free_list( ch );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 KeyFile::BoolList KeyFile::get_bool_list( cstr group, cstr key, Error *err ) const
@@ -188,7 +208,9 @@ KeyFile::str KeyFile::get_comment( cstr group, cstr key, Error *err ) const
     assert( p );
     error_proxy err_proxy( err );
     auto *ch = g_key_file_get_comment( p.get(), group.c_str(), key.c_str(), err_proxy );
-    return convert_and_free( ch );
+    auto res = convert_and_free( ch );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 
@@ -310,6 +332,10 @@ void KeyFile::set_string_list( cstr group, cstr key, const StringList &val )
 //=======================================================================================
 void KeyFile::set_bool_list( cstr group, cstr key, const BoolList &val )
 {
+    static_assert ( !is_same<gboolean,bool>::value, "Обязательная проверка, что в итоге "
+            "не получим vector<bool>. По Стандарту, vector<bool> не соответствует "
+            "следующим друг за другом bool-ам! Они там могут быть упакованы!" );
+
     assert( p );
     vector<gboolean> res( val.begin(), val.end() );
     g_key_file_set_boolean_list( p.get(), group.c_str(), key.c_str(),
@@ -335,8 +361,10 @@ bool KeyFile::set_comment( cstr group, cstr key, cstr val, Error *err )
 {
     assert( p );
     error_proxy err_proxy( err );
-    return g_key_file_set_comment( p.get(), group.c_str(), key.c_str(), val.c_str(),
-                                   err_proxy );
+    auto res = g_key_file_set_comment( p.get(), group.c_str(), key.c_str(), val.c_str(),
+                                       err_proxy );
+    err_proxy.flush();
+    return res;
 }
 //=======================================================================================
 
@@ -346,21 +374,27 @@ bool KeyFile::remove_group( cstr group, Error *err )
 {
     assert( p );
     error_proxy eproxy( err );
-    return g_key_file_remove_group( p.get(), group.c_str(), eproxy );
+    auto res = g_key_file_remove_group( p.get(), group.c_str(), eproxy );
+    eproxy.flush();
+    return res;
 }
 //=======================================================================================
 bool KeyFile::remove_key( cstr group, cstr key, Error *err )
 {
     assert( p );
     error_proxy eproxy( err );
-    return g_key_file_remove_key( p.get(), group.c_str(), key.c_str(), eproxy );
+    auto res = g_key_file_remove_key( p.get(), group.c_str(), key.c_str(), eproxy );
+    eproxy.flush();
+    return res;
 }
 //=======================================================================================
 bool KeyFile::remove_comment( cstr group, cstr key, Error *err )
 {
     assert( p );
     error_proxy eproxy( err );
-    return g_key_file_remove_comment( p.get(), group.c_str(), key.c_str(), eproxy );
+    auto res = g_key_file_remove_comment( p.get(), group.c_str(), key.c_str(), eproxy );
+    eproxy.flush();
+    return res;
 }
 //=======================================================================================
 void KeyFile::_g_free( void *ptr )

@@ -1,6 +1,7 @@
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
 
+#========================================================================================
 if ( NOT  VGIO_ERROR_INCLUDED )
     set ( VGIO_ERROR_INCLUDED TRUE )
     message( "about vgio error ..." )
@@ -8,6 +9,7 @@ if ( NOT  VGIO_ERROR_INCLUDED )
     include( "${VLIBS_DIR}/vgio/core/core.cmake" )
 
     include( "${VLIBS_DIR}/vcat/vcat.cmake" )
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
 
     include_directories( "${VLIBS_DIR}/vgio/error" )
 
@@ -20,6 +22,7 @@ if ( NOT  VGIO_ERROR_INCLUDED )
     message( "vgio error included." )
 
 endif()
+#========================================================================================
 
 
 

@@ -98,9 +98,12 @@ namespace vgio
 
             operator GError** ();
 
+            void flush();
+
         private:
             Error *_target;
             GError *_gerror = nullptr;
+            bool _flushed = false;
 
             error_proxy ( const error_proxy & ) = delete;
             error_proxy & operator = ( const error_proxy & ) = delete;

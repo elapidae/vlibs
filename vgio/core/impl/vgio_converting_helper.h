@@ -12,7 +12,7 @@ namespace vgio
     {
         //===============================================================================
         //  Вызывает g_strfreev в случае необходимости.
-        std::vector<std::string> convert_and_free( char ** list );
+        std::vector<std::string> convert_and_free_list( char ** list );
         //===============================================================================
         //  Вызывает g_free в случае необходимости.
         std::string convert_and_free( char * raw );
