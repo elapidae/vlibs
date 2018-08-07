@@ -236,7 +236,7 @@ void KeyFile_Schema::append( cstr key, int *dst, int defval,
 }
 //=======================================================================================
 void KeyFile_Schema::append( cstr key, double *dst, double defval,
-                             cstr comment, validator<double> validator )
+                             cstr comment, validator<double> validat )
 {
     _check_unique( key, dst );
 
@@ -244,7 +244,7 @@ void KeyFile_Schema::append( cstr key, double *dst, double defval,
     auto setter = &KeyFile::set_double;
 
     auto res = make_spec_validate( getter, setter, _cur_group, key, dst, defval, comment,
-                                   validator );
+                                   validat );
     _values.push_back( res );
 }
 //=======================================================================================

@@ -3,7 +3,7 @@
 
 #include <glib-object.h>
 #include <memory>
-
+#include <string>
 
 
 //=======================================================================================
@@ -13,7 +13,10 @@ public:
 
     bool is_null() const;
 
+    static uint ref_count( const GObject *obj );
     uint ref_count() const;
+
+    static std::string type_name( const GObject *obj );
     std::string type_name() const;
 
 protected:

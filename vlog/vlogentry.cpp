@@ -3,7 +3,7 @@
 #include "vcat.h"
 #include <assert.h>
 #include <algorithm>
-
+#include <stdexcept>
 
 using namespace std;
 

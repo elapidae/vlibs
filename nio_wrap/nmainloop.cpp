@@ -95,7 +95,7 @@ public:
     NTimer *owner;
 };
 //=======================================================================================
-static thread_local unordered_map<uint,NTimer::Pimpl::Ptr> timers;
+static unordered_map<uint,NTimer::Pimpl::Ptr> timers;
 //=======================================================================================
 int NTimer::_on_timeout( void *pimpl_ )
 {
@@ -103,7 +103,7 @@ int NTimer::_on_timeout( void *pimpl_ )
 
     if ( !pimpl->detached )
     {
-        pimpl->owner->timeout();
+        //pimpl->owner->timeout();
         return TRUE;
     }
 

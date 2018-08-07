@@ -69,8 +69,7 @@ namespace vgio
         //-------------------------------------------------------------------------------
 
         static KeyFile from_file( cstr fname, Error *err = nullptr );
-
-        static KeyFile from_data( cstr data, Error *err = nullptr );
+        static KeyFile from_data( cstr data,  Error *err = nullptr );
 
         explicit KeyFile();
 

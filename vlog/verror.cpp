@@ -23,7 +23,7 @@ VError::VError( const char *file, int line, const char *func )
     _logger->do_cat( "ERROR: " );
 }
 //=======================================================================================
-VError::~VError()
+VError::~VError() noexcept
 {
     if ( *_printed ) return;
 

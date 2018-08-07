@@ -1,16 +1,39 @@
+#========================================================================================
+# vstring.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include VString..." )
+#========================================================================================
 
-#set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if ( NOT  VSTRING_INCLUDED )
+    set ( VSTRING_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vstring/" )
+    message( "Include vstring..." )
 
-FILE( GLOB HEADERS_VString "${VLIBS_PATH}/vstring/*.h"   )
-FILE( GLOB SOURCES_VString "${VLIBS_PATH}/vstring/*.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_VString} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_VString} )
+    include_directories( "${VLIBS_DIR}/vstring/")
 
-message( "VString included..." )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vstring/vbufferforwardreader.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vstring/vstring.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vstring/vstring.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vstring/vbufferforwardreader.cpp") 
 
+    message( "vstring included" )
+
+endif()
+# vstring.cmake
+#========================================================================================

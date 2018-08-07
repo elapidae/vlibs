@@ -9,14 +9,14 @@
 using namespace std;
 
 
-static thread_local ThreadSafe_Unordered_Map<GSocket*, NSocket*> all_sockets;
+static ThreadSafe_Unordered_Map<GSocket*, NSocket*> all_sockets;
 
 
 
 //=======================================================================================
 //NSocket NSocket::udp4()
 //{
-//    _NErrorProxy err_proxy(nullptr);
+//    _n_error_proxy err_proxy(nullptr);
 //    return g_socket_new( G_SOCKET_FAMILY_IPV4,
 //                         G_SOCKET_TYPE_DATAGRAM,
 //                         G_SOCKET_PROTOCOL_UDP,
@@ -82,7 +82,7 @@ int NSocket::_on_ready_read( void *vself )
     auto *gsocket = static_cast<GSocket*>( vself );
     auto *nsocket = all_sockets.at( gsocket );
 
-    nsocket->ready_read();
+    //nsocket->ready_read();
 
     return G_SOURCE_CONTINUE;
 }
@@ -95,6 +95,11 @@ NSocket::NSocket( GSocket *s )
 {
     all_sockets.emplace( _g_socket, this );
 }
+//=======================================================================================
+//NSocket NSocket::udp4()
+//{
+//    return std::move( NSocket(AsUdp4) );
+//}
 //=======================================================================================
 NSocket::NSocket( GSocketFamily family,
                   GSocketType type,
