@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 #include "vcat.h"
-
+#include "verror.h"
 
 using namespace std;
 using namespace vgio;
@@ -82,10 +82,26 @@ _impl::error_proxy::error_proxy( Error *err )
     : _target( err )
 {}
 //=======================================================================================
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wexceptions"
 _impl::error_proxy::~error_proxy()
 {
     // Я знаю, что нельзя бросать исключения из деструктора, но здесь обратный случай,
     // когда класс используется для оповещения об ошибке.
+    if ( !_flushed )
+    {
+        throw verror << "Была использована _impl::error_proxy, но не была сброшена.\n"
+                        "Следует делать flush() после использования (скорее всего, "
+                        "автор просто забыл это сделать).";
+    }
+}
+#pragma GCC diagnostic pop
+//=======================================================================================
+void _impl::error_proxy::flush()
+{
+    _flushed = true;
+
     if ( _target )
     {
         _target->_set( _gerror );

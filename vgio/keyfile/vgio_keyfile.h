@@ -7,7 +7,7 @@
 
 //=======================================================================================
 /**
- *      NKeyFile -- обертка над GKeyFile из GIO.
+ *      KeyFile -- обертка над GKeyFile из GIO.
  *
  *  Задачи класса:
  *      - автоматизировать выделение/освобождение памяти;
@@ -57,7 +57,7 @@ namespace vgio
     //===================================================================================
     class KeyFile final
     {
-        static constexpr char _default_list_separator = ',';
+        static constexpr char _default_list_separator = ';';
     public:
         //-------------------------------------------------------------------------------
         using StringList = std::vector<std::string>;
@@ -67,19 +67,10 @@ namespace vgio
         using str        = std::string;
         using cstr       = const str &;
         //-------------------------------------------------------------------------------
-        enum class OpenFlag
-        {
-            ReadOnly,       // Don't save comment & locale (use G_KEY_FILE_NONE)
-            ReadWrite       // (G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS)
-        };
 
-        static KeyFile from_file( cstr fname,
-                                  OpenFlag flag = OpenFlag::ReadWrite,
-                                  Error *err = nullptr );
+        static KeyFile from_file( cstr fname, Error *err = nullptr );
 
-        static KeyFile from_data( cstr data,
-                                  OpenFlag flag = OpenFlag::ReadWrite,
-                                  Error *err = nullptr );
+        static KeyFile from_data( cstr data, Error *err = nullptr );
 
         explicit KeyFile();
 
@@ -180,6 +171,7 @@ namespace vgio
 
         auto res = ptr ? std::vector<T>(ptr, ptr + len) : std::vector<T>();
         if (ptr) _g_free(ptr);
+        err_proxy.flush();
         return res;
     }
     //===================================================================================

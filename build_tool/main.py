@@ -1,3 +1,4 @@
+# coding=utf-8
 import jinja2
 import argparse
 import glob, os
@@ -32,10 +33,14 @@ if __name__ == "__main__":
     templateLoader = jinja2.FileSystemLoader(searchpath="./")
     templateEnv = jinja2.Environment(loader=templateLoader)
 
-    sources = [os.path.basename(x) for x in glob.glob("../"+arg_vlib_name+"/*.cpp")]
+    sources_c = [os.path.basename(x) for x in glob.glob("../"+arg_vlib_name+"/*.c")]
+    sources_cpp = [os.path.basename(x) for x in glob.glob("../"+arg_vlib_name+"/*.cpp")]
+    sources = sources_c + sources_cpp
     print(sources)
 
-    headers = [os.path.basename(x) for x in glob.glob("../"+arg_vlib_name+"/*.h")]
+    headers_h = [os.path.basename(x) for x in glob.glob("../"+arg_vlib_name+"/*.h")]
+    headers_hpp = [os.path.basename(x) for x in glob.glob("../"+arg_vlib_name+"/*.hpp")]
+    headers = headers_h + headers_hpp
     print(headers)
 
 
@@ -59,9 +64,9 @@ if __name__ == "__main__":
         with open(inputs[i], "r") as infile:
             copy = False
             for line in infile:
-                if line.lstrip().startswith("#<"):
+                if line.lstrip().startswith("#<<< Start your code here"):
                     copy = True
-                elif line.lstrip().startswith("#>"):
+                elif line.lstrip().startswith("#>>> Stop your code here"):
                     break
                 elif copy:
                     manual += line

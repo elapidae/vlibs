@@ -7,7 +7,7 @@ using namespace std;
 
 
 //=======================================================================================
-std::vector<std::string> vgio::_impl::convert_and_free( char **list )
+std::vector<std::string> vgio::_impl::convert_and_free_list( char **list )
 {
     vector<string> res;
     if ( !list ) return res;

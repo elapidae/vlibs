@@ -5,8 +5,8 @@
 #   VIO -- обёртка вокруг библиотек glib и gio (стандартные библиотеки linux систем).
 #
 #   Для подключения, следует:
-#       1. указать путь к папке vlibs через переменную VLIBS_PATH:
-#           set( VLIBS_PATH "../vlibs" )
+#       1. указать путь к папке vlibs через переменную VLIBS_DIR:
+#           set( VLIBS_DIR "../vlibs" )
 #
 #       2. включить файл nio_wrap.cmake в проект:
 #           include( "${NIO_PATH}/nio_wrap.cmake" )
@@ -39,6 +39,8 @@ if ( NOT  VGIO_CORE_INCLUDED )
 
     if ( NOT GLib_PKG_FOUND )
         message( FATAL_ERROR "glib not found" )
+    else()
+        message( "=== GLib_PKG was found === " )
     endif()
 
     set( V_LIBRARIES ${V_LIBRARIES} ${GLib_PKG_LIBRARIES} )
@@ -68,7 +70,7 @@ endif() #VGIO_CORE_INCLUDED
 #    <XPREFIX>_CFLAGS         ... all required cflags
 #    <XPREFIX>_CFLAGS_OTHER   ... the other compiler flags
 
-#include_directories( "${VLIBS_PATH}/vio/" )
+#include_directories( "${VLIBS_DIR}/vio/" )
 # ---- glib-2.0 gio-2.0 connecting part ---------------------------------------------
 # Каким-то образом люди подключают эти штуки, пока непонятно как, захардкоржено.
 #set( GLib_LIBRARIES "-lglib-2.0 -lgobject-2.0 -lgio-2.0" )
