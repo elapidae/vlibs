@@ -1,5 +1,5 @@
 #========================================================================================
-# error.cmake
+# keyfile.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,24 +14,27 @@
 
 
 #========================================================================================
+isEmpty(qi_vgio_keyfile) {
+    qi_vgio_keyfile = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== keyfile appended ===")
 
-if ( NOT  ERROR_INCLUDED )
-    set ( ERROR_INCLUDED TRUE )
+    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
-    message( "Include error..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( $$VLIBS_DIR/vgio/core/impl/helpers.pri )
+
+    INCLUDEPATH += $$VLIBS_DIR/vgio/keyfile
+
+    HEADERS     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile.h
+    SOURCES     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile.cpp
+
+    HEADERS     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile_schema.h
+    SOURCES     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile_schema.cpp
+
+    OTHER_FILES += $$VLIBS_DIR/vgio/keyfile/README
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/error/")
-
-    
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/error/vgio_error.h") 
-    
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/error/vgio_error.cpp") 
-
-    message( "error included" )
-
-endif()
-# error.cmake
+}
+# keyfile.pri
 #========================================================================================

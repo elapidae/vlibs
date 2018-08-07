@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <memory>
 
-#include "vsignal.h"
+//#include "vsignal.h"
 
 
 
@@ -74,7 +74,7 @@ public:
     explicit NTimer( uint ms );
     ~NTimer();
 
-    VSignal<> timeout;
+    //VSignal<> timeout;
 
     void stop();
 

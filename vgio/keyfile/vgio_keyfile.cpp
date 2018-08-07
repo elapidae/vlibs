@@ -5,6 +5,13 @@
 #include "impl/vgio_converting_helper.h"
 #include "vlog_pretty.h"
 
+#define GNUC_VERSION_ELPD ((__GNUC__ * 100) + __GNUC_MINOR__)
+
+#if GNUC_VERSION_ELPD <= 407
+  #warning "using fstream version for writing keyfile."
+  #include <fstream>
+#endif
+
 using namespace std;
 using namespace vgio;
 using namespace vgio::_impl;
@@ -80,13 +87,22 @@ KeyFile::str KeyFile::to_data( Error *err ) const
     return res;
 }
 //=======================================================================================
+
+
 bool KeyFile::to_file( cstr fname, Error *err )
 {
     assert( p );
+
+  #if GNUC_VERSION_ELPD > 407
     error_proxy err_proxy( err );
     auto res = g_key_file_save_to_file( p.get(), fname.c_str(), err_proxy );
     err_proxy.flush();
     return res;
+  #else
+    ofstream o( fname, ios_base::trunc|ios_base::out );
+    o << to_data();
+    return o.good();
+  #endif
 }
 //=======================================================================================
 void KeyFile::set_list_separator( char sep )

@@ -1,5 +1,5 @@
 #========================================================================================
-# error.cmake
+# error.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,24 +14,20 @@
 
 
 #========================================================================================
+isEmpty(qi_error) {
+    qi_error = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== error appended ===")
 
-if ( NOT  ERROR_INCLUDED )
-    set ( ERROR_INCLUDED TRUE )
+    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
-    message( "Include error..." )
 
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/error/")
-
+    INCLUDEPATH += $$VLIBS_DIR/vgio/error
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/error/vgio_error.h") 
-    
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/error/vgio_error.cpp") 
-
-    message( "error included" )
-
-endif()
-# error.cmake
+    HEADERS     += $$VLIBS_DIR/vgio/error/vgio_error.h
+    SOURCES     += $$VLIBS_DIR/vgio/error/vgio_error.cpp
+}
+# error.pri
 #========================================================================================

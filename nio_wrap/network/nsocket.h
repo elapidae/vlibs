@@ -6,13 +6,13 @@
 #include "nerror.h"
 #include "ncancellable.h"
 
-#include "vsignal.h"
+//#include "vsignal.h"
 
 
 class NSocket final : public NObject
 {
 public:
-    //static NSocket udp4();
+    static NSocket udp4();
     //static NSocket udp6();
     //static NSocket tcp();
     //static NSocket sctp();
@@ -67,7 +67,7 @@ public:
     bool join_multicast_group( const NInetAddress &group, bool source_specific,
                                const char *iface, NError *err = nullptr );
 
-    VSignal<> ready_read;
+    //VSignal<> ready_read;
     void poll_in_context( NMainContext *ctx = nullptr,
                           NCancellable *cancel = nullptr );
 

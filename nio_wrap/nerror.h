@@ -2,7 +2,8 @@
 #define NERROR_H
 
 #include <memory>
-
+#include <stdint.h>
+#include <stdexcept>
 
 typedef struct _GError GError;
 

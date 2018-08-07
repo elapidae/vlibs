@@ -1,19 +1,37 @@
+#========================================================================================
+# vstring.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
+#========================================================================================
 isEmpty(qi_vstring) {
     qi_vstring = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vstring appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
-    CONFIG *= c++11
 
-    INCLUDEPATH += $$VLibs_Dir/vstring
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-    HEADERS     += $$VLibs_Dir/vstring/vstring.h
-    SOURCES     += $$VLibs_Dir/vstring/vstring.cpp
+    INCLUDEPATH += $$VLIBS_DIR/vstring
+
     
-    HEADERS     += $$VLibs_Dir/vstring/vbufferforwardreader.h
-    SOURCES     += $$VLibs_Dir/vstring/vbufferforwardreader.cpp
+    HEADERS     += $$VLIBS_DIR/vstring/vbufferforwardreader.h 
+    HEADERS     += $$VLIBS_DIR/vstring/vstring.h 
+    
+    SOURCES     += $$VLIBS_DIR/vstring/vstring.cpp 
+    SOURCES     += $$VLIBS_DIR/vstring/vbufferforwardreader.cpp 
 }
-
+# vstring.pri
+#========================================================================================

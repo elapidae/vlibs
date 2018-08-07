@@ -13,7 +13,7 @@
  *
 */
 //=======================================================================================
-
+#define VERSION_COMPILER_ELPD ( (__GNUC__ * 100) + __GNUC_MINOR__ )
 
 
 
@@ -27,7 +27,12 @@ public:
 
     //-----------------------------------------------------------------------------------
     // Часть конструкторов приходится перегружать...
+    #if VERSION_COMPILER_ELPD >= 407
+    #include "vstring_old_ctors.h"
+    #else
     using std::string::string;
+    #endif
+
     VString()                           noexcept;
     VString( std::string &&str )        noexcept;
     VString( const std::string &str );
