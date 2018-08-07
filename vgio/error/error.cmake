@@ -21,14 +21,15 @@ if ( NOT  ERROR_INCLUDED )
     message( "Include error..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vgio/core/core.cmake" )
+    include( "${VLIBS_DIR}/vcat/vcat.cmake" )
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+
+    include_directories( "${VLIBS_DIR}/vgio/error/" )
+
+    set( V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgio/error/vgio_error.h" )
+    set( V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgio/error/vgio_error.cpp" )
     #>>> Stop your code here ------------------------------------------------------------
-
-    include_directories( "${VLIBS_DIR}/error/")
-
-    
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/error/vgio_error.h") 
-    
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/error/vgio_error.cpp") 
 
     message( "error included" )
 

@@ -1,19 +1,40 @@
+#========================================================================================
+# vcat.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vcat..." )
+#========================================================================================
 
-include_directories( "${VLIBS_PATH}/vcat/" )
+if ( NOT  VCAT_INCLUDED )
+    set ( VCAT_INCLUDED TRUE )
 
-FILE( GLOB HEADERS_Vcat "${VLIBS_PATH}/vcat/*.h"   )
-FILE( GLOB SOURCES_Vcat "${VLIBS_PATH}/vcat/*.cpp" )
+    message( "Include vcat..." )
 
-set ( V_HEADERS ${V_HEADERS} ${HEADERS_Vcat} )
-set ( V_SOURCES ${V_SOURCES} ${SOURCES_Vcat} )
+    #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/c++11/c++11.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-if( NOT CPP11_STANDARD_INCLUDED )
-    add_definitions( -std=c++11 )
-    set ( CPP11_STANDARD_INCLUDED TRUE )
+    include_directories( "${VLIBS_DIR}/vcat/")
+
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vcat/vcat.cpp")
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vcat/vcat_containers.h")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vcat/vcat.h")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vcat/_vcat_iface.h")
+
+    message( "vcat included" )
+
 endif()
-
-message( "vcat has included..." )
-
+# vcat.cmake
+#========================================================================================

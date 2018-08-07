@@ -1,27 +1,46 @@
+#========================================================================================
+# vlog.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vfilelog..." )
+#========================================================================================
 
-include( "${VLIBS_PATH}/vlog/vlog.cmake" )
-include( "${VLIBS_PATH}/vdir/vdir.cmake" )
-include( "${VLIBS_PATH}/voutfile/voutfile.cmake" )
-include( "${VLIBS_PATH}/vthread/vthread.cmake" )
+if ( NOT  VFILELOG_INCLUDED )
+    set ( VFILELOG_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vlog/" )
+    message( "Include vfilelog..." )
 
-FILE( GLOB HEADERS_VFILELOGGER "${VLIBS_PATH}/vlog/vfilelog.h"   )
-FILE( GLOB SOURCES_VFILELOGGER "${VLIBS_PATH}/vlog/vfilelog.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    #   NB! Файл вычищен от лишнего руками.
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    include( "${VLIBS_DIR}/vdir/vdir.cmake" )
+    include( "${VLIBS_DIR}/voutfile/voutfile_with_rotate.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-FILE( GLOB HEADERS_VFILELOGGER ${HEADERS_VFILELOGGER}
-                                "${VLIBS_PATH}/vlog/vfilelog_threaded.h"   )
-FILE( GLOB SOURCES_VFILELOGGER ${SOURCES_VFILELOGGER}
-                                "${VLIBS_PATH}/vlog/vfilelog_threaded.cpp" )
+    include_directories( "${VLIBS_DIR}/vlog/")
 
-set ( HEADERS ${HEADERS} ${HEADERS_VFILELOGGER} )
-set ( SOURCES ${SOURCES} ${SOURCES_VFILELOGGER} )
+    
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_VFILELOGGER} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_VFILELOGGER} )
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vlog/vfilelog_threaded.h")
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vlog/vfilelog_keyfile.h")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vlog/vfilelog.h") 
+    
+    #set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vlog/vfilelog_threaded.cpp")
+    #set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vlog/vfilelog_keyfile.cpp")
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vlog/vfilelog.cpp") 
 
-message( "vfilelog included" )
+    message( "vfilelog included" )
 
+endif()
+# vlog.cmake
+#========================================================================================

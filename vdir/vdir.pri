@@ -1,14 +1,35 @@
+#========================================================================================
+# vdir.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
+#========================================================================================
 isEmpty(qi_vdir) {
     qi_vdir = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vdir appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
-    INCLUDEPATH += $$VLibs_Dir/vdir
 
-    HEADERS     += $$VLibs_Dir/vdir/vdir.h
-    SOURCES     += $$VLibs_Dir/vdir/vdir.cpp
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
+
+    INCLUDEPATH += $$VLIBS_DIR/vdir
+
+    
+    HEADERS     += $$VLIBS_DIR/vdir/vdir.h 
+    
+    SOURCES     += $$VLIBS_DIR/vdir/vdir.cpp 
 }
-
+# vdir.pri
+#========================================================================================

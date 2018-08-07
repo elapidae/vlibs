@@ -21,7 +21,7 @@ if ( NOT  VGIO_CORE_IMPL_INCLUDED )
     message( "Include VGIO core impl..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    include_directories( "${VLIBS_DIR}/vgio/core/impl/")
+    include_directories( "${VLIBS_DIR}/vgio/core")
 
     set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgio/core/impl/vgio_casting_helper.h")
 

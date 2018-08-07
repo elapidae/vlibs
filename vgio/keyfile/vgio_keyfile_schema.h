@@ -58,27 +58,27 @@ namespace vgio
         void set_current_group( const std::string &group );
 
         //-------------------------------------------------------------------------------
-        void append( cstr key, bool* dst, bool defval, cstr comment = str() );
+        void append( cstr key, bool* dst, bool init_val, cstr comment = str() );
 
-        void append( cstr key, int* dst, int defval, cstr comment = str(),
+        void append( cstr key, int* dst, int init_val, cstr comment = str(),
                      validator<int> validat = validator<int>() );
 
-        void append( cstr key, double* dst, double defval, cstr comment = str(),
+        void append( cstr key, double* dst, double init_val, cstr comment = str(),
                      validator<double> validat = validator<double>() );
 
-        void append( cstr key, str* dst, cstr defval, cstr comment = str() );
+        void append( cstr key, str* dst, cstr init_val, cstr comment = str() );
 
         //-------------------------------------------------------------------------------
-        void append( cstr key, bool_list *dst, cbool_list defval,
+        void append( cstr key, bool_list *dst, cbool_list init_val,
                      cstr comment = str() );
 
-        void append( cstr key, int_list *dst, cint_list defval,
+        void append( cstr key, int_list *dst, cint_list init_val,
                      cstr comment = str() );
 
-        void append( cstr key, double_list *dst, cdouble_list defval,
+        void append( cstr key, double_list *dst, cdouble_list init_val,
                      cstr comment = str() );
 
-        void append( cstr key, string_list *dst, cstr_list defval,
+        void append( cstr key, string_list *dst, cstr_list init_val,
                      cstr comment = str() );
 
         //-------------------------------------------------------------------------------
