@@ -23,6 +23,7 @@ isEmpty(qi_vgio_keyfile) {
 
     #<<< Start your code here -----------------------------------------------------------
     include( $$VLIBS_DIR/vgio/core/impl/helpers.pri )
+    include( $$VLIBS_DIR/vgio/error/error.pri )
 
     INCLUDEPATH += $$VLIBS_DIR/vgio/keyfile
 

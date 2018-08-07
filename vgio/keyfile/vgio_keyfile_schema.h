@@ -64,7 +64,7 @@ namespace vgio
                      validator<int> validat = validator<int>() );
 
         void append( cstr key, double* dst, double defval, cstr comment = str(),
-                     validator<double> validator = validator<double>() );
+                     validator<double> validat = validator<double>() );
 
         void append( cstr key, str* dst, cstr defval, cstr comment = str() );
 
