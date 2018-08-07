@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-#set( VLIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../.." )
+set( VLIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../.." )
 
 
 project(test_keyfile)

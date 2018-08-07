@@ -2,6 +2,8 @@
 #define NKEYFILE_SCHEMA_H
 
 #include "vgio_keyfile.h"
+#include "verror.h"
+#include <limits>
 
 //=======================================================================================
 /*
@@ -58,6 +60,24 @@ namespace vgio
         void set_current_group( const std::string &group );
 
         //-------------------------------------------------------------------------------
+
+        void append_i8( cstr key, int8_t* dst, int init_val, cstr comment = str(),
+                        validator<int> validat = validator<int>() );
+
+        void append_u8( cstr key, uint8_t* dst, int init_val, cstr comment = str(),
+                        validator<int> validat = validator<int>() );
+
+        void append_i16( cstr key, int16_t* dst, int init_val, cstr comment = str(),
+                         validator<int> validat = validator<int>() );
+
+        void append_u16( cstr key, uint16_t* dst, int init_val,cstr comment = str(),
+                         validator<int> validat = validator<int>() );
+
+        void append_float( cstr key, float* dst, float init_val, cstr comment = str(),
+                           validator<double> validat = validator<double>() );
+
+        //-------------------------------------------------------------------------------
+
         void append( cstr key, bool* dst, bool init_val, cstr comment = str() );
 
         void append( cstr key, int* dst, int init_val, cstr comment = str(),
@@ -112,6 +132,11 @@ namespace vgio
         std::string _cur_group;
 
         void _check_unique( cstr key, void *dst_ptr ) const;
+        //static str _group_key_str( cstr group, cstr key );
+
+        template<typename T>
+        void _append_any_int( cstr key, T* dst, int init_val,
+                              cstr comment, validator<int> validat );
     };
     //===================================================================================
     //      KeyFile_Schema

@@ -1,9 +1,13 @@
 #include "vgio_keyfile_schema.h"
 
 #include "verror.h"
+//#include "vlog_pretty.h"
 
 #include <assert.h>
 
+// Для отладки типов...
+template<class T>
+class TD;
 
 using namespace vgio;
 
@@ -51,7 +55,7 @@ public:
     Setter setter;
 
     T* dst;
-    T  def_val;
+    T  init_val;
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
@@ -65,7 +69,7 @@ void Spec_Field<T,Getter,Setter>::capture( const KeyFile &kf ) const
 template<typename T, typename Getter, typename Setter>
 void Spec_Field<T,Getter,Setter>::save_defaults_into( KeyFile *kf ) const
 {
-    (kf->*setter)(group, key, def_val);
+    (kf->*setter)(group, key, init_val);
 
     if ( !comment.empty() )
         kf->set_comment( group, key, comment );
@@ -81,19 +85,19 @@ bool Spec_Field<T,Getter,Setter>::is_destination( void *ptr ) const
 //=======================================================================================
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
-template<typename T, typename Getter, typename Setter>
+template<typename T, typename Getter, typename Setter, typename Valid_T>
 class Spec_Field_Validate : public Spec_Field<T,Getter,Setter>
 {
     using Base = Spec_Field<T,Getter,Setter>;
 public:
     void capture( const KeyFile &kf ) const override;
 
-    KeyFile_Schema::validator<T> validator;
+    KeyFile_Schema::validator<Valid_T> validator;
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
-template<typename T, typename Getter, typename Setter>
-void Spec_Field_Validate<T,Getter,Setter>::capture( const KeyFile &kf ) const
+template<typename T, typename Getter, typename Setter, typename Valid_T>
+void Spec_Field_Validate<T,Getter,Setter,Valid_T>::capture( const KeyFile &kf ) const
 {
     Base::capture( kf );
 
@@ -135,7 +139,7 @@ static void fill_spec( Spec_Field<T,Getter,Setter> *spec,
     spec->setter  = setter;
 
     spec->dst     = dst;
-    spec->def_val = def_val;
+    spec->init_val = def_val;
 
     spec->comment = comment;
 }
@@ -157,21 +161,23 @@ static KeyFile_Schema::_field_ptr make_spec (
 //=======================================================================================
 
 //=======================================================================================
-template<typename T, typename Getter, typename Setter>
+template<typename T, typename Getter, typename Setter, typename Valid_T>
 static KeyFile_Schema::_field_ptr make_spec_validate (
-                Getter   getter,     Setter   setter,
-                cstr     group,      cstr     key,
-                T*       dst,        const T& def_val,
+                Getter   getter,     Setter setter,
+                cstr     group,      cstr   key,
+                T*       dst,        T      init_val,
                 cstr     comment,
-                KeyFile_Schema::validator<T> validator )
+                KeyFile_Schema::validator<Valid_T> validator )
 {
-    if ( !validator.is_ok(def_val) )
-        throw verror( group_key_str(group,key), ": default value out of valid range!" );
+    // Проверка на соблюдение диапазона начальным значением.
+    if ( !validator.is_ok(init_val) )
+        throw verror( group_key_str(group,key), ": Начальное значение вне диапазона: ",
+                      double(init_val), " =/= [", validator.lo, ":", validator.hi, "].");
 
-    using spec_validate_type = Spec_Field_Validate<T, Getter, Setter>;
+    using spec_validate_type = Spec_Field_Validate<T, Getter, Setter, Valid_T>;
     auto res = std::make_shared<spec_validate_type>();
 
-    fill_spec( res.get(), getter, setter, group, key, dst, def_val, comment );
+    fill_spec( res.get(), getter, setter, group, key, dst, init_val, comment );
 
     res->validator = validator;
 
@@ -191,6 +197,105 @@ void KeyFile_Schema::set_current_group( const std::string &group )
     assert( !group.empty() );
     _cur_group = group;
 }
+//=======================================================================================
+//=======================================================================================
+template<typename Alt_T, typename Base_T>
+static void tune_alternate_validator( KeyFile_Schema::validator<Base_T> *valid,
+                                      cstr info )
+{
+    auto alt_min = std::numeric_limits<Alt_T>::lowest();
+    auto alt_max = std::numeric_limits<Alt_T>::max();
+
+    if ( !valid->activated )
+    {
+        valid->lo = Base_T(alt_min);
+        valid->hi = Base_T(alt_max);
+        valid->activated = true;
+        return;
+    }
+
+    if ( valid->lo < Base_T(alt_min) )
+        throw verror( "У валидатора для ", info, " слишком малая нижняя граница. (",
+                      valid->lo, " < ", alt_min, ").");
+
+    if ( valid->hi > Base_T(alt_max) )
+        throw verror( "У валидатора для ", info, " слишком большая верхняя граница. (",
+                      valid->hi, " > ", alt_max, ").");
+}
+//=======================================================================================
+template<typename Alt_T, typename Base_T>
+static void check_alternate_value( Base_T val, cstr info )
+{
+    auto alt_min = std::numeric_limits<Alt_T>::lowest();
+    auto alt_max = std::numeric_limits<Alt_T>::max();
+
+
+    if ( alt_min <= val && val <= alt_max ) return;
+
+    throw verror << "Начальное значение для " << info
+                 << " вне возможностей диапазона этого типа: "
+                 << val << "=/= [" << double(alt_min) << ":" << double(alt_max) << "].";
+}
+//=======================================================================================
+template<typename T>
+void KeyFile_Schema::_append_any_int( cstr key, T* dst, int init_val,
+                                      cstr comment, validator<int> validat )
+{
+    auto info = group_key_str( _cur_group, key );
+    tune_alternate_validator<T>( &validat, info );
+    check_alternate_value<T>( init_val, info );
+
+    auto getter = &KeyFile::get_int;
+    auto setter = &KeyFile::set_int;
+
+    auto in_val = static_cast<T>(init_val);
+    auto res = make_spec_validate( getter, setter, _cur_group, key, dst,
+                                   in_val, comment, validat );
+    _values.push_back( res );
+}
+//===================================================================================
+void KeyFile_Schema::append_i8( cstr key, int8_t *dst, int init_val,
+                                cstr comment, validator<int> validat )
+{
+    _append_any_int( key, dst, init_val, comment, validat );
+}
+//=======================================================================================
+void KeyFile_Schema::append_u8( cstr key, uint8_t *dst, int init_val,
+                                cstr comment, validator<int> validat )
+{
+    _append_any_int( key, dst, init_val, comment, validat );
+}
+//=======================================================================================
+void KeyFile_Schema::append_i16(cstr key, int16_t *dst, int init_val,
+                                 cstr comment, validator<int> validat )
+{
+    _append_any_int( key, dst, init_val, comment, validat );
+}
+//=======================================================================================
+void KeyFile_Schema::append_u16(cstr key, uint16_t *dst, int init_val,
+                                 cstr comment, validator<int> validat )
+{
+    _append_any_int( key, dst, init_val, comment, validat );
+}
+//=======================================================================================
+void KeyFile_Schema::append_float( cstr key, float *dst, float init_val,
+                                   cstr comment, validator<double> validat )
+{
+    using T = std::remove_reference<decltype(*dst)>::type;
+
+    auto info = group_key_str( _cur_group, key );
+    tune_alternate_validator<T>( &validat, info );
+    check_alternate_value<T>( init_val, info );
+
+    auto getter = &KeyFile::get_double;
+    auto setter = &KeyFile::set_double;
+
+    auto in_val = static_cast<T>(init_val);
+    auto res = make_spec_validate( getter, setter, _cur_group, key, dst,
+                                   in_val, comment, validat );
+    _values.push_back( res );
+}
+//=======================================================================================
 //=======================================================================================
 //  Проверяет, что такого ключа с текущей группой еще не добавляли.
 void KeyFile_Schema::_check_unique( cstr key, void *dst_ptr ) const

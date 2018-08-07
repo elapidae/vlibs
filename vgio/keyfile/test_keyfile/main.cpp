@@ -171,3 +171,25 @@ TEST_F(KF_Test, simple_shema)
 }
 
 //=======================================================================================
+
+TEST_F(KF_Test, extended_shema)
+{
+    int8_t i8;
+    uint8_t u8;
+    int16_t i16;
+    uint16_t u16;
+    float f;
+
+    KeyFile_Schema sh;
+    sh.set_current_group("Gr");
+    sh.append_i8("i8", &i8, 110, "", {-120,120} );
+    sh.append_u8("u8", &u8, 110, "", {100,120} );
+    sh.append_i16("i16", &i16, 110, "", {-120,120} );
+    sh.append_u16("u16", &u16, 110, "", {100,120} );
+    sh.append_float("f", &f, 110., "", {-120,120} );
+
+
+    auto kf = sh.build();
+    //vdeb << kf.to_data();
+    //sh.capture( kf );
+}
