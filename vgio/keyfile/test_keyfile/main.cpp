@@ -4,6 +4,7 @@
 
 #include "vgio_keyfile_schema.h"
 #include "vlog_pretty.h"
+#include "vcat_containers.h"
 
 using namespace std;
 using namespace vgio;
@@ -182,14 +183,19 @@ TEST_F(KF_Test, extended_shema)
 
     KeyFile_Schema sh;
     sh.set_current_group("Gr");
-    sh.append_i8("i8", &i8, 110, "", {-120,120} );
-    sh.append_u8("u8", &u8, 110, "", {100,120} );
-    sh.append_i16("i16", &i16, 110, "", {-120,120} );
-    sh.append_u16("u16", &u16, 110, "", {100,120} );
-    sh.append_float("f", &f, 110., "", {-120,120} );
+    sh.append("i8", &i8, 110, "", {-120,120} );
+    sh.append("u8", &u8, 110, "", {100,120} );
+    sh.append("i16", &i16, 110, "", {-120,120} );
+    sh.append("u16", &u16, 110, "", {100,120} );
+    sh.append("f", &f, 110., "", {-120,120} );
 
+
+    uint32_t bad;
+    EXPECT_THROW( sh.append("bad", &bad, uint32_t(110), "", {-120,120}), VError );
 
     auto kf = sh.build();
     //vdeb << kf.to_data();
     //sh.capture( kf );
 }
+
+//=======================================================================================

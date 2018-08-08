@@ -60,24 +60,24 @@ namespace vgio
         void set_current_group( const std::string &group );
 
         //-------------------------------------------------------------------------------
+        // Урезанные типы
+        void append( cstr key, int8_t* dst, int init_val, cstr comment = str(),
+                     validator<int> validat = validator<int>() );
 
-        void append_i8( cstr key, int8_t* dst, int init_val, cstr comment = str(),
-                        validator<int> validat = validator<int>() );
+        void append( cstr key, uint8_t* dst, int init_val, cstr comment = str(),
+                     validator<int> validat = validator<int>() );
 
-        void append_u8( cstr key, uint8_t* dst, int init_val, cstr comment = str(),
-                        validator<int> validat = validator<int>() );
+        void append( cstr key, int16_t* dst, int init_val, cstr comment = str(),
+                     validator<int> validat = validator<int>() );
 
-        void append_i16( cstr key, int16_t* dst, int init_val, cstr comment = str(),
-                         validator<int> validat = validator<int>() );
+        void append( cstr key, uint16_t* dst, int init_val,cstr comment = str(),
+                     validator<int> validat = validator<int>() );
 
-        void append_u16( cstr key, uint16_t* dst, int init_val,cstr comment = str(),
-                         validator<int> validat = validator<int>() );
-
-        void append_float( cstr key, float* dst, float init_val, cstr comment = str(),
-                           validator<double> validat = validator<double>() );
+        void append( cstr key, float* dst, double init_val, cstr comment = str(),
+                     validator<double> validat = validator<double>() );
 
         //-------------------------------------------------------------------------------
-
+        // Ведущие типы
         void append( cstr key, bool* dst, bool init_val, cstr comment = str() );
 
         void append( cstr key, int* dst, int init_val, cstr comment = str(),
@@ -89,6 +89,7 @@ namespace vgio
         void append( cstr key, str* dst, cstr init_val, cstr comment = str() );
 
         //-------------------------------------------------------------------------------
+        // Списки
         void append( cstr key, bool_list *dst, cbool_list init_val,
                      cstr comment = str() );
 
@@ -101,6 +102,11 @@ namespace vgio
         void append( cstr key, string_list *dst, cstr_list init_val,
                      cstr comment = str() );
 
+        //-------------------------------------------------------------------------------
+        // Заглушка
+        template<typename T>
+        void append( cstr key, T *dst, T init_val, cstr comment = str(),
+                     validator<double> v = validator<double>() );
         //-------------------------------------------------------------------------------
         /// Устанавливает все заранее перечисленные поля в значения из keyfile.
         /// В случае ошибок, бросит исключение Exception.
@@ -128,15 +134,17 @@ namespace vgio
         KeyFile_Schema& operator = (const KeyFile_Schema &) = delete;
 
         //-------------------------------------------------------------------------------
-        std::vector<_field_ptr> _values;
+        std::vector<_field_ptr> _fields;
         std::string _cur_group;
 
         void _check_unique( cstr key, void *dst_ptr ) const;
-        //static str _group_key_str( cstr group, cstr key );
 
-        template<typename T>
-        void _append_any_int( cstr key, T* dst, int init_val,
-                              cstr comment, validator<int> validat );
+        template<typename Dst_T, typename Base_T, typename GetSet>
+        void _append_any( GetSet, cstr key, Dst_T* dst, Base_T init_val, cstr comment );
+
+        template<typename Dst_T, typename Base_T, typename GetSet>
+        void _append_any_v( GetSet, cstr key, Dst_T* dst, Base_T init_val,
+                            cstr comment, validator<Base_T> validat );
     };
     //===================================================================================
     //      KeyFile_Schema
@@ -162,6 +170,14 @@ namespace vgio
     {
         if ( !activated ) return true;
         return lo <= val && val <= hi;
+    }
+    //===================================================================================
+    template<typename T>
+    void KeyFile_Schema::append( cstr key, T*, T, cstr, validator<double>  )
+    {
+        throw verror << "В '[" << _cur_group << "]:" << key << "' в качестве "
+                     << "приемника установлен тип, не предусмотренный для чтения "
+                        "из KeyFile. Проверьте поле принимающего типа (dst).";
     }
     //===================================================================================
     //      IMPLEMENTATION
