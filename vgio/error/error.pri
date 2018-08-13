@@ -1,5 +1,5 @@
 #========================================================================================
-# voutfile.pri
+# error.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,9 +14,9 @@
 
 
 #========================================================================================
-isEmpty(qi_voutfile) {
-    qi_voutfile = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== voutfile appended ===")
+isEmpty(qi_error) {
+    qi_error = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== error appended ===")
 
     isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
@@ -24,14 +24,10 @@ isEmpty(qi_voutfile) {
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/voutfile
-
+    INCLUDEPATH += $$VLIBS_DIR/vgio/error
     
-    HEADERS     += $$VLIBS_DIR/voutfile/voutfile.h 
-    HEADERS     += $$VLIBS_DIR/voutfile/voutfile_withrotate.h 
-    
-    SOURCES     += $$VLIBS_DIR/voutfile/voutfile_withrotate.cpp 
-    SOURCES     += $$VLIBS_DIR/voutfile/voutfile.cpp 
+    HEADERS     += $$VLIBS_DIR/vgio/error/vgio_error.h
+    SOURCES     += $$VLIBS_DIR/vgio/error/vgio_error.cpp
 }
-# voutfile.pri
+# error.pri
 #========================================================================================

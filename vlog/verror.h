@@ -23,7 +23,7 @@ class VError : public std::exception, public _vcat_iface<VError>
 {
 public:
     explicit VError( const char *file, int line, const char *fn );
-    virtual ~VError() override;
+    virtual ~VError() noexcept override;
 
     virtual const char * what() const noexcept override;
 

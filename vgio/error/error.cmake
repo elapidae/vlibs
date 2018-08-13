@@ -1,28 +1,37 @@
-#----------------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------------
+#========================================================================================
+# error.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
+
 
 #========================================================================================
-if ( NOT  VGIO_ERROR_INCLUDED )
-    set ( VGIO_ERROR_INCLUDED TRUE )
-    message( "about vgio error ..." )
 
-    include( "${VLIBS_DIR}/vgio/core/core.cmake" )
+if ( NOT  ERROR_INCLUDED )
+    set ( ERROR_INCLUDED TRUE )
 
-    include( "${VLIBS_DIR}/vcat/vcat.cmake" )
-    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    message( "Include error..." )
 
-    include_directories( "${VLIBS_DIR}/vgio/error" )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-    FILE( GLOB HEADERS_vgio_error "${VGIO_DIR}/error/vgio_error.h"   )
-    FILE( GLOB SOURCES_vgio_error "${VGIO_DIR}/error/vgio_error.cpp" )
+    include_directories( "${VLIBS_DIR}/error/")
 
-    set ( V_HEADERS ${V_HEADERS} ${HEADERS_vgio_error} )
-    set ( V_SOURCES ${V_SOURCES} ${SOURCES_vgio_error} )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/error/vgio_error.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/error/vgio_error.cpp") 
 
-    message( "vgio error included." )
+    message( "error included" )
 
 endif()
+# error.cmake
 #========================================================================================
-
-
-

@@ -1,5 +1,16 @@
-
-
+#========================================================================================
+# vchrono.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
 #========================================================================================
@@ -7,17 +18,20 @@ isEmpty(qi_vchrono) {
     qi_vchrono = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vchrono appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
-    INCLUDEPATH += $$VLibs_Dir/vchrono
 
-    #HEADERS     += $$VLibs_Dir/vchrono/vchrono.h
-    #SOURCES     += $$VLibs_Dir/vchrono/vchrono.cpp
+    #<<< Start your code here -----------------------------------------------------------
+    include( $$VLIBS_DIR/vcat/vcat.pri )
+    #>>> Stop your code here ------------------------------------------------------------
 
-    HEADERS     += $$VLibs_Dir/vchrono/vtimepoint.h
-    SOURCES     += $$VLibs_Dir/vchrono/vtimepoint.cpp
+    INCLUDEPATH += $$VLIBS_DIR/vchrono
 
-    HEADERS     += $$VLibs_Dir/vchrono/vchrono_weeks.h
+    
+    HEADERS     += $$VLIBS_DIR/vchrono/vtimepoint.h 
+    HEADERS     += $$VLIBS_DIR/vchrono/vchrono_weeks.h 
+    
+    SOURCES     += $$VLIBS_DIR/vchrono/vtimepoint.cpp 
 }
+# vchrono.pri
 #========================================================================================
-

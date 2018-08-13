@@ -4,7 +4,7 @@ isEmpty(qi_nio_wrap) {
     qi_nio_wrap = 1
     isEmpty(qi_not_print_pri_messages): message("=== NIO (GIO wrapper) appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir variable.")
+    #isEmpty(VLibs_Dir): error("Need VLibs_Dir variable.")
     isEmpty(Nio_Dir): error("Need Nio_Dir variable.")
 
     include($$VLibs_Dir/vlog/vlog.pri)

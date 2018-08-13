@@ -1,5 +1,5 @@
 #========================================================================================
-# voutfile.pri
+# keyfile.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,24 +14,28 @@
 
 
 #========================================================================================
-isEmpty(qi_voutfile) {
-    qi_voutfile = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== voutfile appended ===")
+isEmpty(qi_vgio_keyfile) {
+    qi_vgio_keyfile = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== keyfile appended ===")
 
     isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
+    include( $$VLIBS_DIR/vgio/core/impl/helpers.pri )
+    include( $$VLIBS_DIR/vgio/error/error.pri )
+
+    INCLUDEPATH += $$VLIBS_DIR/vgio/keyfile
+
+    HEADERS     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile.h
+    SOURCES     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile.cpp
+
+    HEADERS     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile_schema.h
+    SOURCES     += $$VLIBS_DIR/vgio/keyfile/vgio_keyfile_schema.cpp
+
+    OTHER_FILES += $$VLIBS_DIR/vgio/keyfile/README
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/voutfile
-
-    
-    HEADERS     += $$VLIBS_DIR/voutfile/voutfile.h 
-    HEADERS     += $$VLIBS_DIR/voutfile/voutfile_withrotate.h 
-    
-    SOURCES     += $$VLIBS_DIR/voutfile/voutfile_withrotate.cpp 
-    SOURCES     += $$VLIBS_DIR/voutfile/voutfile.cpp 
 }
-# voutfile.pri
+# keyfile.pri
 #========================================================================================

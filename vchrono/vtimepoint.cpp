@@ -4,7 +4,7 @@
 #include "vtimepoint.h"
 #include <sys/time.h>
 
-//#include "vlog_pretty.h"
+#include <stdexcept>
 
 
 

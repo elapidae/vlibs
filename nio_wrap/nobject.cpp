@@ -1,5 +1,7 @@
 #include "nobject.h"
 
+#include <assert.h>
+
 
 //=======================================================================================
 //      Object
@@ -18,14 +20,27 @@ bool NObject::is_null() const
     return !_p;
 }
 //=======================================================================================
+uint NObject::ref_count( const GObject *obj )
+{
+    assert( obj );
+    return obj->ref_count;
+}
+//=======================================================================================
 uint NObject::ref_count() const
 {
-    return _p ? _p->ref_count : 0;
+    return _p ? ref_count(_p.get()) : 0;
+}
+//=======================================================================================
+std::string NObject::type_name( const GObject *obj )
+{
+    assert( obj );
+    // Чистить не надо, оно статическое.
+    return g_type_name( obj->g_type_instance.g_class->g_type );
 }
 //=======================================================================================
 std::string NObject::type_name() const
 {
-    return g_type_name( _g_object->g_type_instance.g_class->g_type );
+    return type_name( _g_object );
 }
 //=======================================================================================
 //      Object
