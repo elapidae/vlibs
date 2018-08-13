@@ -2,9 +2,12 @@ project(tests_vgeometry C CXX)
 
 include_directories("${VLIBS_PATH}/vgeometry/tests" )
 
-FILE(GLOB T_SOURCES "${VLIBS_PATH}/vgeometry/*.cpp" "*.cpp")
+include( "${VLIBS_PATH}/vgeometry/vgeometry.cmake" )
 
-add_executable(${PROJECT_NAME} ${T_SOURCES})
+#FILE(GLOB T_SOURCES "${VLIBS_PATH}/vgeometry/*.cpp" "*.cpp")
+FILE( GLOB T_SOURCES "*.cpp" )
+
+add_executable(${PROJECT_NAME} ${T_SOURCES} ${V_SOURCES} )
 
 find_library(GTEST_LIBRARY NAMES libgtest.a PATHS ${EXT_LIBS_PATH})
 set(GTEST_LIBRARYS ${GTEST_LIBRARYS} ${GTEST_LIBRARY})

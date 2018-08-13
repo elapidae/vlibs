@@ -1,17 +1,37 @@
+#========================================================================================
+# vdir.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vdir..." )
+#========================================================================================
 
-include_directories( "${VLIBS_PATH}/vdir/" )
+if ( NOT  VDIR_INCLUDED )
+    set ( VDIR_INCLUDED TRUE )
 
-FILE( GLOB HEADERS_VDIR "${VLIBS_PATH}/vdir/vdir.h"   )
-FILE( GLOB SOURCES_VDIR "${VLIBS_PATH}/vdir/vdir.cpp" )
+    message( "Include vdir..." )
 
-set ( HEADERS ${HEADERS} ${HEADERS_VDIR} )
-set ( SOURCES ${SOURCES} ${SOURCES_VDIR} )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_VDIR} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_VDIR} )
+    include_directories( "${VLIBS_DIR}/vdir/")
 
-message( "vdir included" )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vdir/vdir.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vdir/vdir.cpp") 
 
+    message( "vdir included" )
+
+endif()
+# vdir.cmake
+#========================================================================================
