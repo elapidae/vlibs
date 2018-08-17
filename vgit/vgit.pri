@@ -1,15 +1,33 @@
+#========================================================================================
+# vgit.pri
+#
 #http://blog.mgsxx.com/?p=2140
+#
+#   Это система автоматического подтягивания в плюсовый код информации о текущем коммите.
+#
+#   Как это реализуется надо обязательно и подробно описать, смысл такой, чтобы скриптами
+#   перейти в папку с исходниками, награбить информацию во флаги компиляции и
+#   макросами вытянуть их до состояния объектов C++. Короче, магия, в основном, черная.
+#
+#   UPD 17-08-2018
+#   Решена проблема "оторванной головы". Когда реп находится в статусе Detached HEAD,
+#   команда git branch выдает "* (HEAD detached at 27130b6)".
+#   В результате, awk вытягивает "(HEAD". Скобочка, в итоге, делает больно препроцессору.
+#   Юра написал команду sed, чтобы избавиться от этой самой скобочки.
+#
+#========================================================================================
+
 
 isEmpty(qi_vgit2) {
     qi_vgit2 = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vgit2 appended ===")
 
-    isEmpty(Main_Dir): error("Please, specify Main_Dir=$$PWD in your .pro file.")
+    isEmpty(Main_Dir): error("vgit2: Please, specify Main_Dir=$$PWD in your .pro file.")
 
 
-    INCLUDEPATH += $$VLibs_Dir/vgit
-    HEADERS     += $$VLibs_Dir/vgit/vgit.h
-    SOURCES     += $$VLibs_Dir/vgit/vgit.cpp
+    INCLUDEPATH += $$VLIBS_DIR/vgit
+    HEADERS     += $$VLIBS_DIR/vgit/vgit.h
+    SOURCES     += $$VLIBS_DIR/vgit/vgit.cpp
 
 
     VGIT_REVCOUNT = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
@@ -24,19 +42,16 @@ isEmpty(qi_vgit2) {
     VGIT_AUTHOR   = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
                     git log -n 1 --pretty=format:\"%an\")"
 
-# Каменный цветочек не выходит, походу из-за кодировки.
-#    VGIT_COMMENT  = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
-#                    git log -n 1 --pretty=format:\"%s\")"
-
     VGIT_BRANCH   = "$$system(cd \"$$system_path($$Main_Dir)\"    && \
-                    git branch | awk \'{print \$2}\')"
+                    git branch | awk \'{print \$2}\' \
+                    | sed \'s/\(//g\')"
+
 
 
     DEFINES += VGIT_REVCOUNT_ELPD=\"$${VGIT_REVCOUNT}\"
     DEFINES += VGIT_HASH_ELPD=\"$${VGIT_HASH}\"
     DEFINES += VGIT_DATE_ELPD=\"$${VGIT_DATE}\"
     DEFINES += VGIT_AUTHOR_ELPD=\"$${VGIT_AUTHOR}\"
-#    DEFINES += VGIT_COMMENT_ELPD=\"$${VGIT_COMMENT}\"
     DEFINES += VGIT_BRANCH_ELPD=\"$${VGIT_BRANCH}\"
 
     message(">>> Current git hash: $${VGIT_HASH}, \
@@ -44,7 +59,6 @@ isEmpty(qi_vgit2) {
                              revcount: $${VGIT_REVCOUNT}, \
                              author: $${VGIT_AUTHOR}, \
                              date: $${VGIT_DATE}\
-#                             comment: $${VGIT_COMMENT}\
                              ")
 
 
@@ -59,3 +73,5 @@ isEmpty(qi_vgit2) {
     #DEFINES += VGIT_CURRENT_GENERAL_SOURCES_PATH=\"$${PWD}\"
     #DEFINES += VGIT_CURRENT_GENERAL_BUILD_PATH=\"$$shadowed($$PWD)\"
 }
+# vgit.pri
+#========================================================================================
