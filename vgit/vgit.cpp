@@ -35,8 +35,7 @@ std::string VGit::author()
     return VGIT_CURRECT_AUTHOR_BYEL;
 }
 //=======================================================================================
-//  Если ветка называется HEAD, это значит, что мы на оторванной голове.
-//  Подробнее см. vgit.pri
+//  Если ветка HEAD, значит, что у репа оторвана голова. Подробнее см. vgit.pri.
 std::string VGit::branch()
 {
     std::string res = VGIT_CURRECT_BRANCH_BYEL;
