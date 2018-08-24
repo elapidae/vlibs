@@ -35,17 +35,15 @@ std::string VGit::author()
     return VGIT_CURRECT_AUTHOR_BYEL;
 }
 //=======================================================================================
-//  Пока не запускается...
-//std::string VGit::comment()
-//{
-//    return VGIT_CURRECT_OLOLOLOLO;
-//    //return "comment";
-//    return VGIT_CURRECT_COMMENT_BYEL;
-//}
-//=======================================================================================
+//  Если ветка HEAD, значит, что у репа оторвана голова. Подробнее см. vgit.pri.
 std::string VGit::branch()
 {
-    return VGIT_CURRECT_BRANCH_BYEL;
+    std::string res = VGIT_CURRECT_BRANCH_BYEL;
+
+    if ( res == "HEAD" )
+        return  "DETACHED HEAD";
+
+    return res;
 }
 //=======================================================================================
 std::string VGit::revcount()
