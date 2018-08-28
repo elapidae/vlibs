@@ -1,13 +1,33 @@
+#========================================================================================
+# vimage.pri
+#   NB! Изменен руками, постарайтесь не перегенерировать.
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
+#========================================================================================
 isEmpty(qi_vimage) {
     qi_vimage = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vimage appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("vimage: Need VLIBS_DIR correct path.")
 
-    INCLUDEPATH += $$VLibs_Dir/vimage
 
-    HEADERS     += $$VLibs_Dir/vimage/vimage.h
-    SOURCES     += $$VLibs_Dir/vimage/vimage.cpp
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
+
+    INCLUDEPATH += $$VLIBS_DIR/vimage
+    
+    HEADERS     += $$VLIBS_DIR/vimage/vimage.h 
+    SOURCES     += $$VLIBS_DIR/vimage/vimage.cpp 
 }
+# vimage.pri
+#========================================================================================

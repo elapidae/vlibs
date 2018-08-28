@@ -10,12 +10,19 @@
  *  VZCM_Subscriber -- подписчик на ZCM сообщения. Во-первых, берет на себя подписку,
  *  во-вторых, не заставляет создавать класс-приемник.
  *
+ *  При удалении объекта-подписчика он автоматически отписывается от zcm подписки.
+ *
  *  Примерное использование:
         using Subscriber = VZCM_Subscriber<ZcmVeryLongStrangePassiveTypeName>;
-        Subscriber subs( &zcm, "Channel" );
-        subs.received.connect( [&](const Subscriber::ZType &msg)
+        Subscriber subscriber( &zcm, "Channel" );
+        subscriber.received.connect( [&](const Subscriber::ZType &msg)
         {
             .. using msg ..
+        });
+        subscriber.received_channel.connect( [&](const Subscriber::ZType &msg,
+                                                 const std::string &channel)
+        {
+            .. using msg and channel ..
         });
 */
 //=======================================================================================
@@ -67,7 +74,7 @@ private:
 //=======================================================================================
 template<typename ZCM_Type>
 VZCM_Subscriber<ZCM_Type>::VZCM_Subscriber( zcm::ZCM *z, const std::string &channel )
-    : _zcm(z)
+    : _zcm( z )
 {
     _handle = z->subscribe( channel, &VZCM_Subscriber<ZCM_Type>::_subsribe, this );
     assert( _handle );
@@ -81,8 +88,8 @@ VZCM_Subscriber<ZCM_Type>::~VZCM_Subscriber()
 //=======================================================================================
 template<typename ZCM_Type>
 void VZCM_Subscriber<ZCM_Type>::_subsribe( const zcm::ReceiveBuffer*,
-                const std::string &channel,
-                const ZCM_Type *zzz )
+                                           const std::string &channel,
+                                           const ZCM_Type *zzz )
 {
     received( *zzz );
     received_channel( *zzz, channel );

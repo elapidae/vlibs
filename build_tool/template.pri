@@ -18,7 +18,7 @@ isEmpty(qi_{{vlib_name}}) {
     qi_{{vlib_name}} = 1;
     isEmpty(qi_not_print_pri_messages): message("=== {{vlib_name}} appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("{{vlib_name}}: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
