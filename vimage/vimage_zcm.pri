@@ -1,30 +1,25 @@
+#========================================================================================
+#   UPD 2018-08-28      by Elapidae
+#
+#   Файл ручной работы, подтягивает ZCM к VImage.
+#   Сделан без каких-либо включений источников, просто через шаблон, работает по полям
+#   (см. vimage_zcm.h).
+#
+#   В общем, это include-отрыжка, т.к. не несет очевидной пользы, но, по крайнем мере,
+#   скрашивает знакомство с ZCM_TYPES.
+#
+#========================================================================================
 
 
+#========================================================================================
 isEmpty(qi_zcm_image) {
     qi_zcm_image = 1;
     isEmpty(qi_not_print_pri_messages): message("=== zcm_image appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
-    include($$VLibs_Dir/vimage/vimage.pri)
-    include($$VLibs_Dir/vzcm/vzcm.pri)
+    isEmpty(VLIBS_DIR): error("zcm_image: Need VLIBS_DIR correct path.")
+    include( $$VLIBS_DIR/vimage/vimage.pri )
+    include( $$VLIBS_DIR/vzcm/vzcm.pri )
 
-    HEADERS += $$VLibs_Dir/vimage/vimage_zcm.h
-    SOURCES += $$VLibs_Dir/vimage/vimage_zcm.cpp
-
-    #HEADERS += $$VLibs_Dir/vimage/z_image.h
-    #HEADERS += $$VLibs_Dir/vimage/ZCM_Image.h
-    #SOURCES += $$VLibs_Dir/vimage/z_image.cpp
-
-    #vzcm_image_pre_target.target = vzcm_image
-    #vzcm_image_pre_target.commands = \
-    #    cd $$system_path($$PWD/zcm) &&              \
-    #    if [ ! -f ../ZCM_Image.hpp ]; then          \
-    #    zcm-gen -x zcm_image.zcm --cpp-hpath ..; fi
-
-
-    #vzcm_image_pre_target.CONFIG = phony
-    #QMAKE_EXTRA_TARGETS +=   vzcm_image_pre_target
-    #PRE_TARGETDEPS      += $$vzcm_image_pre_target.target
-    #first.depends       += $$vzcm_image_pre_target.target
+    HEADERS += $$VLIBS_DIR/vimage/vimage_zcm.h
 }
-
+#========================================================================================
