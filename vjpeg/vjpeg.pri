@@ -4,18 +4,18 @@ isEmpty(qi_vjpeg) {
     qi_vjpeg = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vjpeg appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
 
-    include( $$VLibs_Dir/vlog/vlog.pri )
-    include( $$VLibs_Dir/vimage/vimage.pri )
-    include( $$VLibs_Dir/vstring/vstring.pri )
-    include( $$VLibs_Dir/voutfile/voutfile.pri )
+    include( $$VLIBS_DIR/vlog/vlog.pri )
+    include( $$VLIBS_DIR/vimage/vimage.pri )
+    include( $$VLIBS_DIR/vstring/vstring.pri )
+    include( $$VLIBS_DIR/voutfile/voutfile.pri )
 
     LIBS *= -ljpeg
 
-    INCLUDEPATH += $$VLibs_Dir/vjpeg
+    INCLUDEPATH += $$VLIBS_DIR/vjpeg
 
-    HEADERS     += $$VLibs_Dir/vjpeg/vjpeg.h
-    SOURCES     += $$VLibs_Dir/vjpeg/vjpeg.cpp
+    HEADERS     += $$VLIBS_DIR/vjpeg/vjpeg.h
+    SOURCES     += $$VLIBS_DIR/vjpeg/vjpeg.cpp
 }
 

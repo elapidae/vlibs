@@ -7,10 +7,10 @@ isEmpty(qi_qt_vinvoke) {
 
     !contains(CONFIG, c++11): CONFIG += c++11
 
-    INCLUDEPATH += $$VLibs_Dir/qt_vinvoke
+    INCLUDEPATH += $$VLIBS_DIR/qt_vinvoke
 
-    HEADERS  	+= $$VLibs_Dir/qt_vinvoke/qt_vinvoke.h
-    SOURCES  	+= $$VLibs_Dir/qt_vinvoke/qt_vinvoke.cpp
+    HEADERS  	+= $$VLIBS_DIR/qt_vinvoke/qt_vinvoke.h
+    SOURCES  	+= $$VLIBS_DIR/qt_vinvoke/qt_vinvoke.cpp
 }
 # -----------------------------------------------------------------------
 

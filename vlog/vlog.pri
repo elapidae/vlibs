@@ -18,7 +18,7 @@ isEmpty(qi_vlog) {
     qi_vlog = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vlog appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vlog: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------

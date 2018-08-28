@@ -1,22 +1,29 @@
+#========================================================================================
+# vimage_opencv.cmake
+#
+# NB! Файл правлен ручками, постарайтесь не перегенерировать.
+#
+#========================================================================================
 
 
-message( "Include VImageOpencv..." )
+#========================================================================================
 
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if ( NOT  VIMAGE_OPENCV_INCLUDED )
+    set ( VIMAGE_OPENCV_INCLUDED TRUE )
 
-include( "${VLIBS_PATH}/vlog/vlog.cmake" )
-include( "${VLIBS_PATH}/vimage/vimage.cmake" )
+    message( "Include vimage opencv..." )
 
-include_directories( "${VLIBS_PATH}/vimage/" )
+    #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vimage/vimage.cmake" )
+    include( "${VLIBS_DIR}/vopencv/vopencv.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-FILE( GLOB HEADERS_vimage "${VLIBS_PATH}/vimage/vimage_opencv.h"   )
-FILE( GLOB SOURCES_vimage "${VLIBS_PATH}/vimage/vimage_opencv.cpp" )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vimage/vimage_opencv.h")
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vimage/vimage_opencv.cpp")
 
-set ( HEADERS ${HEADERS} ${HEADERS_vimage} )
-set ( SOURCES ${SOURCES} ${SOURCES_vimage} )
+    message( "vimage opencv included" )
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_vimage} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_vimage} )
-
-message( "vimage included..." )
-
+endif()
+# vimage_opencv.cmake
+#========================================================================================

@@ -18,7 +18,7 @@ isEmpty(qi_vchrono) {
     qi_vchrono = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vchrono appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vchrono: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------

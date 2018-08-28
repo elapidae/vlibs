@@ -5,7 +5,7 @@ isEmpty(qt_pretty_build) {
     isEmpty(qi_not_print_pri_messages): message("=== qt_pretty_build appended ===")
 
 
-    # каталог, куда ложить результирующий исполняемый файл
+    # каталог, куда загонять результирующий исполняемый файл
     DESTDIR = bin
 
     # промежуточные файлы, созданные moc
@@ -21,7 +21,6 @@ isEmpty(qt_pretty_build) {
     # промежуточные файлы, созданные компилятором
     # файлов форм (.ui) Qt (uic)
     UI_DIR = uic
-
 }
 
 
