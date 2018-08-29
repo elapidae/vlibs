@@ -21,6 +21,9 @@ if ( NOT  VPID_INCLUDED )
     message( "Include vpid..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    include( "${VLIBS_DIR}/vdir/vdir.cmake" )
+    include( "${VLIBS_DIR}/voutfile/voutfile.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vpid/")
