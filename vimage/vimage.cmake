@@ -1,19 +1,29 @@
+#========================================================================================
+# vimage.cmake
+#
+# NB! Файл правлен ручками, постарайтесь не перегенерировать.
+#
+#========================================================================================
 
 
-message( "Include vimage..." )
+#========================================================================================
 
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if ( NOT  VIMAGE_INCLUDED )
+    set ( VIMAGE_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vimage/" )
+    message( "Include vimage..." )
 
-FILE( GLOB HEADERS_vimage "${VLIBS_PATH}/vimage/vimage.h"   )
-FILE( GLOB SOURCES_vimage "${VLIBS_PATH}/vimage/vimage.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_vimage} )
-set ( SOURCES ${SOURCES} ${SOURCES_vimage} )
+    include_directories( "${VLIBS_DIR}/vimage/")
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_vimage} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_vimage} )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vimage/vimage.h") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vimage/vimage.cpp") 
 
-message( "vimage included..." )
+    message( "vimage included" )
 
+endif()
+# vimage.cmake
+#========================================================================================

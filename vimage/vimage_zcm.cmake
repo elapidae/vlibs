@@ -1,19 +1,26 @@
+#========================================================================================
+# vimage_zcm.cmake
+#
+# NB! Файл правлен ручками, постарайтесь не перегенерировать.
+#
+#========================================================================================
 
 
-message( "Include VImageZcm..." )
+#========================================================================================
 
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if ( NOT  VIMAGE_ZCM_INCLUDED )
+    set ( VIMAGE_ZCM_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vimage/" )
+    message( "Include vimage ZCM..." )
 
-FILE( GLOB HEADERS_vimage "${VLIBS_PATH}/vimage/vimage_zcm.h"   )
-FILE( GLOB SOURCES_vimage "${VLIBS_PATH}/vimage/vimage_zcm.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vimage/vimage.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_vimage} )
-set ( SOURCES ${SOURCES} ${SOURCES_vimage} )
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vimage/vimage_zcm.h")
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_vimage} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_vimage} )
+    message( "vimage ZCM included" )
 
-message( "vimage included..." )
-
+endif()
+# vimage_zcm.cmake
+#========================================================================================

@@ -1,19 +1,37 @@
+#========================================================================================
+# vapp_args_parser.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include VArgs parser..." )
+#========================================================================================
 
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+if ( NOT  VAPP_ARGS_PARSER_INCLUDED )
+    set ( VAPP_ARGS_PARSER_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vapp_args_parser/" )
+    message( "Include vapp_args_parser..." )
 
-FILE( GLOB HEADERS_VArgsParser "${VLIBS_PATH}/vapp_args_parser/vapp_args_parser.h"   )
-FILE( GLOB SOURCES_VArgsParser "${VLIBS_PATH}/vapp_args_parser/vapp_args_parser.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_VArgsParser} )
-set ( SOURCES ${SOURCES} ${SOURCES_VArgsParser} )
+    include_directories( "${VLIBS_DIR}/vapp_args_parser/")
 
-set ( INC_ALL ${INC_ALL} ${HEADERS_VArgsParser} )
-set ( SRC_ALL ${SRC_ALL} ${SOURCES_VArgsParser} )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vapp_args_parser/vapp_args_parser.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vapp_args_parser/vapp_args_parser.cpp") 
 
-message( "VArgs parser included..." )
+    message( "vapp_args_parser included" )
 
+endif()
+# vapp_args_parser.cmake
+#========================================================================================

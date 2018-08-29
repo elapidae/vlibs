@@ -18,7 +18,7 @@ isEmpty(qi_vcat) {
     qi_vcat = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vcat appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vcat: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
