@@ -1,5 +1,5 @@
 #========================================================================================
-# vdir.pri
+# vcrc.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,22 +14,23 @@
 
 
 #========================================================================================
-isEmpty(qi_vdir) {
-    qi_vdir = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vdir appended ===")
+isEmpty(qi_vcrc) {
+    qi_vcrc = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vcrc appended ===")
 
-    isEmpty(VLIBS_DIR): error("vdir: Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vcrc: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
+    CONFIG *= c++11
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vdir
+    INCLUDEPATH += $$VLIBS_DIR/vcrc
 
     
-    HEADERS     += $$VLIBS_DIR/vdir/vdir.h 
+    HEADERS     += $$VLIBS_DIR/vcrc/vcrc.h 
     
-    SOURCES     += $$VLIBS_DIR/vdir/vdir.cpp 
+    SOURCES     += $$VLIBS_DIR/vcrc/vcrc.cpp 
 }
-# vdir.pri
+# vcrc.pri
 #========================================================================================

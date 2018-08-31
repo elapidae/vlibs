@@ -18,5 +18,8 @@ add_executable(${PROJECT_NAME} "main.cpp")
 add_subdirectory("${VLIBS_DIR}/vgio/keyfile/test_keyfile/")
 
 # VLIBS_PATH устарела, далее от нее надо избавиться.
-set( VLIBS_PATH  "${VLIBS_DIR}" )
+#set( VLIBS_PATH  "${VLIBS_DIR}" )
 add_subdirectory("${VLIBS_DIR}/vgeometry/tests/")
+
+
+add_subdirectory("${VLIBS_DIR}/vcrc/test_vcrc/")

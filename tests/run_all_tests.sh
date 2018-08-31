@@ -6,6 +6,10 @@ cd build-all-tests
 cmake .. || exit 1
 make -j6 || exit 1
 
-
+echo ==================================================================
 vlibs/vgeometry/tests/tests_vgeometry
+echo ==================================================================
 vlibs/vgio/keyfile/test_keyfile/test_keyfile
+echo ==================================================================
+vlibs/vcrc/test_vcrc/test_vcrc
+echo ==================================================================

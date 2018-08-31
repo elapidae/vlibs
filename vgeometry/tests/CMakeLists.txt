@@ -1,10 +1,10 @@
 project(tests_vgeometry C CXX)
 
-include_directories("${VLIBS_PATH}/vgeometry/tests" )
+include_directories("${VLIBS_DIR}/vgeometry/tests" )
 
-include( "${VLIBS_PATH}/vgeometry/vgeometry.cmake" )
+include( "${VLIBS_DIR}/vgeometry/vgeometry.cmake" )
 
-#FILE(GLOB T_SOURCES "${VLIBS_PATH}/vgeometry/*.cpp" "*.cpp")
+#FILE(GLOB T_SOURCES "${VLIBS_DIR}/vgeometry/*.cpp" "*.cpp")
 FILE( GLOB T_SOURCES "*.cpp" )
 
 add_executable(${PROJECT_NAME} ${T_SOURCES} ${V_SOURCES} )

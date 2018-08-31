@@ -1,5 +1,5 @@
 #========================================================================================
-# vdir.pri
+# vcrc.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,22 +14,25 @@
 
 
 #========================================================================================
-isEmpty(qi_vdir) {
-    qi_vdir = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vdir appended ===")
 
-    isEmpty(VLIBS_DIR): error("vdir: Need VLIBS_DIR correct path.")
+if ( NOT  VCRC_INCLUDED )
+    set ( VCRC_INCLUDED TRUE )
 
+    message( "Include vcrc..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/c++11/c++11.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vdir
+    include_directories( "${VLIBS_DIR}/vcrc/")
 
     
-    HEADERS     += $$VLIBS_DIR/vdir/vdir.h 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vcrc/vcrc.h") 
     
-    SOURCES     += $$VLIBS_DIR/vdir/vdir.cpp 
-}
-# vdir.pri
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vcrc/vcrc.cpp") 
+
+    message( "vcrc included" )
+
+endif()
+# vcrc.cmake
 #========================================================================================
