@@ -11,6 +11,10 @@ VBufferForwardReader::VBufferForwardReader( const std::string &buf )
     : VBufferForwardReader( buf.data(), buf.size() )
 {}
 //=======================================================================================
+VBufferForwardReader::VBufferForwardReader( const string *buf )
+    : VBufferForwardReader( buf->data(), buf->size() )
+{}
+//=======================================================================================
 VBufferForwardReader::VBufferForwardReader( const char *buf, size_t size )
     : _buffer   ( buf  )
     , _remained ( size )

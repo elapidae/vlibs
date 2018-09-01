@@ -26,9 +26,10 @@ class VBufferForwardReader
 public:
 
     //-----------------------------------------------------------------------------------
-
+    [[deprecated]]
     explicit VBufferForwardReader( const std::string &buf );
-    VBufferForwardReader( const char *buf, size_t size );
+    explicit VBufferForwardReader( const std::string *buf );
+    explicit VBufferForwardReader( const char *buf, size_t size );
 
     size_t remained() const;
     bool finished() const;

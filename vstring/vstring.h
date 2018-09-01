@@ -4,16 +4,31 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <linux/swab.h>
 
 //=======================================================================================
 /*  2018-02-02
  *
  *  VString  -- буфер для сырых данных. Также может использоваться для удобства, если
- * есть пожелания касательно добавления к-л функциональности, милости прошу.
+ *  есть пожелания касательно добавления к-л функциональности, милости прошу.
  *
+ *  Аббревиатуры BE/LE означают Big/Little Endian соответственно (идею честно подглядел
+ *  на SDK лидаров).
+ *  -------------------------------------------------------------------------------------
+ *  UPD 17-08-2018
+ *  Были реализованы все конструкторы из Стандарта, список которых был взят отсюда:
+ *  http://www.cplusplus.com/reference/string/string/string/
+ *
+ *  Таким образом получена совместимость со старым компилятором, не поддерживающим
+ *  using std::string::string;
+ *
+ *  Заодно, конструкторы само-в-коде-документированы.
+ *  -------------------------------------------------------------------------------------
+ *  UPD 21-08-2018
+ *  Реверс между Little <-> Big endian реализован православным для линукса способом
+ *  (через __swab(), он, по идее, транслируется в bswap).
 */
 //=======================================================================================
-#define VERSION_COMPILER_ELPD ( (__GNUC__ * 100) + __GNUC_MINOR__ )
 
 
 
@@ -26,31 +41,38 @@ public:
     using vector = std::vector<VString>;
 
     //-----------------------------------------------------------------------------------
-    // Часть конструкторов приходится перегружать...
-    #if VERSION_COMPILER_ELPD >= 407
-    #include "vstring_old_ctors.h"
-    #else
-    using std::string::string;
-    #endif
+    // Все конструкторы проксированы.
 
-    VString()                           noexcept;
-    VString( std::string &&str )        noexcept;
-    VString( const std::string &str );
+    VString()                                     noexcept;             // Default    (1)
+    VString( const std::string& str );                                  // Copy       (2)
 
-    VString( VString &&str )                    = default;
-    VString( const VString &str )               = default;
-    VString& operator = ( VString &&str )       = default;
-    VString& operator = ( const VString &str )  = default;
+    VString( const std::string& str, size_t pos, size_t len = npos );   // Substring  (3)
+    VString( const char* s );                                           // C-string   (4)
+    VString( const char* s, size_t n );                                 // Buffer     (5)
+    VString( size_t n, char c );                                        // Fill       (6)
+
+    template <class InputIterator>
+    VString( InputIterator first, InputIterator last );                 // Range      (7)
+
+    VString( const std::initializer_list<char>& il );                   // Init list  (8)
+    VString( std::string&& str )                  noexcept;             // Move       (9)
+
+
+    VString( VString&& str )                    = default;
+    VString( const VString& str )               = default;
+    VString& operator = ( VString&& str )       = default;
+    VString& operator = ( const VString& str )  = default;
 
     //-----------------------------------------------------------------------------------
     // Нечувствительна к регистру, все символы, кроме набора hex игнорируются.
     // NB! При нечетном количестве годных символов, считается, что первый -- ноль.
     static VString from_hex( const std::string &src );
+    VString from_hex() const;
 
-    VString tohex () const;  // сплошным текстом, строчными.
-    VString toHex () const;  // сплошным текстом, Заглавными.
-    VString to_hex() const;  // с пробелами, строчными.
-    VString to_Hex() const;  // с пробелами, Заглавными.
+    VString tohex () const;                         // сплошным текстом, строчными.
+    VString toHex () const;                         // сплошным текстом, Заглавными.
+    VString to_hex( char separator = ' ' ) const;   // с разделителями, строчными.
+    VString to_Hex( char separator = ' ' ) const;   // с разделителями, Заглавными.
 
     //-----------------------------------------------------------------------------------
     void prepend ( const std::string &s );
@@ -80,9 +102,24 @@ public:
     char take_front();
     char take_back();
 
-    void append_byte_string     ( const std::string &str ); // throw error if bigger 255
-    void append_word_string_LE  ( const std::string &str ); // throw error if bigger 2^16
-    void append_dword_string_LE ( const std::string &str ); // throw error if bigger 2^32
+    //-----------------------------------------------------------------------------------
+    //  Методы - ускорители. Sized строками называются строки, перед которыми стоит их
+    //  размер. Т.е. <size><string_data>. Размеры могут храниться в байтах, словах и
+    //  двойных словах, притом слова и двойные слова размеров могут быть записаны
+    //  в Big и little endian.
+    //  В названиях, соответственно, размер в байтах указан после слова sized.
+    //  Размер устанавливается перед строкой, читать можно только с начала.
+    //
+    //  Реализованы только append_* методы, т.к. с prepend совсем уж мясо получается,
+    //  начинает хромать логика применения. Если что, пользуйтесь составными методами.
+
+    void append_sized1_string     ( const std::string& str );
+
+    void append_sized2_string_LE  ( const std::string& str );
+    void append_sized2_string_BE  ( const std::string& str );
+
+    void append_sized4_string_LE  ( const std::string& str );
+    void append_sized4_string_BE  ( const std::string& str );
 
     //-----------------------------------------------------------------------------------
     // удаление n символов с разных сторон.
@@ -91,8 +128,18 @@ public:
     void chop_back  ( size_t n );
 
     //-----------------------------------------------------------------------------------
-    bool begins_with ( const std::string &what ) const;
-    bool ends_with   ( const std::string &what ) const;
+    bool begins_with ( const std::string& what ) const;
+    bool ends_with   ( const std::string& what ) const;
+
+    // Возвращает строку без начальных и конечных пробелов (функция isspace()).
+    VString trimmed() const;
+
+    // Разрезает текст, используя разделители всех мастей. Пустых не берем.
+    std::vector<VString> split_by_spaces() const;
+
+    //-----------------------------------------------------------------------------------
+    VString left  ( size_t sz ) const;
+    VString right ( size_t sz ) const;
 
     //-----------------------------------------------------------------------------------
     std::vector<std::string> split( char splitter ) const;
@@ -123,6 +170,15 @@ private:
 
 //=======================================================================================
 //      IMPLEMENTATION
+//=======================================================================================
+//      Constructors
+//=======================================================================================
+template <class InputIterator>
+VString::VString( InputIterator first, InputIterator last )
+    : std::string( first, last )
+{}
+//=======================================================================================
+//      Constructors
 //=======================================================================================
 //      Public wrappers
 //=======================================================================================
@@ -330,17 +386,14 @@ T VString::reverse_T( T val )
 {
     _check_that_arithmetic_and_1_2_4_8<T>();
 
-    auto *ch = static_cast<char*>( static_cast<void*>(&val) );
-
-    constexpr auto tsize = sizeof(T);
-    switch ( tsize )
+    switch ( sizeof(T) )
     {
-    case 8: std::swap( ch[3], ch[tsize-4] );
-            std::swap( ch[2], ch[tsize-3] );
-    case 4: std::swap( ch[1], ch[tsize-2] );
-    case 2: std::swap( ch[0], ch[tsize-1] );
+    case 2: return __swab16( val );
+    case 4: return __swab32( val );
+    case 8: return __swab64( val );
     }
-    return val;
+
+    return val; // Для единичного размера.
 }
 //=======================================================================================
 //      front, back & pop_front, pop_back
