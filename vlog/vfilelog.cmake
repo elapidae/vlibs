@@ -23,7 +23,7 @@ if ( NOT  VFILELOG_INCLUDED )
     #   NB! Файл вычищен от лишнего руками.
     include( "${VLIBS_DIR}/vlog/vlog.cmake" )
     include( "${VLIBS_DIR}/vdir/vdir.cmake" )
-    #include( "${VLIBS_DIR}/voutfile/voutfile_with_rotate.cmake" )
+    include( "${VLIBS_DIR}/voutfile/voutfile.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vlog/")
