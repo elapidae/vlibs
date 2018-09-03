@@ -29,8 +29,11 @@ if ( NOT  VOUTFILE_INCLUDED )
     include_directories( "${VLIBS_DIR}/voutfile/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/voutfile/voutfile.h") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/voutfile/voutfile.cpp") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/voutfile/voutfile.h")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/voutfile/voutfile_with_rotate.h")
+
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/voutfile/voutfile.cpp")
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/voutfile/voutfile_with_rotate.cpp")
 
     message( "voutfile included" )
 
