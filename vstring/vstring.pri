@@ -27,11 +27,11 @@ isEmpty(qi_vstring) {
     INCLUDEPATH += $$VLIBS_DIR/vstring
 
     
-    HEADERS     += $$VLIBS_DIR/vstring/vbufferforwardreader.h 
+    #HEADERS     += $$VLIBS_DIR/vstring/vbufferforwardreader.h
     HEADERS     += $$VLIBS_DIR/vstring/vstring.h 
     
     SOURCES     += $$VLIBS_DIR/vstring/vstring.cpp 
-    SOURCES     += $$VLIBS_DIR/vstring/vbufferforwardreader.cpp 
+    #SOURCES     += $$VLIBS_DIR/vstring/vbufferforwardreader.cpp
 }
 # vstring.pri
 #========================================================================================

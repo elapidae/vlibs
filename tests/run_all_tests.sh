@@ -13,3 +13,5 @@ vlibs/vgio/keyfile/test_keyfile/test_keyfile
 echo ==================================================================
 vlibs/vcrc/test_vcrc/test_vcrc
 echo ==================================================================
+vlibs/vstring/test_vstring/test_vstring
+echo ==================================================================

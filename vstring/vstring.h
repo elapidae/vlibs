@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <linux/swab.h>
+#include <algorithm>
 
 //=======================================================================================
 /*  2018-02-02
@@ -38,7 +39,7 @@
 class VString : public std::string
 {
 public:
-    using vector = std::vector<VString>;
+    using Vector = std::vector<VString>;
 
     //-----------------------------------------------------------------------------------
     // Все конструкторы проксированы.
@@ -75,9 +76,14 @@ public:
     VString to_Hex( char separator = ' ' ) const;   // с разделителями, Заглавными.
 
     //-----------------------------------------------------------------------------------
-    void prepend ( const std::string &s );
+    void prepend( const std::string &s );
     template<typename It> void prepend ( It b, It e );  // Только для однобайтовых типов.
 
+    void append( const std::string &s );
+    template<typename It> void append ( It b, It e );  // Только для однобайтовых типов.
+
+    void prepend ( char ch );
+    void append  ( char ch );
     //-----------------------------------------------------------------------------------
     template<typename T> void prepend_LE ( T val );
     template<typename T> void prepend_BE ( T val );
@@ -92,6 +98,8 @@ public:
     template<typename T> T back_LE()  const;
     template<typename T> T back_BE()  const;
 
+    VString front_str ( size_t sz ) const;
+    VString back_str  ( size_t sz ) const;
     //-----------------------------------------------------------------------------------
     template<typename T> T take_front_LE();
     template<typename T> T take_front_BE();
@@ -102,28 +110,12 @@ public:
     char take_front();
     char take_back();
 
-    //-----------------------------------------------------------------------------------
-    //  Методы - ускорители. Sized строками называются строки, перед которыми стоит их
-    //  размер. Т.е. <size><string_data>. Размеры могут храниться в байтах, словах и
-    //  двойных словах, притом слова и двойные слова размеров могут быть записаны
-    //  в Big и little endian.
-    //  В названиях, соответственно, размер в байтах указан после слова sized.
-    //  Размер устанавливается перед строкой, читать можно только с начала.
-    //
-    //  Реализованы только append_* методы, т.к. с prepend совсем уж мясо получается,
-    //  начинает хромать логика применения. Если что, пользуйтесь составными методами.
-
-    void append_sized1_string     ( const std::string& str );
-
-    void append_sized2_string_LE  ( const std::string& str );
-    void append_sized2_string_BE  ( const std::string& str );
-
-    void append_sized4_string_LE  ( const std::string& str );
-    void append_sized4_string_BE  ( const std::string& str );
+    VString take_front_str ( size_t sz );
+    VString take_back_str  ( size_t sz );
 
     //-----------------------------------------------------------------------------------
-    // удаление n символов с разных сторон.
-    // Если размер меньше n, оставляет строку пустой.
+    //  Удаление n символов с разных сторон.
+    //  Если размер меньше n, оставляет строку пустой.
     void chop_front ( size_t n );
     void chop_back  ( size_t n );
 
@@ -131,25 +123,26 @@ public:
     bool begins_with ( const std::string& what ) const;
     bool ends_with   ( const std::string& what ) const;
 
-    // Возвращает строку без начальных и конечных пробелов (функция isspace()).
+    //  Возвращает строку без начальных и конечных пробелов (детектирование пробелов
+    //  функцией isspace(), а также '\n' ).
     VString trimmed() const;
 
+    //-----------------------------------------------------------------------------------
+    Vector split( char splitter ) const;
+    Vector split_without_empties( char splitter ) const;
+
     // Разрезает текст, используя разделители всех мастей. Пустых не берем.
-    std::vector<VString> split_by_spaces() const;
+    Vector split_by_spaces() const;
 
     //-----------------------------------------------------------------------------------
-    VString left  ( size_t sz ) const;
-    VString right ( size_t sz ) const;
-
-    //-----------------------------------------------------------------------------------
-    std::vector<std::string> split( char splitter ) const;
-    std::vector<std::string> split_without_empties( char splitter ) const;
-
-    //-----------------------------------------------------------------------------------
-    // Выворачивает наизнанку. Не особо касается этого класса, но может пригодится.
+    // Выворачивает байты наизнанку, т.е. <LE> <-> <BE>.
     template<typename T> static T reverse_T( T src );
     //-----------------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------------
+    class ForwardView;
+    ForwardView forward_view() const;
+    //-----------------------------------------------------------------------------------
 
 private:
     template<typename T> void _append_sys   ( const T &val );
@@ -167,10 +160,109 @@ private:
 //=======================================================================================
 
 
+//=======================================================================================
+//      FORWARD VIEW
+//=======================================================================================
+class VString::ForwardView
+{
+public:
+    //-----------------------------------------------------------------------------------
+
+    size_t remained() const;
+    bool   finished() const;
+
+    //-----------------------------------------------------------------------------------
+
+    template<typename T> T show_LE()  const;
+    template<typename T> T show_BE()  const;
+
+    VString show_str( size_t sz ) const;
+
+    //-----------------------------------------------------------------------------------
+
+    template<typename T> T take_LE();
+    template<typename T> T take_BE();
+
+    VString take_str( size_t sz );
+
+    //-----------------------------------------------------------------------------------
+
+    char     show_ch()        const         { return show_LE<char>();       }
+    int8_t   show_i8()        const         { return show_LE<int8_t>();     }
+    uint8_t  show_u8()        const         { return show_LE<uint8_t>();    }
+
+    int16_t  show_i16_LE()    const         { return show_LE<int16_t>();    }
+    int16_t  show_i16_BE()    const         { return show_BE<int16_t>();    }
+    uint16_t show_u16_LE()    const         { return show_LE<uint16_t>();   }
+    uint16_t show_u16_BE()    const         { return show_BE<uint16_t>();   }
+
+    int32_t  show_i32_LE()    const         { return show_LE<int32_t>();    }
+    int32_t  show_i32_BE()    const         { return show_BE<int32_t>();    }
+    uint32_t show_u32_LE()    const         { return show_LE<uint32_t>();   }
+    uint32_t show_u32_BE()    const         { return show_BE<uint32_t>();   }
+
+    int64_t  show_i64_LE()    const         { return show_LE<int64_t>();    }
+    int64_t  show_i64_BE()    const         { return show_BE<int64_t>();    }
+    uint64_t show_u64_LE()    const         { return show_LE<uint64_t>();   }
+    uint64_t show_u64_BE()    const         { return show_BE<uint64_t>();   }
+
+
+    float    show_float_LE()  const         { return show_LE<float>();      }
+    float    show_float_BE()  const         { return show_BE<float>();      }
+
+    double   show_double_LE() const         { return show_LE<double>();     }
+    double   show_double_BE() const         { return show_BE<double>();     }
+
+    //-----------------------------------------------------------------------------------
+
+    char     take_ch()                      { return take_LE<char>();       }
+    int8_t   take_i8()                      { return take_LE<int8_t>();     }
+    uint8_t  take_u8()                      { return take_LE<uint8_t>();    }
+
+    int16_t  take_i16_LE()                  { return take_LE<int16_t>();    }
+    int16_t  take_i16_BE()                  { return take_BE<int16_t>();    }
+    uint16_t take_u16_LE()                  { return take_LE<uint16_t>();   }
+    uint16_t take_u16_BE()                  { return take_BE<uint16_t>();   }
+
+    int32_t  take_i32_LE()                  { return take_LE<int32_t>();    }
+    int32_t  take_i32_BE()                  { return take_BE<int32_t>();    }
+    uint32_t take_u32_LE()                  { return take_LE<uint32_t>();   }
+    uint32_t take_u32_BE()                  { return take_BE<uint32_t>();   }
+
+    int64_t  take_i64_LE()                  { return take_LE<int64_t>();    }
+    int64_t  take_i64_BE()                  { return take_BE<int64_t>();    }
+    uint64_t take_u64_LE()                  { return take_LE<uint64_t>();   }
+    uint64_t take_u64_BE()                  { return take_BE<uint64_t>();   }
+
+
+    float    take_float_LE()                { return take_LE<float>();      }
+    float    take_float_BE()                { return take_BE<float>();      }
+
+    double   take_double_LE()               { return take_LE<double>();     }
+    double   take_double_BE()               { return take_BE<double>();     }
+
+    //-----------------------------------------------------------------------------------
+
+private:
+    const char *_buffer;
+    size_t      _remained;
+
+    friend class VString;
+    ForwardView( const VString *owner );
+};
+//=======================================================================================
+//      FORWARD VIEW
+//=======================================================================================
+
+
 
 //=======================================================================================
 //      IMPLEMENTATION
 //=======================================================================================
+
+
+//=======================================================================================
+//      VString
 //      Constructors
 //=======================================================================================
 template <class InputIterator>
@@ -179,7 +271,6 @@ VString::VString( InputIterator first, InputIterator last )
 {}
 //=======================================================================================
 //      Constructors
-//=======================================================================================
 //      Public wrappers
 //=======================================================================================
 template<typename T>
@@ -272,7 +363,6 @@ T VString::front_LE() const
 }
 //=======================================================================================
 //      Public wrappers
-//=======================================================================================
 //      Checking types
 //=======================================================================================
 template<typename T>
@@ -293,7 +383,6 @@ void VString::_check_that_arithmetic_and_enough_size() const
 }
 //=======================================================================================
 //      Checking types
-//=======================================================================================
 //      append & prepend
 //=======================================================================================
 template<typename T>
@@ -302,7 +391,7 @@ void VString::_append_sys( const T &val )
     _check_that_arithmetic_and_1_2_4_8<T>();
 
     auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
-    append( ch, sizeof(T) );
+    insert( size(), ch, sizeof(T) );
 }
 //=======================================================================================
 template<typename T>
@@ -321,8 +410,14 @@ void VString::prepend( It b, It e )
     insert( begin(), b, e );
 }
 //=======================================================================================
-//      append & prepend
+template<typename It>
+void VString::append( It b, It e )
+{
+    static_assert( sizeof(*b) == 1, "sizeof(It::value_type) != 1" );
+    insert( end(), b, e );
+}
 //=======================================================================================
+//      append & prepend
 //      front, back & pop_front, pop_back
 //=======================================================================================
 template<typename T>
@@ -386,20 +481,90 @@ T VString::reverse_T( T val )
 {
     _check_that_arithmetic_and_1_2_4_8<T>();
 
-    switch ( sizeof(T) )
-    {
-    case 2: return __swab16( val );
-    case 4: return __swab32( val );
-    case 8: return __swab64( val );
-    }
+    auto *ch = static_cast<char*>( static_cast<void*>(&val) );
+    std::reverse( ch, ch + sizeof(T) );
+    return val;
 
-    return val; // Для единичного размера.
+//  Эта гадость такое с float и double делает, что потом их не узнать вообще.
+//    switch ( sizeof(T) )
+//    {
+//    case 2: return static_cast<T>( __swab16(val) );
+//    case 4: return static_cast<T>( __swab32(val) );
+//    case 8: return static_cast<T>( __swab64(val) );
+//    }
+//    return val; // Для единичного размера.
 }
 //=======================================================================================
 //      front, back & pop_front, pop_back
+//      VString
 //=======================================================================================
-//      IMPLEMENTATION
+
+
 //=======================================================================================
+//      FORWARD VIEW
+//=======================================================================================
+template<typename T>
+T VString::ForwardView::show_LE() const
+{
+    if ( _remained < sizeof(T) )
+        throw std::out_of_range( "VString::ForwardView::show_LE<T>(): not enouth data" );
+
+    auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
+
+    #if   BYTE_ORDER == LITTLE_ENDIAN
+    #elif BYTE_ORDER == BIG_ENDIAN
+    res = VString::reverse_T( res );
+    #else
+    #error "Unknown byte order"
+    #endif
+
+    return res;
+}
+//=======================================================================================
+template<typename T>
+T VString::ForwardView::show_BE() const
+{
+    if ( _remained < sizeof(T) )
+        throw std::out_of_range( "VString::ForwardView::take_BE<T>(): not enouth data" );
+
+    auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
+
+    #if BYTE_ORDER == LITTLE_ENDIAN
+    res = VString::reverse_T( res );
+    #elif BYTE_ORDER == BIG_ENDIAN
+    #else
+    #error "Unknown byte order"
+    #endif
+
+    return res;
+}
+//=======================================================================================
+template<typename T>
+T VString::ForwardView::take_LE()
+{
+    auto res = show_LE<T>();
+
+    _remained -= sizeof(T);
+    _buffer   += sizeof(T);
+
+    return res;
+}
+//=======================================================================================
+template<typename T>
+T VString::ForwardView::take_BE()
+{
+    auto res = show_BE<T>();
+
+    _remained -= sizeof(T);
+    _buffer   += sizeof(T);
+
+    return res;
+}
+//=======================================================================================
+//      FORWARD VIEW
+//=======================================================================================
+
+
 
 
 #endif // VSTRING_H

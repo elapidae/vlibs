@@ -23,3 +23,4 @@ add_subdirectory("${VLIBS_DIR}/vgeometry/tests/")
 
 
 add_subdirectory("${VLIBS_DIR}/vcrc/test_vcrc/")
+add_subdirectory("${VLIBS_DIR}/vstring/test_vstring/")
