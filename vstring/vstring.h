@@ -25,9 +25,6 @@
  *
  *  Заодно, конструкторы само-в-коде-документированы.
  *  -------------------------------------------------------------------------------------
- *  UPD 21-08-2018
- *  Реверс между Little <-> Big endian реализован православным для линукса способом
- *  (через __swab(), он, по идее, транслируется в bswap).
 */
 //=======================================================================================
 
@@ -140,8 +137,10 @@ public:
     //-----------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------
+    // NB! Пока используется ForwardView нельзя изменять исходную строку!
     class ForwardView;
     ForwardView forward_view() const;
+    // NB! Пока используется ForwardView нельзя изменять исходную строку!
     //-----------------------------------------------------------------------------------
 
 private:
@@ -484,15 +483,6 @@ T VString::reverse_T( T val )
     auto *ch = static_cast<char*>( static_cast<void*>(&val) );
     std::reverse( ch, ch + sizeof(T) );
     return val;
-
-//  Эта гадость такое с float и double делает, что потом их не узнать вообще.
-//    switch ( sizeof(T) )
-//    {
-//    case 2: return static_cast<T>( __swab16(val) );
-//    case 4: return static_cast<T>( __swab32(val) );
-//    case 8: return static_cast<T>( __swab64(val) );
-//    }
-//    return val; // Для единичного размера.
 }
 //=======================================================================================
 //      front, back & pop_front, pop_back
@@ -506,16 +496,15 @@ T VString::reverse_T( T val )
 template<typename T>
 T VString::ForwardView::show_LE() const
 {
+    _check_big_or_little_endian();
+
     if ( _remained < sizeof(T) )
         throw std::out_of_range( "VString::ForwardView::show_LE<T>(): not enouth data" );
 
     auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
 
-    #if   BYTE_ORDER == LITTLE_ENDIAN
-    #elif BYTE_ORDER == BIG_ENDIAN
-    res = VString::reverse_T( res );
-    #else
-    #error "Unknown byte order"
+    #if BYTE_ORDER == BIG_ENDIAN
+        res = VString::reverse_T( res );
     #endif
 
     return res;
@@ -524,16 +513,15 @@ T VString::ForwardView::show_LE() const
 template<typename T>
 T VString::ForwardView::show_BE() const
 {
+    _check_big_or_little_endian();
+
     if ( _remained < sizeof(T) )
         throw std::out_of_range( "VString::ForwardView::take_BE<T>(): not enouth data" );
 
     auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
 
     #if BYTE_ORDER == LITTLE_ENDIAN
-    res = VString::reverse_T( res );
-    #elif BYTE_ORDER == BIG_ENDIAN
-    #else
-    #error "Unknown byte order"
+        res = VString::reverse_T( res );
     #endif
 
     return res;
