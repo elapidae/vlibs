@@ -237,7 +237,7 @@ const VPoint<T> & VPoint<T>::operator -=( const VPoint<T>& rhs )
 template<typename T>
 bool VPoint<T>::operator == ( const VPoint<T>& rhs ) const
 {
-    if ( std::numeric_limits<T>::is_integer )
+    if ( !std::is_floating_point<T>::value )
     {
         return _x == rhs._x && _y == rhs._y;
     }
@@ -246,8 +246,8 @@ bool VPoint<T>::operator == ( const VPoint<T>& rhs ) const
         auto xx = std::abs( _x - rhs._x );
         auto yy = std::abs( _y - rhs._y );
 
-        return xx <= std::numeric_limits<T>::min() &&   //  У вещественных min() содержит
-               yy <= std::numeric_limits<T>::min();     //  малое для сравнения.
+        return xx <= std::numeric_limits<T>::epsilon() &&
+               yy <= std::numeric_limits<T>::epsilon();
     }
 }
 //=======================================================================================
@@ -368,7 +368,7 @@ VPoint<T> VPolarPoint<T>::to_cartesian() const
 template<typename T>
 bool VPolarPoint<T>::operator == ( const VPolarPoint<T> &rhs ) const
 {
-    if ( std::numeric_limits<T>::is_integer )
+    if ( !std::is_floating_point<T>::value )
     {
         return _distance == rhs._distance && _angle == rhs._angle;
     }
@@ -377,8 +377,8 @@ bool VPolarPoint<T>::operator == ( const VPolarPoint<T> &rhs ) const
         auto d = std::abs( _distance - rhs._distance );
         auto a = std::abs( _angle - rhs._angle );
 
-        return d <= std::numeric_limits<T>::min() &&   //  У вещественных min() содержит
-               a <= std::numeric_limits<T>::min();     //  малое для сравнения.
+        return d <= std::numeric_limits<T>::epsilon() &&
+               a <= std::numeric_limits<T>::epsilon();
     }
 }
 //=======================================================================================
