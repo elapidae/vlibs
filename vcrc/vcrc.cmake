@@ -1,5 +1,5 @@
 #========================================================================================
-# voutfile.cmake
+# vcrc.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -15,28 +15,24 @@
 
 #========================================================================================
 
-if ( NOT  VOUTFILE_INCLUDED )
-    set ( VOUTFILE_INCLUDED TRUE )
+if ( NOT  VCRC_INCLUDED )
+    set ( VCRC_INCLUDED TRUE )
 
-    message( "Include voutfile..." )
+    message( "Include vcrc..." )
 
-    #<<< Start your code here -----------------------------------------------------------    
-    #   NB! Файл был отредактирован, перезапись может добавить ненужные поля.
-
+    #<<< Start your code here -----------------------------------------------------------
     include( "${VLIBS_DIR}/c++11/c++11.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/voutfile/")
+    include_directories( "${VLIBS_DIR}/vcrc/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/voutfile/voutfile.h")
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/voutfile/voutfile_with_rotate.h")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vcrc/vcrc.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vcrc/vcrc.cpp") 
 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/voutfile/voutfile.cpp")
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/voutfile/voutfile_with_rotate.cpp")
-
-    message( "voutfile included" )
+    message( "vcrc included" )
 
 endif()
-# voutfile.cmake
+# vcrc.cmake
 #========================================================================================

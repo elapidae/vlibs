@@ -18,7 +18,7 @@ isEmpty(qi_vdir) {
     qi_vdir = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vdir appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vdir: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------

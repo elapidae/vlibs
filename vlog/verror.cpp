@@ -20,7 +20,7 @@ VError::VError( const char *file, int line, const char *func )
     , _printed ( std::make_shared<bool>(false) )
 {
     _preambul = _logger->entry().place_func();
-    _logger->do_cat( "ERROR: " );
+    _logger->do_cat( " ERROR: " );
 }
 //=======================================================================================
 VError::~VError() noexcept

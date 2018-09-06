@@ -21,6 +21,26 @@ VString::VString( const std::string &str )
     : std::string( str )
 {}
 //=======================================================================================
+VString::VString( const std::string &str, size_t pos, size_t len )
+    : std::string( str, pos, len )
+{}
+//=======================================================================================
+VString::VString( const char *s )
+    : std::string( s )
+{}
+//=======================================================================================
+VString::VString( const char *s, size_t n )
+    : std::string( s, n )
+{}
+//=======================================================================================
+VString::VString( size_t n, char c )
+    : std::string( n, c )
+{}
+//=======================================================================================
+VString::VString(const std::initializer_list<char> &il )
+    : std::string( il )
+{}
+//=======================================================================================
 void VString::_check_big_or_little_endian()
 {
     static_assert( BYTE_ORDER == BIG_ENDIAN || BYTE_ORDER == LITTLE_ENDIAN,
@@ -52,7 +72,7 @@ VString VString::from_hex( const std::string &src )
     res.resize( (src.size() + 1)/2 );
 
     auto cur = res.rbegin();
-    int real_res_size = 0;
+    size_t real_res_size = 0;
 
     bool in_char = false;
     for ( auto src_it = src.rbegin(); src_it != src.rend(); ++src_it )
@@ -60,13 +80,13 @@ VString VString::from_hex( const std::string &src )
         int tmp = ch_from_hex( *src_it );
         if (tmp < 0) continue;
 
-        if (in_char)
+        if ( in_char )
         {
             *cur++ |= tmp << 4;
         }
         else
         {
-            *cur = tmp;
+            *cur = static_cast<char>( tmp );
             ++real_res_size;
         }
         in_char = !in_char;
@@ -75,39 +95,53 @@ VString VString::from_hex( const std::string &src )
     return res.erase( 0, res.size() - real_res_size );
 }
 //---------------------------------------------------------------------------------------
-static VString _to_hex( const std::string &src, const char *hsyms, bool with_space )
+VString VString::from_hex() const
+{
+    return from_hex( *this );
+}
+//---------------------------------------------------------------------------------------
+//  Separator wiil ignore if with_separator == false.
+static VString _to_hex( const std::string &src,
+                        const char *hsyms,
+                        bool with_separator,
+                        char separator )
 {
     std::stringstream ss;
 
     for ( auto ch: src )
     {
         ss << hsyms[(ch >> 4) & 0xF] << hsyms[ch & 0xF];
-        if ( with_space ) ss << " ";
+
+        if ( with_separator )
+            ss << separator;
     }
 
     auto res = ss.str();
-    if (with_space && !src.empty()) res.pop_back(); // delete last space.
+
+    if ( with_separator && !src.empty() )   // Delete last space.
+        res.pop_back();                     //
+
     return res;
 }
 //=======================================================================================
 VString VString::tohex() const
 {
-    return _to_hex( *this, hexs_syms, false );
+    return _to_hex( *this, hexs_syms, false, '\0' );
 }
 //=======================================================================================
 VString VString::toHex() const
 {
-    return _to_hex( *this, Hexs_Syms, false );
+    return _to_hex( *this, Hexs_Syms, false, '\0' );
 }
 //=======================================================================================
-VString VString::to_hex() const
+VString VString::to_hex( char separator ) const
 {
-    return _to_hex( *this, hexs_syms, true );
+    return _to_hex( *this, hexs_syms, true, separator );
 }
 //=======================================================================================
-VString VString::to_Hex() const
+VString VString::to_Hex( char separator ) const
 {
-    return _to_hex( *this, Hexs_Syms, true );
+    return _to_hex( *this, Hexs_Syms, true, separator );
 }
 //=======================================================================================
 //      HEX
@@ -123,6 +157,21 @@ void VString::prepend( const std::string &s )
     return prepend( s.begin(), s.end() );
 }
 //=======================================================================================
+void VString::append( const std::string &s )
+{
+    return append( s.begin(), s.end() );
+}
+//=======================================================================================
+void VString::prepend( char ch )
+{
+    prepend_LE( ch );
+}
+//=======================================================================================
+void VString::append( char ch )
+{
+    append_LE( ch );
+}
+//=======================================================================================
 char VString::take_front()
 {
     return take_front_LE<char>();
@@ -133,34 +182,18 @@ char VString::take_back()
     return take_back_LE<char>();
 }
 //=======================================================================================
-void VString::append_byte_string( const std::string &str )
+VString VString::take_front_str( size_t sz )
 {
-    if (str.size() > std::numeric_limits<uint8_t>::max() )
-        throw std::runtime_error("Byte string cannot be serialize, size > 255...");
-
-    uint8_t sz = static_cast<uint8_t>( str.size() );
-    append_LE( sz );
-    append( str.c_str(), sz );
+    auto res = front_str( sz );
+    chop_front( sz );
+    return res;
 }
 //=======================================================================================
-void VString::append_word_string_LE(const std::string &str)
+VString VString::take_back_str( size_t sz )
 {
-    if ( str.size() > std::numeric_limits<uint16_t>::max() )
-        throw std::runtime_error("Word string cannot be serialize, size > 2^16...");
-
-    uint16_t sz = static_cast<uint16_t>( str.size() );
-    append_LE( sz );
-    append( str.c_str(), sz );
-}
-//=======================================================================================
-void VString::append_dword_string_LE( const std::string &str )
-{
-    if ( str.size() > std::numeric_limits<uint32_t>::max() )
-        throw std::overflow_error("String is bigger 2^32.");
-
-    uint32_t sz = static_cast<uint32_t>( str.size() );
-    append_LE( sz );
-    append( str );
+    auto res = back_str( sz );
+    chop_back( sz );
+    return res;
 }
 //=======================================================================================
 //      append, prepend, takes
@@ -173,7 +206,7 @@ void VString::append_dword_string_LE( const std::string &str )
 //=======================================================================================
 void VString::chop_front( size_t n )
 {
-    erase(0, n);
+    erase( 0, n );
 }
 //=======================================================================================
 void VString::chop_back( size_t n )
@@ -205,7 +238,67 @@ bool VString::ends_with( const std::string &what ) const
     return rfind(what) == size() - what.size();
 }
 //=======================================================================================
+static bool is_any_space(char ch)
+{
+    return std::isspace( ch ) ||
+           ch == '\n';
+}
+//=======================================================================================
+VString VString::trimmed() const
+{
+    auto from = begin();
+    while( from != end() && is_any_space(*from) )
+        ++from;
+
+    if ( from == end() ) return {};
+
+    auto to = end() - 1;
+    while( to != from && is_any_space(*to) )
+        --to;
+
+    return VString( from, to + 1 );
+}
+//=======================================================================================
+VString::Vector VString::split_by_spaces() const
+{
+    Vector res;
+
+    auto cur = begin();    
+    do
+    {
+        auto next = std::find_if( cur, end(), is_any_space );
+
+        VString str( cur, next );
+        if ( !str.empty() )
+            res.push_back( str );
+
+        if ( next == end() ) break;
+        cur = next + 1;
+    }
+    while(1);
+
+    return res;
+}
+//=======================================================================================
 //      patterns finding
+//=======================================================================================
+
+//=======================================================================================
+//      Substrings
+//=======================================================================================
+VString VString::front_str( size_t sz ) const
+{
+    sz = std::min( sz, size() );
+    return substr( 0, sz );
+}
+//=======================================================================================
+VString VString::back_str( size_t sz ) const
+{
+    sz = std::min( sz, size() );
+    return substr( size() - sz, sz );
+}
+//=======================================================================================
+//      Substrings
 //=======================================================================================
 
 
@@ -213,9 +306,9 @@ bool VString::ends_with( const std::string &what ) const
 //=======================================================================================
 //      splitting
 //=======================================================================================
-std::vector<std::string> VString::split( char splitter ) const
+VString::Vector VString::split( char splitter ) const
 {
-    std::vector<std::string> res;
+    VString::Vector res;
 
     auto cur = begin();
     auto next = std::find( begin(), end(), splitter );
@@ -239,7 +332,7 @@ std::vector<std::string> VString::split( char splitter ) const
 //    return res;
 }
 //=======================================================================================
-std::vector<std::string> VString::split_without_empties( char splitter ) const
+VString::Vector VString::split_without_empties( char splitter ) const
 {
     auto res = split( splitter );
     res.erase( std::remove(res.begin(), res.end(), std::string()), res.end() );
@@ -247,4 +340,49 @@ std::vector<std::string> VString::split_without_empties( char splitter ) const
 }
 //=======================================================================================
 //      splitting
+//=======================================================================================
+
+
+//=======================================================================================
+//      FORWARD VIEW
+//=======================================================================================
+VString::ForwardView VString::forward_view() const
+{
+    return ForwardView( this );
+}
+//=======================================================================================
+VString::ForwardView::ForwardView( const VString *owner )
+    : _buffer( owner->c_str() )
+    , _remained( owner->size() )
+{}
+//=======================================================================================
+size_t VString::ForwardView::remained() const
+{
+    return _remained;
+}
+//=======================================================================================
+bool VString::ForwardView::finished() const
+{
+    return _remained == 0;
+}
+//=======================================================================================
+VString VString::ForwardView::show_str( size_t sz ) const
+{
+    if ( sz > remained() )
+        throw std::out_of_range("VString::ForwardView::show_str -- not enouth data.");
+
+    return VString( _buffer, sz );
+}
+//=======================================================================================
+VString VString::ForwardView::take_str( size_t sz )
+{
+    auto res = show_str( sz );
+
+    _remained -= sz;
+    _buffer   += sz;
+
+    return res;
+}
+//=======================================================================================
+//      FORWARD VIEW
 //=======================================================================================

@@ -2,15 +2,28 @@
 #define VFILELOG_H
 
 #include "vlogentry.h"
-#include "voutfile_withrotate.h"
+#include "voutfile_with_rotate.h"
+
+#include "vgio_keyfile.h"
 
 
 //=======================================================================================
-//namespace vlog
-//{
+/**     07-08-2018      by Elapidae
+ *
+ *      Файловое логгирование
+ *
+ *
+**/
+//=======================================================================================
 
-//===================================================================================
-class VFileLog
+
+
+//=======================================================================================
+//      VAbstractFileLog
+//=======================================================================================
+//  Введен чисто для того, чтобы объединить в одном месте формирование сообщений из
+//  вхождений логов.
+class VAbstractFileLog
 {
 public:
     // формируем строки из вхождения, с указанием типа / без оного.
@@ -20,60 +33,71 @@ public:
     // Используется при записи незначащей строки в начало логгирования.
     static std::string start_line();
 };
-//===================================================================================
+//=======================================================================================
+//      VAbstractFileLog
+//=======================================================================================
 
 
-//===================================================================================
-//      Group filelog -- создает для каждого типа лога свой файл.
-//===================================================================================
-class VGroupFileLog : VFileLog
+
+//=======================================================================================
+//      Leveled filelog -- создает для каждого типа лога свой файл.
+//=======================================================================================
+class VFileLog_Leveled : VAbstractFileLog
 {
 public:
-    VGroupFileLog( const std::string &path,
-                   long one_file_size,
-                   int  rotate_files_count );
+    VFileLog_Leveled( const std::string &path,
+                      ulong one_file_size,
+                      uint rotate_files_count );
+
+    ~VFileLog_Leveled() = default;
+
+    void execute( const VLogEntry &entry );
+
+    void register_self();
+
+  //-------------------------------------------------------------------------------------
+    using Ptr = std::shared_ptr<VFileLog_Leveled>;
+    static Ptr  load_from_keyfile( const vgio::KeyFile &kf, const std::string &group );
+
+    static void save_to_keyfile  (vgio::KeyFile *kf, const std::string &group,
+                                   bool need_log,
+                                   const std::string &path,
+                                   int file_size,
+                                   int rotates_count );
+  //-------------------------------------------------------------------------------------
+
+private:
+    bool _dir_created;
+    VOutFile_With_Rotate _trace, _deb, _runlog, _warn, _fatal;
+};
+//=======================================================================================
+//      Leveled filelog
+//=======================================================================================
+
+
+//=======================================================================================
+//      Shared filelog -- создает один файл на все сообщения.
+//=======================================================================================
+class VFileLog_Shared : VAbstractFileLog
+{
+public:
+    VFileLog_Shared( const std::string &fname,
+                     ulong one_file_size,
+                     uint  rotate_files_count );
+
+    ~VFileLog_Shared() = default;
 
     void execute( const VLogEntry &entry );
 
     void register_self();
 
 private:
-    bool _dir_created;
-    VOutFile_WithRotate
-        _trace,
-        _deb,
-        _runlog,
-        _warn,
-        _fatal;
+    VOutFile_With_Rotate _file;
 };
-//===================================================================================
-//      Group filelog
-//===================================================================================
-
-
-//===================================================================================
-//      Common filelog -- создает один файл на все сообщения.
-//===================================================================================
-class VCommonFileLog : VFileLog
-{
-public:
-    VCommonFileLog( const std::string &fname,
-                 long one_file_size,
-                 int  rotate_files_count );
-
-    void execute(const VLogEntry &entry );
-
-    void register_self();
-
-private:
-    VOutFile_WithRotate _file;
-};
-//===================================================================================
-//      Common filelog
-//===================================================================================
-
-//} // vlog namespace
 //=======================================================================================
+//      Shared filelog
+//=======================================================================================
+
 
 
 

@@ -1,5 +1,5 @@
 #========================================================================================
-# vstring.pri
+# vcrc.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,24 +14,23 @@
 
 
 #========================================================================================
-isEmpty(qi_vstring) {
-    qi_vstring = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vstring appended ===")
+isEmpty(qi_vcrc) {
+    qi_vcrc = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vcrc appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vcrc: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
+    CONFIG *= c++11
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vstring
+    INCLUDEPATH += $$VLIBS_DIR/vcrc
 
     
-    #HEADERS     += $$VLIBS_DIR/vstring/vbufferforwardreader.h
-    HEADERS     += $$VLIBS_DIR/vstring/vstring.h 
+    HEADERS     += $$VLIBS_DIR/vcrc/vcrc.h 
     
-    SOURCES     += $$VLIBS_DIR/vstring/vstring.cpp 
-    #SOURCES     += $$VLIBS_DIR/vstring/vbufferforwardreader.cpp
+    SOURCES     += $$VLIBS_DIR/vcrc/vcrc.cpp 
 }
-# vstring.pri
+# vcrc.pri
 #========================================================================================
