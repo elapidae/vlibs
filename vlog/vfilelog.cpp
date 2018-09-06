@@ -36,15 +36,19 @@ std::string VAbstractFileLog::start_line()
 VFileLog_Leveled::VFileLog_Leveled( const std::string &path,
                                     ulong one_file_size,
                                     uint rotate_files_count )
-    : _dir_created( VDir::mkdir(path) )
+    : _dir_created( VDir::mkdir_e(path) )
     , _trace  ( path + "/trace.log",   one_file_size, rotate_files_count )
     , _deb    ( path + "/debug.log",   one_file_size, rotate_files_count )
     , _runlog ( path + "/runlog.log",  one_file_size, rotate_files_count )
     , _warn   ( path + "/warning.log", one_file_size, rotate_files_count )
     , _fatal  ( path + "/fatal.log",   one_file_size, rotate_files_count )
 {
-    if ( !_dir_created )
+    if ( _dir_created != VDir::MkDirError::NoError &&
+         _dir_created != VDir::MkDirError::AlreadyExists
+        )
+    {
         throw verror << "Cannot create dir '" << path << "' for leveled log...";
+    }
 
     if ( start_line().empty() ) return;
 

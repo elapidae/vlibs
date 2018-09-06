@@ -5,7 +5,7 @@
 #include "voutfile_with_rotate.h"
 
 #include "vgio_keyfile.h"
-
+#include "vdir.h"
 
 //=======================================================================================
 /**     07-08-2018      by Elapidae
@@ -67,7 +67,7 @@ public:
   //-------------------------------------------------------------------------------------
 
 private:
-    bool _dir_created;
+    VDir::MkDirError _dir_created;
     VOutFile_With_Rotate _trace, _deb, _runlog, _warn, _fatal;
 };
 //=======================================================================================
