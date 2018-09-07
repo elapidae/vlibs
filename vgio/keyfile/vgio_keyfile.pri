@@ -16,14 +16,14 @@
 #========================================================================================
 isEmpty(qi_vgio_keyfile) {
     qi_vgio_keyfile = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== keyfile appended ===")
+    isEmpty(qi_not_print_pri_messages): message("=== vgio::keyfile appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vgio_keyfile: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
-    include( $$VLIBS_DIR/vgio/core/impl/helpers.pri )
-    include( $$VLIBS_DIR/vgio/error/error.pri )
+    include( $$VLIBS_DIR/vgio/core/impl/vgio_helpers.pri )
+    include( $$VLIBS_DIR/vgio/error/vgio_error.pri )
 
     INCLUDEPATH += $$VLIBS_DIR/vgio/keyfile
 

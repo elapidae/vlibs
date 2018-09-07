@@ -1,8 +1,7 @@
 #========================================================================================
 # error.pri
 #
-#
-# Этот файл сгенерирован автоматически.
+#   NB! Отредактировано руками!
 #
 # Вносить изменения можно между строк:
 #   #<<< Start your code here
@@ -14,11 +13,11 @@
 
 
 #========================================================================================
-isEmpty(qi_error) {
-    qi_error = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== error appended ===")
+isEmpty(qi_vgio_error) {
+    qi_vgio_error = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vgio_error appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vgio_error: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
