@@ -19,7 +19,7 @@
 //=======================================================================================
 //      SEMAPHORE QUEUE
 //=======================================================================================
-template< class T >
+template< typename T >
 class VSemaphoreQueue
 {
 public:
@@ -48,7 +48,7 @@ private:
 //=======================================================================================
 //      IMPLEMENTATION
 //=======================================================================================
-template<class T>
+template<typename T>
 void VSemaphoreQueue<T>::push( const T &val )
 {
     std::unique_lock<std::mutex> lock( _mutex );
@@ -56,7 +56,7 @@ void VSemaphoreQueue<T>::push( const T &val )
     _semaphore.notify();
 }
 //=======================================================================================
-template<class T>
+template<typename T>
 T VSemaphoreQueue<T>::pop()
 {
     _semaphore.wait();
@@ -68,19 +68,19 @@ T VSemaphoreQueue<T>::pop()
     return res;
 }
 //=======================================================================================
-template<class T>
+template<typename T>
 int VSemaphoreQueue<T>::size() const
 {
     return _semaphore.count();
 }
 //=======================================================================================
-template<class T>
+template<typename T>
 bool VSemaphoreQueue<T>::empty() const
 {
     return size() == 0;
 }
-
-template<class T>
+//=======================================================================================
+template<typename T>
 void VSemaphoreQueue<T>::clear()
 {
     while (!empty()) pop();

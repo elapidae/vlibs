@@ -6,7 +6,7 @@
 #include <future>
 #include <assert.h>
 
-#include "vthreadqueue/vsemaphorequeue.h"
+#include "vsemaphorequeue.h"
 #include "impl/vthreadqueueregistrator_impl.h"
 
 //#include "vlogger.h"
@@ -55,7 +55,7 @@ VThreadInterface::~VThreadInterface()
     //vdeb(vlog("~VThreadInterface()", p->label));
 
     // registered in _run().
-    VThreadQueueRegistrator_Impl::instance().unregister_queue( _queue );
+    //VThreadQueueRegistrator_Impl::instance().unregister_queue( _queue );
     _queue = nullptr;
 }
 //=======================================================================================
@@ -100,8 +100,8 @@ void *VThreadInterface::_run(void *self_)
     // Чёрти что ради pthread реализации...
     auto self = static_cast<VThreadInterface*>( self_ );
 
-    VThreadQueueRegistrator_Impl::instance()
-            .register_queue_for_cur_thread( &self->p->queue );
+//    VThreadQueueRegistrator_Impl::instance()
+//            .register_queue_for_cur_thread( &self->p->queue );
 
     //vtrace( vlog("Thread queue registered.") );
 
