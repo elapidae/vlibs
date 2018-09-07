@@ -6,9 +6,6 @@
 #include <memory>
 
 //=======================================================================================
-//namespace vlog
-//{
-//===================================================================================
 class VGroupFileLog_Threaded final
 {
 public:
@@ -24,10 +21,10 @@ public:
     int queued_entries() const;
 
 private:
-    std::unique_ptr<VGroupFileLog> _log;
+    std::unique_ptr<VFileLog_Leveled> _log;
     VThread _thread;
 };
-//===================================================================================
+//=======================================================================================
 class VCommonFileLog_Threaded final
 {
 public:
@@ -43,11 +40,9 @@ public:
     int queued_entries() const;
 
 private:
-    std::unique_ptr<VCommonFileLog> _log;
+    std::unique_ptr<VFileLog_Shared> _log;
     VThread _thread;
 };
-//===================================================================================
-//}
 //=======================================================================================
 
 
