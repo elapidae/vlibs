@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <assert.h>
 
 //=======================================================================================
 #define VGIT_QUOTES_FOR_EXTRACT_DEFINES(name) #name
@@ -80,9 +81,12 @@ std::string VGit::as_message(const std::string &query)
     return ss.str();
 }
 //=======================================================================================
-void VGit::print_and_exit_if_need(int argc, const char * const *argv, int retcode)
+void VGit::print_and_exit_if_need( int argc, const char * const * const argv,
+                                   int retcode )
 {
-    std::string vgit("--vgit");
+    assert( argc >= 0 && argv );
+
+    std::string vgit( "--vgit" );
     for ( int i = 1; i < argc; ++i )
     {
         std::string str = argv[i];
