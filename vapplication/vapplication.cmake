@@ -1,5 +1,5 @@
 #========================================================================================
-# vapp_args_parser.cmake
+# vapplication.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -15,23 +15,25 @@
 
 #========================================================================================
 
-if ( NOT  VAPP_ARGS_PARSER_INCLUDED )
-    set ( VAPP_ARGS_PARSER_INCLUDED TRUE )
+if ( NOT  VAPPLICATION_INCLUDED )
+    set ( VAPPLICATION_INCLUDED TRUE )
 
-    message( "Include vapp_args_parser..." )
+    message( "Include vapplication..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    include( "${VLIBS_DIR}/vfile/vfile.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vapp_args_parser/")
+    include_directories( "${VLIBS_DIR}/vapplication/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vapp_args_parser/vapp_args_parser.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vapplication/vapplication.h") 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vapp_args_parser/vapp_args_parser.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vapplication/vapplication.cpp") 
 
-    message( "vapp_args_parser included" )
+    message( "vapplication included" )
 
 endif()
-# vapp_args_parser.cmake
+# vapplication.cmake
 #========================================================================================
