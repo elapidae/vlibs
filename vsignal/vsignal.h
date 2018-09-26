@@ -85,7 +85,7 @@ private:
     // do not use this connector.
     void connect( VSignal<Args...> repeater );
 
-    using Func = std::function< void(Args...) >;
+    using Func = std::function< void(const Args&...) >;
     std::vector<Func> _funcs;
 
     VSignal( const VSignal& ) = delete;
