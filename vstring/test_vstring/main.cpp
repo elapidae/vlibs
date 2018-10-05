@@ -358,5 +358,16 @@ TEST_F( VString_Test, forward_view )
     EXPECT_TRUE( fwd_view.finished() );
 }
 //=======================================================================================
+TEST_F( VString_Test, substr )
+{
+    VString str = "Hello world!";
+
+    // LE
+    EXPECT_EQ( str.take_front_str(5), "Hello" );
+    EXPECT_EQ( str.take_back_str(3), "ld!" );
+
+    EXPECT_THROW( str.front_str(str.size() + 1), std::out_of_range );
+}
+//=======================================================================================
 
 

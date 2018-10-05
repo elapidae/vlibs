@@ -25,6 +25,10 @@
  *
  *  Заодно, конструкторы само-в-коде-документированы.
  *  -------------------------------------------------------------------------------------
+ *  UPD 04-10-2018
+ *  Выпилены статические проверки соответствия типов, вместо них введено автоопределение
+ *  арифметических типов через std::enable_if.
+ *  -------------------------------------------------------------------------------------
 */
 //=======================================================================================
 
@@ -104,8 +108,8 @@ public:
     template<typename T> T take_back_LE();
     template<typename T> T take_back_BE();
 
-    char take_front();
-    char take_back();
+    char take_front_ch();
+    char take_back_ch();
 
     VString take_front_str ( size_t sz );
     VString take_back_str  ( size_t sz );
@@ -133,7 +137,9 @@ public:
 
     //-----------------------------------------------------------------------------------
     // Выворачивает байты наизнанку, т.е. <LE> <-> <BE>.
-    template<typename T> static T reverse_T( T src );
+    template<typename T>
+    static typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+    reverse_T( T src );
     //-----------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------
@@ -147,12 +153,13 @@ private:
     template<typename T> void _append_sys   ( const T &val );
     template<typename T> void _prepend_sys  ( const T &val );
 
-    template<typename T> T _back_sys()   const;
-    template<typename T> T _front_sys()  const;
+    template<typename T> typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+    _back_sys() const;
 
-    static void _check_big_or_little_endian();
-    template<typename T> static void _check_that_arithmetic_and_1_2_4_8();
-    template<typename T> void _check_that_arithmetic_and_enough_size() const;
+    template<typename T> typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+    _front_sys() const;
+
+    void _check_enough_size(size_t sz ) const;
 };
 //=======================================================================================
 //      VString
@@ -275,7 +282,6 @@ VString::VString( InputIterator first, InputIterator last )
 template<typename T>
 void VString::append_LE( T val )
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return _append_sys( reverse_T(val) );
     #else
@@ -286,7 +292,6 @@ void VString::append_LE( T val )
 template<typename T>
 void VString::append_BE( T val )
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return _append_sys( val );
     #else
@@ -297,7 +302,6 @@ void VString::append_BE( T val )
 template<typename T>
 void VString::prepend_LE( T val )
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return _prepend_sys( reverse_T(val) );
     #else
@@ -308,7 +312,6 @@ void VString::prepend_LE( T val )
 template<typename T>
 void VString::prepend_BE( T val )
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return _prepend_sys( val );
     #else
@@ -320,7 +323,6 @@ void VString::prepend_BE( T val )
 template<typename T>
 T VString::back_BE() const
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return _back_sys<T>();
     #else
@@ -331,7 +333,6 @@ T VString::back_BE() const
 template<typename T>
 T VString::back_LE() const
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return reverse_T( _back_sys<T>() );
     #else
@@ -342,7 +343,6 @@ T VString::back_LE() const
 template<typename T>
 T VString::front_BE() const
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return _front_sys<T>();
     #else
@@ -353,7 +353,6 @@ T VString::front_BE() const
 template<typename T>
 T VString::front_LE() const
 {
-    _check_big_or_little_endian();
     #if BYTE_ORDER == BIG_ENDIAN
     return reverse_T( _front_sys<T>() );
     #else
@@ -362,33 +361,11 @@ T VString::front_LE() const
 }
 //=======================================================================================
 //      Public wrappers
-//      Checking types
-//=======================================================================================
-template<typename T>
-void VString::_check_that_arithmetic_and_1_2_4_8()
-{
-    static_assert( std::is_arithmetic<T>::value, "!std::is_arithmetic<T>::value" );
-    static_assert( sizeof(T) == 1 || sizeof(T) == 2 ||
-                   sizeof(T) == 4 || sizeof(T) == 8, "Strange size of arithmetic type" );
-}
-//=======================================================================================
-template<typename T>
-void VString::_check_that_arithmetic_and_enough_size() const
-{
-    _check_that_arithmetic_and_1_2_4_8<T>();
-
-    if ( size() < sizeof(T) )
-        throw std::out_of_range("VString: remained size less than need T size.");
-}
-//=======================================================================================
-//      Checking types
 //      append & prepend
 //=======================================================================================
 template<typename T>
 void VString::_append_sys( const T &val )
 {
-    _check_that_arithmetic_and_1_2_4_8<T>();
-
     auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
     insert( size(), ch, sizeof(T) );
 }
@@ -396,8 +373,6 @@ void VString::_append_sys( const T &val )
 template<typename T>
 void VString::_prepend_sys( const T &val )
 {
-    _check_that_arithmetic_and_1_2_4_8<T>();
-
     auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
     insert( 0, ch, sizeof(T) );
 }
@@ -452,9 +427,10 @@ T VString::take_back_BE()
 }
 //=======================================================================================
 template<typename T>
-T VString::_front_sys() const
+typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+VString::_front_sys() const
 {
-    _check_that_arithmetic_and_enough_size<T>();
+    _check_enough_size( sizeof(T) );
 
     T res;
     auto *ch = static_cast<char*>(static_cast<void*>(&res));
@@ -464,9 +440,10 @@ T VString::_front_sys() const
 }
 //=======================================================================================
 template<typename T>
-T VString::_back_sys() const
+typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+VString::_back_sys() const
 {
-    _check_that_arithmetic_and_enough_size<T>();
+    _check_enough_size( sizeof(T) );
 
     T res;
     auto *ch = static_cast<char*>( static_cast<void*>(&res) );
@@ -476,10 +453,9 @@ T VString::_back_sys() const
 }
 //=======================================================================================
 template<typename T>
-T VString::reverse_T( T val )
+typename std::enable_if<std::is_arithmetic<T>::value, T>::type
+VString::reverse_T( T val )
 {
-    _check_that_arithmetic_and_1_2_4_8<T>();
-
     auto *ch = static_cast<char*>( static_cast<void*>(&val) );
     std::reverse( ch, ch + sizeof(T) );
     return val;
@@ -496,8 +472,6 @@ T VString::reverse_T( T val )
 template<typename T>
 T VString::ForwardView::show_LE() const
 {
-    _check_big_or_little_endian();
-
     if ( _remained < sizeof(T) )
         throw std::out_of_range( "VString::ForwardView::show_LE<T>(): not enouth data" );
 
@@ -513,8 +487,6 @@ T VString::ForwardView::show_LE() const
 template<typename T>
 T VString::ForwardView::show_BE() const
 {
-    _check_big_or_little_endian();
-
     if ( _remained < sizeof(T) )
         throw std::out_of_range( "VString::ForwardView::take_BE<T>(): not enouth data" );
 
