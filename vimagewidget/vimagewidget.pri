@@ -1,16 +1,35 @@
+#========================================================================================
+# vimagewidget.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
+#========================================================================================
 isEmpty(qi_vimagewidget) {
     qi_vimagewidget = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== VImageWidget appending... ===")
+    isEmpty(qi_not_print_pri_messages): message("=== vimagewidget appended ===")
 
-    isEmpty(VLibs_Dir): error("Need to have var VLibs_Dir")
+    isEmpty(VLIBS_DIR): error("vimagewidget: Need VLIBS_DIR correct path.")
 
-    QT *= opengl
 
-    INCLUDEPATH += $$VLibs_Dir/vimagewidget
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
+
+    INCLUDEPATH += $$VLIBS_DIR/vimagewidget
+
     
-    HEADERS     += $$VLibs_Dir/vimagewidget/vimagewidget.h
-    SOURCES     += $$VLibs_Dir/vimagewidget/vimagewidget.cpp
-
-} # isEmpty(qi_basler_wrap_with_qt)
+    HEADERS     += $$VLIBS_DIR/vimagewidget/vimagewidget.h 
+    
+    SOURCES     += $$VLIBS_DIR/vimagewidget/vimagewidget.cpp 
+}
+# vimagewidget.pri
+#========================================================================================
