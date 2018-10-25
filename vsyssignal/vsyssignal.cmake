@@ -1,5 +1,5 @@
 #========================================================================================
-# vsyssignal.pri
+# vsyssignal.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,23 +14,24 @@
 
 
 #========================================================================================
-isEmpty(qi_vsyssignal) {
-    qi_vsyssignal = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vsyssignal appended ===")
 
-    isEmpty(VLIBS_DIR): error("vsyssignal: Need VLIBS_DIR correct path.")
+if ( NOT  VSYSSIGNAL_INCLUDED )
+    set ( VSYSSIGNAL_INCLUDED TRUE )
 
+    message( "Include vsyssignal..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    CONFIG *= c++11
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vsyssignal
+    include_directories( "${VLIBS_DIR}/vsyssignal/")
 
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vsyssignal/vsyssignal.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vsyssignal/vsyssignal.cpp") 
 
-    HEADERS     += $$VLIBS_DIR/vsyssignal/vsyssignal.h
+    message( "vsyssignal included" )
 
-    SOURCES     += $$VLIBS_DIR/vsyssignal/vsyssignal.cpp
-}
-# vsyssignal.pri
+endif()
+# vsyssignal.cmake
 #========================================================================================

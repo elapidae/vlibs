@@ -1,15 +1,7 @@
 #========================================================================================
 # vthread.cmake
 #
-#
-# Этот файл сгенерирован автоматически.
-#
-# Вносить изменения можно между строк:
-#   #<<< Start your code here
-#   Сохраненный код.
-#   #>>> Stop your code here
-# Все остальные изменения будут перезаписаны.
-#
+#   Manual tuned.
 #========================================================================================
 
 
@@ -27,17 +19,19 @@ if ( NOT  VTHREAD_INCLUDED )
 
     include_directories( "${VLIBS_DIR}/vthread/")
 
-    
+    set( V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vsemaphore/vsemaphore.h")
+    set( V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vsemaphore/vsemaphore.cpp")
+
     set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vthread.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vslot.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vapplication.h") 
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vslot.h")
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vapplication.h")
     set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vsemaphorequeue.h") 
     set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vthreadqueue.h") 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vapplication.cpp") 
+    #set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vapplication.cpp")
     set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vthreadqueue.cpp") 
     set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vthread.cpp") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vslot.cpp") 
+    #set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vslot.cpp")
 
     message( "vthread included" )
 

@@ -85,6 +85,7 @@ _impl::error_proxy::error_proxy( Error *err )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wexceptions"
+#pragma GCC diagnostic ignored "-Wterminate"
 _impl::error_proxy::~error_proxy()
 {
     // Я знаю, что нельзя бросать исключения из деструктора, но здесь обратный случай,

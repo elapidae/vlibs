@@ -21,6 +21,7 @@ if ( NOT  VFILE_INCLUDED )
     message( "Include vfile..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vposix/vposix.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vfile/")
