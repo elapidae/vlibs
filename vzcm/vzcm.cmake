@@ -1,5 +1,5 @@
 #========================================================================================
-# vsyssignal.pri
+# vzcm.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,23 +14,29 @@
 
 
 #========================================================================================
-isEmpty(qi_vsyssignal) {
-    qi_vsyssignal = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vsyssignal appended ===")
 
-    isEmpty(VLIBS_DIR): error("vsyssignal: Need VLIBS_DIR correct path.")
+if ( NOT  VZCM_INCLUDED )
+    set ( VZCM_INCLUDED TRUE )
+
+    message( "Include vzcm..." )
 
 
-    #<<< Start your code here -----------------------------------------------------------
-    CONFIG *= c++11
+    #<<< Start your code here -----------------------------------------------------------    
+    include( "${VLIBS_DIR}/vsignal/vsignal.cmake" )
+
+    find_library( ZCM_LIB name zcm
+                    PATHS
+                        /usr/lib
+                        /usr/local/lib )
+    set( V_LIBRARIES ${V_LIBRARIES} ${ZCM_LIB} )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vsyssignal
 
+    include_directories( "${VLIBS_DIR}/vzcm/")    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vzcm/vzcm_subscriber.h") 
 
-    HEADERS     += $$VLIBS_DIR/vsyssignal/vsyssignal.h
+    message( "vzcm included" )
 
-    SOURCES     += $$VLIBS_DIR/vsyssignal/vsyssignal.cpp
-}
-# vsyssignal.pri
+endif()
+# vzcm.cmake
 #========================================================================================
