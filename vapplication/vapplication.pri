@@ -1,5 +1,5 @@
 #========================================================================================
-# vthread.pri
+# vapplication.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,39 +14,26 @@
 
 
 #========================================================================================
-isEmpty(qi_vthread) {
-    qi_vthread = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vthread appended ===")
+isEmpty(qi_vapplication) {
+    qi_vapplication = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vapplication appended ===")
 
-    isEmpty(VLIBS_DIR): error("vthread: Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vapplication: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
-
-    DEFINES += VTHREAD_USE_PTHREAD
-
-    !contains(CONFIG, qt) {
-        LIBS += -pthread
-        QMAKE_CXXFLAGS += -pthread
-    }
-
-    HEADERS     += $$VLIBS_DIR/vthread/vsemaphore/vsemaphore.h
-    SOURCES     += $$VLIBS_DIR/vthread/vsemaphore/vsemaphore.cpp
-
+    #include( $$VLIBS_DIR/vstring/vstring.pri )
+    include( $$VLIBS_DIR/vlog/vlog.pri )
+    include( $$VLIBS_DIR/vfile/vfile.pri )
+    OTHER_FILES += $$VLIBS_DIR/vapplication/README
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vthread
+    INCLUDEPATH += $$VLIBS_DIR/vapplication
 
     
-    HEADERS     += $$VLIBS_DIR/vthread/vthread.h 
-    #HEADERS     += $$VLIBS_DIR/vthread/vslot.h
-    HEADERS     += $$VLIBS_DIR/vthread/vsemaphorequeue.h 
-    HEADERS     += $$VLIBS_DIR/vthread/vthreadqueue.h 
+    HEADERS     += $$VLIBS_DIR/vapplication/vapplication.h 
     
-
-    SOURCES     += $$VLIBS_DIR/vthread/vthread.cpp 
-    SOURCES     += $$VLIBS_DIR/vthread/vthreadqueue.cpp
-    #SOURCES     += $$VLIBS_DIR/vthread/vslot.cpp
+    SOURCES     += $$VLIBS_DIR/vapplication/vapplication.cpp 
 }
-# vthread.pri
+# vapplication.pri
 #========================================================================================

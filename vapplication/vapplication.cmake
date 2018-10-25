@@ -1,5 +1,5 @@
 #========================================================================================
-# vpoints.pri
+# vapplication.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,21 +14,26 @@
 
 
 #========================================================================================
-isEmpty(qi_vpoints) {
-    qi_vpoints = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vpoints appended ===")
 
-    isEmpty(VLIBS_DIR): error("vpoints: Need VLIBS_DIR correct path.")
+if ( NOT  VAPPLICATION_INCLUDED )
+    set ( VAPPLICATION_INCLUDED TRUE )
 
+    message( "Include vapplication..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    include( "${VLIBS_DIR}/vfile/vfile.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vpoints
+    include_directories( "${VLIBS_DIR}/vapplication/")
 
     
-    HEADERS     += $$VLIBS_DIR/vpoints/vpoints.h 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vapplication/vapplication.h") 
     
-}
-# vpoints.pri
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vapplication/vapplication.cpp") 
+
+    message( "vapplication included" )
+
+endif()
+# vapplication.cmake
 #========================================================================================

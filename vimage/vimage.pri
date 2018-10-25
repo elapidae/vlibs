@@ -1,15 +1,6 @@
 #========================================================================================
 # vimage.pri
 #   NB! Изменен руками, постарайтесь не перегенерировать.
-#
-# Этот файл сгенерирован автоматически.
-#
-# Вносить изменения можно между строк:
-#   #<<< Start your code here
-#   Сохраненный код.
-#   #>>> Stop your code here
-# Все остальные изменения будут перезаписаны.
-#
 #========================================================================================
 
 
@@ -22,12 +13,16 @@ isEmpty(qi_vimage) {
 
 
     #<<< Start your code here -----------------------------------------------------------
+    include( $$VLIBS_DIR/vsignal/vsignal.pri )
+    include( $$VLIBS_DIR/vchrono/vchrono.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vimage
     
-    HEADERS     += $$VLIBS_DIR/vimage/vimage.h 
-    SOURCES     += $$VLIBS_DIR/vimage/vimage.cpp 
+    HEADERS     += $$VLIBS_DIR/vimage/vimage.h
+    SOURCES     += $$VLIBS_DIR/vimage/vimage.cpp
+
+    HEADERS     += $$VLIBS_DIR/vimage/abstract_vimage_supplier.h
 }
 # vimage.pri
 #========================================================================================

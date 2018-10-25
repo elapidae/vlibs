@@ -1,11 +1,9 @@
 #ifndef VPOINTS_H
 #define VPOINTS_H
 
-#include "vbufferforwardreader.h"
-#include "vstring.h"
 #include <vector>
-#include <algorithm>
 #include <ostream>
+#include <algorithm>
 
 //=======================================================================================
 /*
@@ -26,12 +24,10 @@
  *  T distance();   // Расстояние до точки из декартового (0,0).
  *  T angle();      // Угол -- в радианах.
  *  Разница только в том, что декартовы точки вычисляют distance() и angle(),
- *  а полярные -- x() и y().
+ *  а полярные вычисляют x() и y().
  *
  *  Декартовы обладают методом to_polar(), полярные -- to_cartesian() (это декартовы
  *  по буржуйски).
- *
- *  Умеют писать и читать себя из VString и VBufferForwardReader
 */
 //=======================================================================================
 
@@ -48,15 +44,7 @@ class VPoint
 {
 public:
 
-    static VPoint<T> from_back_LE( VString * buf );
-    static VPoint<T> from_back_BE( VString * buf );
-
-    static VPoint<T> from_reader_LE( VBufferForwardReader * buf );
-    static VPoint<T> from_reader_BE( VBufferForwardReader * buf );
-
-    void to_back_LE( VString * buf ) const;
-    void to_back_BE( VString * buf ) const;
-
+    //-----------------------------------------------------------------------------------
     VPoint();
     VPoint( const T& xx, const T& yy );
 
@@ -73,15 +61,14 @@ public:
     const VPoint<T> & operator += ( const VPoint<T> &rhs );
     const VPoint<T> & operator -= ( const VPoint<T> &rhs );
 
+    bool operator == ( const VPoint<T> &rhs ) const;        //  Вещественные сравнивает
+    bool operator != ( const VPoint<T> &rhs ) const;        //  через эпсилон.
+
     T distance_to( const VPoint<T> & other ) const;
 
-    bool is_valid() const                           { return x() == x() && y() == y(); }
+    bool is_valid() const;
 
-    // Конвертирует в указанный тип, если у типа есть соответствующий конструктор.
-    //template<typename Dst>
-    //Dst convert_to_any() const                      { return {x(), y()}; }
-
-
+    //-----------------------------------------------------------------------------------
     class Vector : public std::vector<VPoint<T>>
     {
     public:
@@ -91,7 +78,7 @@ public:
         VPoint<T> average_center() const;
     };
 
-
+    //-----------------------------------------------------------------------------------
 private:
     T _x, _y;
 }; // VPoint class
@@ -116,16 +103,7 @@ template<typename T>
 class VPolarPoint
 {
 public:
-
-    static VPolarPoint<T> from_back_LE( VString * buf );
-    static VPolarPoint<T> from_back_BE( VString * buf );
-
-    static VPolarPoint<T> from_reader_LE( VBufferForwardReader * buf );
-    static VPolarPoint<T> from_reader_BE( VBufferForwardReader * buf );
-
-    void to_back_LE( VString * buf ) const;
-    void to_back_BE( VString * buf ) const;
-
+    //-----------------------------------------------------------------------------------
     VPolarPoint();
     VPolarPoint( const T& distance, const T& angle );
 
@@ -136,19 +114,21 @@ public:
 
     VPoint<T> to_cartesian() const;
 
-    T distance_to( const VPolarPoint & other )
-    { return to_cartesian().distance_to(other.to_cartesian()); }
+    bool operator == ( const VPolarPoint<T> &rhs ) const;   // Вещественные сравнивает
+    bool operator != ( const VPolarPoint<T> &rhs ) const;   // через эпсилон.
 
-    bool is_valid() const
-    { return distance() == distance() && angle() == angle(); }
+    T distance_to( const VPolarPoint & other );
 
+    bool is_valid() const;
+
+    //-----------------------------------------------------------------------------------
     class Vector : public std::vector<VPolarPoint<T>>
     {
     public:
         typename VPoint<T>::Vector to_cartesian() const;
     };
 
-
+    //-----------------------------------------------------------------------------------
 private:
     T _distance, _angle;
 }; // VPolarPoint class
@@ -183,56 +163,10 @@ std::ostream & operator << (std::ostream &os, const VPolarPoint<T> &p )
 //=======================================================================================
 //      IMPLEMENTATION VPoint
 //=======================================================================================
-template<typename T>
-VPoint<T> VPoint<T>::from_back_LE( VString * buf )
-{
-    auto y = buf->take_back_LE<T>();
-    auto x = buf->take_back_LE<T>();
-    return { x, y };
-}
-//=======================================================================================
-template<typename T>
-VPoint<T> VPoint<T>::from_back_BE( VString * buf )
-{
-    auto y = buf->take_back_BE<T>();
-    auto x = buf->take_back_BE<T>();
-    return { x, y };
-}
-//=======================================================================================
-template<typename T>
-VPoint<T> VPoint<T>::from_reader_LE( VBufferForwardReader * buf )
-{
-    auto xx = buf->take_LE<T>();
-    auto yy = buf->take_LE<T>();
-    return { xx, yy };
-}
-//=======================================================================================
-template<typename T>
-VPoint<T> VPoint<T>::from_reader_BE( VBufferForwardReader * buf )
-{
-    auto xx = buf->take_BE<T>();
-    auto yy = buf->take_BE<T>();
-    return { xx, yy };
-}
-//=======================================================================================
-template<typename T>
-void VPoint<T>::to_back_LE( VString * buf ) const
-{
-    buf->append_LE( x() );
-    buf->append_LE( y() );
-}
-//=======================================================================================
-template<typename T>
-void VPoint<T>::to_back_BE( VString * buf ) const
-{
-    buf->append_BE( x() );
-    buf->append_BE( y() );
-}
-//=======================================================================================
 //=======================================================================================
 template<typename T>
 VPoint<T>::VPoint()
-    : VPoint( NAN, NAN )
+    : VPoint( T(NAN), T(NAN) )
 {}
 //=======================================================================================
 template<typename T>
@@ -293,7 +227,7 @@ const VPoint<T> & VPoint<T>::operator +=( const VPoint<T> &rhs )
 }
 //=======================================================================================
 template<typename T>
-const VPoint<T> & VPoint<T>::operator -=( const VPoint<T> &rhs )
+const VPoint<T> & VPoint<T>::operator -=( const VPoint<T>& rhs )
 {
     _x -= rhs._x;
     _y -= rhs._y;
@@ -301,21 +235,50 @@ const VPoint<T> & VPoint<T>::operator -=( const VPoint<T> &rhs )
 }
 //=======================================================================================
 template<typename T>
-T VPoint<T>::distance_to( const VPoint<T> & other ) const
+bool VPoint<T>::operator == ( const VPoint<T>& rhs ) const
+{
+    if ( !std::is_floating_point<T>::value )
+    {
+        return _x == rhs._x && _y == rhs._y;
+    }
+    else
+    {
+        auto xx = std::abs( _x - rhs._x );
+        auto yy = std::abs( _y - rhs._y );
+
+        return xx <= std::numeric_limits<T>::epsilon() &&
+               yy <= std::numeric_limits<T>::epsilon();
+    }
+}
+//=======================================================================================
+template<typename T>
+bool VPoint<T>::operator != ( const VPoint<T> &rhs ) const
+{
+    return !( *this == rhs );
+}
+//=======================================================================================
+template<typename T>
+T VPoint<T>::distance_to( const VPoint<T>& other ) const
 {
     return (*this - other).distance();
 }
 //=======================================================================================
+template<typename T>
+bool VPoint<T>::is_valid() const
+{
+    return x() == x() &&    //  Проверки на NaN.
+           y() == y();      //
+}
 //=======================================================================================
 template<typename T>
-VPoint<T> operator + ( const VPoint<T> &lhs, const VPoint<T> &rhs )
+VPoint<T> operator + ( const VPoint<T>& lhs, const VPoint<T>& rhs )
 {
     auto tmp = lhs;
     return tmp += rhs;
 }
 //=======================================================================================
 template<typename T>
-VPoint<T> operator - ( const VPoint<T> &lhs, const VPoint<T> &rhs )
+VPoint<T> operator - ( const VPoint<T>& lhs, const VPoint<T>& rhs )
 {
     auto tmp = lhs;
     return tmp -= rhs;
@@ -361,55 +324,8 @@ VPoint<T> VPoint<T>::Vector::average_center() const
 //      IMPLEMENTATION VPolarPoint
 //=======================================================================================
 template<typename T>
-VPolarPoint<T> VPolarPoint<T>::from_back_LE( VString * buf )
-{
-    auto angle = buf->take_back_LE<T>();
-    auto dist  = buf->take_back_LE<T>();
-    return { dist, angle };
-}
-//=======================================================================================
-template<typename T>
-VPolarPoint<T> VPolarPoint<T>::from_back_BE( VString * buf )
-{
-    auto angle = buf->take_back_BE<T>();
-    auto dist  = buf->take_back_BE<T>();
-    return { dist, angle };
-}
-//=======================================================================================
-template<typename T>
-VPolarPoint<T> VPolarPoint<T>::from_reader_LE( VBufferForwardReader * buf )
-{
-    auto angle = buf->take_LE<T>();
-    auto dist  = buf->take_LE<T>();
-    return { dist, angle };
-}
-//=======================================================================================
-template<typename T>
-VPolarPoint<T> VPolarPoint<T>::from_reader_BE( VBufferForwardReader * buf )
-{
-    auto angle = buf->take_BE<T>();
-    auto dist  = buf->take_BE<T>();
-    return { dist, angle };
-}
-//=======================================================================================
-template<typename T>
-void VPolarPoint<T>::to_back_LE( VString * buf ) const
-{
-    buf->append_LE( _distance );
-    buf->append_LE( _angle    );
-}
-//=======================================================================================
-template<typename T>
-void VPolarPoint<T>::to_back_BE( VString * buf ) const
-{
-    buf->append_BE( _distance );
-    buf->append_BE( _angle    );
-}
-//=======================================================================================
-//=======================================================================================
-template<typename T>
 VPolarPoint<T>::VPolarPoint()
-    : VPolarPoint(NAN, NAN)
+    : VPolarPoint( NAN, NAN )
 {}
 //=======================================================================================
 template<typename T>
@@ -422,13 +338,13 @@ VPolarPoint<T>::VPolarPoint( const T& distance, const T& angle )
 template<typename T>
 T VPolarPoint<T>::x() const
 {
-    return _distance * cos(_angle);
+    return _distance * std::cos(_angle);
 }
 //=======================================================================================
 template<typename T>
 T VPolarPoint<T>::y() const
 {
-    return _distance * sin(_angle);
+    return _distance * std::sin(_angle);
 }
 //=======================================================================================
 template<typename T>
@@ -447,6 +363,46 @@ template<typename T>
 VPoint<T> VPolarPoint<T>::to_cartesian() const
 {
     return { x(), y() };
+}
+//=======================================================================================
+template<typename T>
+bool VPolarPoint<T>::operator == ( const VPolarPoint<T> &rhs ) const
+{
+    if ( !std::is_floating_point<T>::value )
+    {
+        return _distance == rhs._distance && _angle == rhs._angle;
+    }
+    else
+    {
+        auto d = std::abs( _distance - rhs._distance );
+        auto a = std::abs( _angle - rhs._angle );
+
+        return d <= std::numeric_limits<T>::epsilon() &&
+               a <= std::numeric_limits<T>::epsilon();
+    }
+}
+//=======================================================================================
+template<typename T>
+bool VPolarPoint<T>::operator != ( const VPolarPoint<T> &rhs ) const
+{
+    return !( *this == rhs );
+}
+//=======================================================================================
+template<typename T>
+T VPolarPoint<T>::distance_to( const VPolarPoint& other )
+{
+    auto d1 = _distance;
+    auto d2 = other._distance;
+    auto cos_a = std::cos( _angle - other._angle );
+
+    return std::sqrt( d1*d1 + d2*d2 - 2 * d1 * d2 * cos_a );
+}
+//=======================================================================================
+template<typename T>
+bool VPolarPoint<T>::is_valid() const
+{
+    return distance() == distance() &&
+           angle()    == angle();
 }
 //=======================================================================================
 template<typename T>

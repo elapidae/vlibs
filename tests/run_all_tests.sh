@@ -15,3 +15,5 @@ vlibs/vcrc/test_vcrc/test_vcrc
 echo ==================================================================
 vlibs/vstring/test_vstring/test_vstring
 echo ==================================================================
+vlibs/vpoints/test_vpoints/test_vpoints
+echo ==================================================================

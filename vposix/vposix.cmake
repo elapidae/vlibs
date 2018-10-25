@@ -1,5 +1,5 @@
 #========================================================================================
-# error.pri
+# vposix.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,20 +14,26 @@
 
 
 #========================================================================================
-isEmpty(qi_error) {
-    qi_error = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== error appended ===")
 
-    isEmpty(VLIBS_DIR): error("Need VLIBS_DIR correct path.")
+if ( NOT  VPOSIX_INCLUDED )
+    set ( VPOSIX_INCLUDED TRUE )
 
+    message( "Include vposix..." )
 
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vgio/error
+    include_directories( "${VLIBS_DIR}/vposix/")
+
     
-    HEADERS     += $$VLIBS_DIR/vgio/error/vgio_error.h
-    SOURCES     += $$VLIBS_DIR/vgio/error/vgio_error.cpp
-}
-# error.pri
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vposix/vposix_errno.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vposix/vposix_files.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vposix/vposix_errno.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vposix/vposix_files.cpp") 
+
+    message( "vposix included" )
+
+endif()
+# vposix.cmake
 #========================================================================================

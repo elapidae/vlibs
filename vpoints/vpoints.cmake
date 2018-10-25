@@ -1,5 +1,5 @@
 #========================================================================================
-# vpoints.pri
+# vpoints.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,21 +14,24 @@
 
 
 #========================================================================================
-isEmpty(qi_vpoints) {
-    qi_vpoints = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vpoints appended ===")
 
-    isEmpty(VLIBS_DIR): error("vpoints: Need VLIBS_DIR correct path.")
+if ( NOT  VPOINTS_INCLUDED )
+    set ( VPOINTS_INCLUDED TRUE )
 
+    message( "Include vpoints..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/c++11/c++11.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vpoints
+    include_directories( "${VLIBS_DIR}/vpoints/")
 
     
-    HEADERS     += $$VLIBS_DIR/vpoints/vpoints.h 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vpoints/vpoints.h") 
     
-}
-# vpoints.pri
+
+    message( "vpoints included" )
+
+endif()
+# vpoints.cmake
 #========================================================================================

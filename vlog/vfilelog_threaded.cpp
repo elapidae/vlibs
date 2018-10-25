@@ -15,7 +15,7 @@ VGroupFileLog_Threaded::VGroupFileLog_Threaded( const std::string &path,
 {
     _thread.finvoke( [=]()
     {
-        _log.reset( new VGroupFileLog(path, one_file_size, rotate_files_count) );
+        _log.reset( new VFileLog_Leveled(path, one_file_size, rotate_files_count) );
     });
 }
 //=======================================================================================
@@ -48,7 +48,7 @@ VCommonFileLog_Threaded::VCommonFileLog_Threaded( const std::string &fname,
 {
     _thread.finvoke( [=]()
     {
-        _log.reset( new VCommonFileLog(fname, one_file_size, rotate_files_count) );
+        _log.reset( new VFileLog_Shared(fname, one_file_size, rotate_files_count) );
     });
 }
 //=======================================================================================

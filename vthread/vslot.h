@@ -2,7 +2,7 @@
 #define VSLOT_H
 
 #include <thread>
-#include "vthreadqueue/vthreadqueue.h"
+#include "vthreadqueue.h"
 #include "vsignal.h"
 
 //=======================================================================================

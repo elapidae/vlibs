@@ -1,8 +1,7 @@
 #========================================================================================
-# vpoints.pri
+# error.pri
 #
-#
-# Этот файл сгенерирован автоматически.
+#   NB! Отредактировано руками!
 #
 # Вносить изменения можно между строк:
 #   #<<< Start your code here
@@ -14,21 +13,20 @@
 
 
 #========================================================================================
-isEmpty(qi_vpoints) {
-    qi_vpoints = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vpoints appended ===")
+isEmpty(qi_vgio_error) {
+    qi_vgio_error = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vgio_error appended ===")
 
-    isEmpty(VLIBS_DIR): error("vpoints: Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vgio_error: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vpoints
-
+    INCLUDEPATH += $$VLIBS_DIR/vgio/error
     
-    HEADERS     += $$VLIBS_DIR/vpoints/vpoints.h 
-    
+    HEADERS     += $$VLIBS_DIR/vgio/error/vgio_error.h
+    SOURCES     += $$VLIBS_DIR/vgio/error/vgio_error.cpp
 }
-# vpoints.pri
+# error.pri
 #========================================================================================

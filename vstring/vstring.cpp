@@ -4,6 +4,10 @@
 #include <sstream>
 #include <algorithm>
 
+//=======================================================================================
+static_assert( BYTE_ORDER == BIG_ENDIAN || BYTE_ORDER == LITTLE_ENDIAN,
+               "Unknown byte order" );
+//=======================================================================================
 
 
 //=======================================================================================
@@ -40,12 +44,6 @@ VString::VString( size_t n, char c )
 VString::VString(const std::initializer_list<char> &il )
     : std::string( il )
 {}
-//=======================================================================================
-void VString::_check_big_or_little_endian()
-{
-    static_assert( BYTE_ORDER == BIG_ENDIAN || BYTE_ORDER == LITTLE_ENDIAN,
-                   "Unknown byte order" );
-}
 //=======================================================================================
 //      Init, ctors
 //=======================================================================================
@@ -172,12 +170,12 @@ void VString::append( char ch )
     append_LE( ch );
 }
 //=======================================================================================
-char VString::take_front()
+char VString::take_front_ch()
 {
     return take_front_LE<char>();
 }
 //=======================================================================================
-char VString::take_back()
+char VString::take_back_ch()
 {
     return take_back_LE<char>();
 }
@@ -288,13 +286,13 @@ VString::Vector VString::split_by_spaces() const
 //=======================================================================================
 VString VString::front_str( size_t sz ) const
 {
-    sz = std::min( sz, size() );
+    _check_enough_size( sz );
     return substr( 0, sz );
 }
 //=======================================================================================
 VString VString::back_str( size_t sz ) const
 {
-    sz = std::min( sz, size() );
+    _check_enough_size( sz );
     return substr( size() - sz, sz );
 }
 //=======================================================================================
@@ -349,6 +347,12 @@ VString::Vector VString::split_without_empties( char splitter ) const
 VString::ForwardView VString::forward_view() const
 {
     return ForwardView( this );
+}
+//=======================================================================================
+void VString::_check_enough_size( size_t sz ) const
+{
+    if ( size() < sz )
+        throw std::out_of_range( "VString: remained size less than need." );
 }
 //=======================================================================================
 VString::ForwardView::ForwardView( const VString *owner )

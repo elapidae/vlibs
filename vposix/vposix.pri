@@ -1,5 +1,5 @@
 #========================================================================================
-# vapp_args_parser.cmake
+# vposix.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,24 +14,25 @@
 
 
 #========================================================================================
+isEmpty(qi_vposix) {
+    qi_vposix = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vposix appended ===")
 
-if ( NOT  VAPP_ARGS_PARSER_INCLUDED )
-    set ( VAPP_ARGS_PARSER_INCLUDED TRUE )
+    isEmpty(VLIBS_DIR): error("vposix: Need VLIBS_DIR correct path.")
 
-    message( "Include vapp_args_parser..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    OTHER_FILES += $$VLIBS_DIR/vposix/README
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vapp_args_parser/")
+    INCLUDEPATH += $$VLIBS_DIR/vposix
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vapp_args_parser/vapp_args_parser.h") 
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_errno.h 
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_files.h 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vapp_args_parser/vapp_args_parser.cpp") 
-
-    message( "vapp_args_parser included" )
-
-endif()
-# vapp_args_parser.cmake
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_errno.cpp 
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_files.cpp 
+}
+# vposix.pri
 #========================================================================================
