@@ -22,6 +22,7 @@ isEmpty(qi_vimagewidget) {
 
 
     #<<< Start your code here -----------------------------------------------------------
+    QT += opengl
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vimagewidget
