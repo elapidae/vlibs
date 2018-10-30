@@ -1,5 +1,5 @@
 #========================================================================================
-# vimagewidget.pri
+# vrandom.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,23 +14,22 @@
 
 
 #========================================================================================
-isEmpty(qi_vimagewidget) {
-    qi_vimagewidget = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vimagewidget appended ===")
+isEmpty(qi_vrandom) {
+    qi_vrandom = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vrandom appended ===")
 
-    isEmpty(VLIBS_DIR): error("vimagewidget: Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vrandom: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
-    QT += opengl
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vimagewidget
+    INCLUDEPATH += $$VLIBS_DIR/vrandom
 
     
-    HEADERS     += $$VLIBS_DIR/vimagewidget/vimagewidget.h 
+    HEADERS     += $$VLIBS_DIR/vrandom/vrandom.h 
     
-    SOURCES     += $$VLIBS_DIR/vimagewidget/vimagewidget.cpp 
+    SOURCES     += $$VLIBS_DIR/vrandom/vrandom.cpp 
 }
-# vimagewidget.pri
+# vrandom.pri
 #========================================================================================

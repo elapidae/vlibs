@@ -22,7 +22,7 @@ isEmpty(qi_vgio_core_impl) {
 
 
     #<<< Start your code here -----------------------------------------------------------
-    include( $$VLIBS_DIR/vgio/core/core.pri )
+    include( $$VLIBS_DIR/vgio/core/vgio_core.pri )
 
     INCLUDEPATH += $$VLIBS_DIR/vgio/core
 

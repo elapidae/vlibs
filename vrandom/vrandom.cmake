@@ -1,5 +1,5 @@
 #========================================================================================
-# vimagewidget.pri
+# vrandom.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,23 +14,26 @@
 
 
 #========================================================================================
-isEmpty(qi_vimagewidget) {
-    qi_vimagewidget = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vimagewidget appended ===")
 
-    isEmpty(VLIBS_DIR): error("vimagewidget: Need VLIBS_DIR correct path.")
+if ( NOT  VRANDOM_INCLUDED )
+    set ( VRANDOM_INCLUDED TRUE )
 
+    message( "Include vrandom..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    QT += opengl
+    include( "${VLIBS_DIR}/c++11/c++11.cmake" )
+    include( "${VLIBS_DIR}/vchrono/vchrono.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vimagewidget
+    include_directories( "${VLIBS_DIR}/vrandom/")
 
     
-    HEADERS     += $$VLIBS_DIR/vimagewidget/vimagewidget.h 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vrandom/vrandom.h") 
     
-    SOURCES     += $$VLIBS_DIR/vimagewidget/vimagewidget.cpp 
-}
-# vimagewidget.pri
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vrandom/vrandom.cpp") 
+
+    message( "vrandom included" )
+
+endif()
+# vrandom.cmake
 #========================================================================================
