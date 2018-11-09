@@ -1,5 +1,7 @@
 #include "vposix_files.h"
 
+#include "vlog_pretty.h"
+
 //  Here: ::open
 #include <fcntl.h>
 
@@ -42,5 +44,11 @@ int Files::remove_raw(  const char *pathname )
 int Files::remove( cstr pathname )
 {
     return remove_raw( pathname.c_str() );
+}
+//=======================================================================================
+void Files::close( int fd )
+{
+    if (trace) vtrace << "V::close_eintr(" << fd << ");";
+    linux_call_eintr<int>( ::close, fd );
 }
 //=======================================================================================
