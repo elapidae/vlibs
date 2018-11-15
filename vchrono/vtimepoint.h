@@ -74,7 +74,6 @@
 //=======================================================================================
 //      GENERAL TEMPLATE
 //=======================================================================================
-//namespace std { struct tm; }
 class _vtimepoint_helper
 {
 public:
@@ -177,6 +176,25 @@ private:
 //=======================================================================================
 
 
+
+//=======================================================================================
+// https://habr.com/post/140357/
+// Литералами пользоваться так: 1_second; -20_millisec; 200_microsec; -3000_nanosec; ...
+std::chrono::seconds        operator "" _seconds    ( unsigned long long  s );
+std::chrono::milliseconds   operator "" _millisec   ( unsigned long long ms );
+std::chrono::microseconds   operator "" _microsec   ( unsigned long long us );
+std::chrono::nanoseconds    operator "" _nanosec    ( unsigned long long ns );
+//=======================================================================================
+template<typename Other> std::chrono::seconds       to_seconds  ( Other && other );
+template<typename Other> std::chrono::milliseconds  to_millisec ( Other && other );
+template<typename Other> std::chrono::microseconds  to_microsec ( Other && other );
+template<typename Other> std::chrono::nanoseconds   to_nanosec  ( Other && other );
+//=======================================================================================
+
+
+
+
+//=======================================================================================
 // Старый компилятор не умеет прокси конструкторов, пишем костыль.
 #define V_GNUC_VERSION_ELPD ((__GNUC__ * 100) + __GNUC_MINOR__)
 #if V_GNUC_VERSION_ELPD > 408       // версии компилятора выше 4.8
@@ -599,6 +617,36 @@ std::string _vTimePoint<Clk,Derived>::str_datetime_zzz_for_filenames() const
 {
     return vcat(str_datetime_for_filename())('.').num(millisecond(), 3, '0');
 }
+//=======================================================================================
+//      v_TimePoint
+//=======================================================================================
+//      to_* converters
+//=======================================================================================
+template<typename Other>
+std::chrono::seconds to_seconds( Other && other )
+{
+    return std::chrono::duration_cast<std::chrono::seconds>( std::forward(other) );
+}
+//=======================================================================================
+template<typename Other>
+std::chrono::milliseconds to_millisec( Other && other )
+{
+    return std::chrono::duration_cast<std::chrono::milliseconds>( std::forward(other) );
+}
+//=======================================================================================
+template<typename Other>
+std::chrono::microseconds to_microsec( Other && other )
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>( std::forward(other) );
+}
+//=======================================================================================
+template<typename Other>
+std::chrono::nanoseconds to_nanosec( Other && other )
+{
+    return std::chrono::duration_cast<std::chrono::nanoseconds>( std::forward(other) );
+}
+//=======================================================================================
+//      to_* converters
 //=======================================================================================
 //      IMPLEMENTATION
 //=======================================================================================

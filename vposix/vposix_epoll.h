@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <functional>
 #include <vector>
-#include <sys/epoll.h>
+//#include <sys/epoll.h>
 
 
 //=======================================================================================
@@ -18,43 +18,32 @@ namespace vposix
 {
     class EPoll final
     {
-        static constexpr auto Wait_Max_Events = 1024;
     public:
+        static constexpr auto Wait_Max_Events = 100;
 
-        struct EventFlags final
-        {
-            bool IN()       const;
-            bool OUT()      const;
-            bool RDHUP()    const;
-            bool PRI()      const;
-            bool ERR()      const;
-            bool HUP()      const;
-
-        private:
-            friend class EPoll;
-            uint32_t _events;
-        };
-
-        //using EventCallBack = std::function<void(int,EventFlags)>; // fd
-
-        enum class Triggered { Level, Edge };
-        enum class Direction { R, W, RW };
+        static bool has_EPOLLIN( uint32_t events );
 
         EPoll();
         ~EPoll();
 
-        void add( int fd, epoll_event *event );
+        void add( int fd, bool dir_in, bool dir_out, bool trigg );
+
+        void raw_add( int fd, epoll_event* event );
+        void raw_mod( int fd, epoll_event* event );
         void del( int fd );
 
-        std::vector<epoll_event> wait( int maxevents, int wait_ms = -1 );
+        using CallBack = std::function<void(int,uint32_t)>; // (fd,events)
+        void wait( CallBack cb, int maxevents = Wait_Max_Events, int wait_ms = -1 );
 
     private:
         int _epoll_fd = -1;
+        int _count = 0;
 
         static int _create();
         static int _wait( int efd, epoll_event* events, int maxevents, int wait_ms );
 
         static void _add( int epoll_fd, int fd, epoll_event *event );
+        static void _mod( int epoll_fd, int fd, epoll_event *event );
         static void _del( int epoll_fd, int fd );
     };
 

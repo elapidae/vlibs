@@ -21,10 +21,8 @@
 namespace vposix
 {
     //===================================================================================
-    struct Errno final
+    struct Errno_2 final
     {
-        static std::string str_error( int err );
-
         //std::string str_error() const;
         //int err_code;
         //  Проверяет возвращаемое значение, если оно равно -1, то бросается исключение

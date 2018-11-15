@@ -28,8 +28,10 @@ namespace vposix
         void inc();
         bool dec();
 
+        int fd() const;
+
     private:
-        int _fd;
+        int _fd = -1;
         Semaphore(const Semaphore&) = delete;
     };
 

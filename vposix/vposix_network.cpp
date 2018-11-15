@@ -51,16 +51,23 @@ Socket::Type Socket::get_type( int fd )
     throw verror( "Unknown socket type: ", t );
 }
 //=======================================================================================
-ssize_t Socket::_recv(int fd, void *buf, size_t n, int flags)
+ssize_t Socket::_recv_or_err( int fd, void *buf, size_t n, int flags )
 {
     if ( do_trace() ) vtrace( "V::recv(", fd, buf, n, flags, ")" );
-    return linux_call_eintr<ssize_t>( ::recv, fd, buf, n, flags );
+
+    return Core::linux_call_or_err( ::recv, fd, buf, n, flags );
 }
 //=======================================================================================
 ssize_t Socket::pending_datagram_size(int fd)
 {
     char c;
-    return _recv( fd, &c, 1, MSG_PEEK | MSG_TRUNC );
+    auto res = _recv_or_err( fd, &c, 1, MSG_PEEK | MSG_TRUNC );
+    if ( res == -1 )
+    {
+        if ( errno == EAGAIN ) return 0;
+        Core::throw_err( errno, "pending_datagram_size" );
+    }
+    return res;
 }
 //=======================================================================================
 ssize_t Socket::_recvfrom( int fd, void *buf, size_t n, int flags,
@@ -68,7 +75,8 @@ ssize_t Socket::_recvfrom( int fd, void *buf, size_t n, int flags,
 {
     assert( buf && n > 0 );
 
-    return linux_call_eintr<ssize_t>( ::recvfrom, fd, buf, n, flags, addr, addr_len );
+    //return Core::linux_call<ssize_t>( ::recvfrom, fd, buf, n, flags, addr, addr_len );
+    return Core::linux_call( ::recvfrom, fd, buf, n, flags, addr, addr_len );
 }
 //=======================================================================================
 ssize_t Socket::_recvfrom( int fd, void *buf, size_t n, int flags, sockaddr_in *addr )
@@ -103,7 +111,8 @@ int Socket::_socket( int domain, int type, int protocol )
     if ( do_trace() )
         vtrace.nospace()( " ::socket( ", domain, ", ", type, ", ", protocol, " )" );
 
-    return linux_call<int>( ::socket, domain, type, protocol );
+    //return Core::linux_call<int>( ::socket, domain, type, protocol );
+    return Core::linux_call( ::socket, domain, type, protocol );
 }
 //=======================================================================================
 void Socket::_setsockopt(int fd, int level, int optname,
@@ -116,7 +125,7 @@ void Socket::_setsockopt(int fd, int level, int optname,
         std::string val;
         if ( optlen == sizeof(int) )
             val = vcat('[', *static_cast<const int*>(optval), ']');
-        vtrace.nospace()( " ::setsockopt("
+        vtrace.nospace()( "V::setsockopt("
                           "fd:", fd,
                           ", lvl:", level,
                           ", name:", optname,
@@ -125,7 +134,8 @@ void Socket::_setsockopt(int fd, int level, int optname,
                           val, " )" );
     }
 
-    linux_call<int>(::setsockopt, fd, level, optname, optval, optlen );
+    //Core::linux_call<int>( ::setsockopt, fd, level, optname, optval, optlen );
+    Core::linux_call( ::setsockopt, fd, level, optname, optval, optlen );
 }
 //=======================================================================================
 std::shared_ptr<sockaddr_in> Socket::new_sockaddr_in( uint32_t host, uint16_t port )
@@ -160,9 +170,10 @@ void Socket::bind( int fd, uint32_t host, uint16_t port )
 //=======================================================================================
 int Socket::_bind( int fd, const sockaddr *addr, Socket::my_socklen_t len )
 {
-    if ( do_trace() ) vtrace.nospace()( " ::bind( ", fd, ", ", addr, ", ", len, " )" );
+    if ( do_trace() ) vtrace.nospace()( "V::bind( ", fd, ", ", addr, ", ", len, " )" );
 
-    return linux_call<int>( ::bind, fd, addr, len );
+    //return Core::linux_call<int>( ::bind, fd, addr, len );
+    return Core::linux_call( ::bind, fd, addr, len );
 }
 //=======================================================================================
 int Socket::_bind( int fd, const sockaddr_in& addr )
@@ -173,7 +184,8 @@ int Socket::_bind( int fd, const sockaddr_in& addr )
 //=======================================================================================
 int Socket::_getsockname( int fd, sockaddr* addr, Socket::my_socklen_t *len )
 {
-    return linux_call<int>( ::getsockname, fd, addr, len );
+    //return Core::linux_call<int>( ::getsockname, fd, addr, len );
+    return Core::linux_call( ::getsockname, fd, addr, len );
 }
 //=======================================================================================
 int Socket::_getsockname( int fd, sockaddr_in* addr )
@@ -208,14 +220,15 @@ void Socket::get_bind_point( int fd, uint32_t* host, uint16_t* port )
 bool Socket::listen( int fd, int queued_count )
 {
     if ( do_trace() ) vtrace( "V::listen(", fd, queued_count, ")" );
-    return 0 == linux_call<int>( ::listen, fd, queued_count );
+    //return 0 == Core::linux_call<int>( ::listen, fd, queued_count );
+    return 0 == Core::linux_call( ::listen, fd, queued_count );
 }
 //=======================================================================================
-int Socket::_connect_or_errno( bool *ok, int fd, const sockaddr *addr,
-                               Socket::my_socklen_t len )
+int Socket::_connect_or_err( int fd, const sockaddr *addr,
+                             Socket::my_socklen_t len )
 {
     if ( do_trace() ) vtrace( "V::connect_eintr(", fd, addr->sa_family, len, ");" );
-    return linux_call_eintr_or_errno<int>( ok, ::connect, fd, addr, len );
+    return Core::linux_call_or_err( ::connect, fd, addr, len );
 }
 //=======================================================================================
 void Socket::connect( int fd, uint32_t addr, uint16_t port )
@@ -223,18 +236,17 @@ void Socket::connect( int fd, uint32_t addr, uint16_t port )
     sockaddr_in sock;
     auto ptr = static_cast<sockaddr*>( static_cast<void*>(&sock) );
     _init_sockaddr_in( addr, port, &sock );
-    bool ok;
-    auto res = _connect_or_errno( &ok, fd, ptr, sizeof(sock) );
-    if ( ok && res == 0 ) return;
-    throw verror( "Bad connect: '", Errno::str_error(res), "'." );
+    auto res = _connect_or_err( fd, ptr, sizeof(sock) );
+    if ( res == -1 ) return;
+    Core::throw_err( errno, "Socket::connect" );
 }
 //=======================================================================================
-int Socket::connect_or_errno( bool *ok, int fd, uint32_t addr, uint16_t port )
+int Socket::connect_or_err( int fd, uint32_t addr, uint16_t port )
 {
     sockaddr_in sock;
     auto ptr = static_cast<sockaddr*>( static_cast<void*>(&sock) );
     _init_sockaddr_in( addr, port, &sock );
-    return _connect_or_errno( ok, fd, ptr, sizeof(sock) );
+    return _connect_or_err( fd, ptr, sizeof(sock) );
 }
 //=======================================================================================
 
@@ -243,7 +255,9 @@ int Socket::connect_or_errno( bool *ok, int fd, uint32_t addr, uint16_t port )
 int Socket::_accept4( int fd, sockaddr* addr, my_socklen_t *addr_len, int flags)
 {
     if ( do_trace() ) vtrace("V::accept(", fd, addr->sa_family, addr_len, flags, ");");
-    return linux_call<int>( ::accept4, fd, addr, addr_len, flags );
+
+    //return Core::linux_call<int>( ::accept4, fd, addr, addr_len, flags );
+    return Core::linux_call( ::accept4, fd, addr, addr_len, flags );
 }
 //=======================================================================================
 int Socket::_accept4( int fd, sockaddr_in *addr, int flags )
@@ -291,7 +305,8 @@ ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
 {
     if ( do_trace() ) vtrace("V::sendto(", fd, buf, n, flags, addr, addr_len, ")" );
 
-    return linux_call_eintr<ssize_t>( ::sendto, fd, buf, n, flags, addr, addr_len );
+    //return Core::linux_call<ssize_t>( ::sendto, fd, buf, n, flags, addr, addr_len );
+    return Core::linux_call( ::sendto, fd, buf, n, flags, addr, addr_len );
 }
 //=======================================================================================
 ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
@@ -319,8 +334,8 @@ ssize_t Socket::sendto( int fd,
 //=======================================================================================
 int Socket::socket( Domain domain, Type type, Cloexec ce, Nonblock nb )
 {
-    int d = raw_domain(domain);
-    int t = raw_type(type);
+    int d = raw_domain( domain );
+    int t = raw_type( type );
     if ( ce == Cloexec::Yes  ) t |= SOCK_CLOEXEC;
     if ( nb == Nonblock::Yes ) t |= SOCK_NONBLOCK;
 
@@ -361,16 +376,17 @@ void Socket::set_ip_receive_hop_limit( int fd )
 
 //=======================================================================================
 void Socket::_getsockopt( int fd, int level, int optname,
-                         void *optval, Socket::my_socklen_t *optlen )
+                          void *optval, my_socklen_t *optlen )
 {
-    auto res = linux_call<int>( ::getsockopt, fd, level, optname, optval, optlen );
+    //auto res = Core::linux_call<int>(::getsockopt, fd, level, optname, optval, optlen);
+    auto res = Core::linux_call( ::getsockopt, fd, level, optname, optval, optlen );
     assert( res == 0 );
 }
 //=======================================================================================
 int32_t Socket::_getsockopt_int32( int fd, int level, int optname )
 {
     int32_t opt;
-    ::socklen_t len = sizeof( opt );
+    socklen_t len = sizeof( opt );
     _getsockopt( fd, level, optname, &opt, &len );
     assert( len == sizeof(opt) );
     return opt;

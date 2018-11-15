@@ -1,6 +1,7 @@
 #include "vstring.h"
 
 
+#include <assert.h>
 #include <sstream>
 #include <algorithm>
 
@@ -360,9 +361,10 @@ VString::ForwardView::ForwardView( const VString *owner )
     , _remained( owner->size() )
 {}
 //=======================================================================================
-size_t VString::ForwardView::remained() const
+int VString::ForwardView::remained() const
 {
-    return _remained;
+    assert( _remained <= std::numeric_limits<int>::max() );
+    return static_cast<int>( _remained );
 }
 //=======================================================================================
 bool VString::ForwardView::finished() const
@@ -372,7 +374,7 @@ bool VString::ForwardView::finished() const
 //=======================================================================================
 VString VString::ForwardView::show_str( size_t sz ) const
 {
-    if ( sz > remained() )
+    if ( sz > size_t(remained()) )
         throw std::out_of_range("VString::ForwardView::show_str -- not enouth data.");
 
     return VString( _buffer, sz );

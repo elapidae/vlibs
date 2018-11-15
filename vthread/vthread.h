@@ -44,7 +44,6 @@ public:
     template<typename Cls, typename Fn, typename ... Args >
     void cinvoke( Cls *cls, Fn fn, const Args& ... args );
 
-
 protected:
     // Способ вырубить поток в зависимости от реализации, используется в _run.
     virtual void _thread_get() = 0;
@@ -52,6 +51,7 @@ protected:
     // Сделан возврат указателя и прием не класса, а чёрти чего из-за особенностей
     // запуска pthread. Но он, всё равно, не умеет нормально прокидывать исключения...
     static void * _run( void * self_ );
+
 
 private:
     VThreadQueue *_queue; // Для вызова из шаблонов.

@@ -81,6 +81,12 @@ VGstElement::_set_state( GstElement *elem, VGstElement::State s )
 //=======================================================================================
 void VGstElement::_set_state_null( GstElement *elem )
 {
-    _set_state( elem, State::NULL_ );
+    auto res = _set_state( elem, State::NULL_ );
+
+    if ( res != StateChangeReturn::ASYNC &&
+         res != StateChangeReturn::SUCCESS )
+    {
+        throw std::runtime_error("Error during set null.");
+    }
 }
 //=======================================================================================

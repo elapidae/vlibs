@@ -1,5 +1,5 @@
 #========================================================================================
-# vgeometry.cmake
+# vgeometry.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,27 +14,25 @@
 
 
 #========================================================================================
+isEmpty(qi_vgeometry) {
+    qi_vgeometry = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vgeometry appended ===")
 
-if ( NOT  VGEOMETRY_INCLUDED )
-    set ( VGEOMETRY_INCLUDED TRUE )
+    isEmpty(VLIBS_DIR): error("vgeometry: Need VLIBS_DIR correct path.")
 
-    message( "Include vgeometry..." )
 
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vgeometry/")
+    INCLUDEPATH += $$VLIBS_DIR/vgeometry
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgeometry/vline.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgeometry/vtransformation.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgeometry/vpoints.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgeometry/vinterval.h") 
+    HEADERS     += $$VLIBS_DIR/vgeometry/vline.h 
+    HEADERS     += $$VLIBS_DIR/vgeometry/vtransformation.h 
+    HEADERS     += $$VLIBS_DIR/vgeometry/vpoints.h 
+    HEADERS     += $$VLIBS_DIR/vgeometry/vinterval.h 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgeometry/vtransformation.cpp") 
-
-    message( "vgeometry included" )
-
-endif()
-# vgeometry.cmake
+    SOURCES     += $$VLIBS_DIR/vgeometry/vtransformation.cpp 
+}
+# vgeometry.pri
 #========================================================================================

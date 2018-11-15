@@ -1,14 +1,13 @@
 //
 // Created by claorisel on 11/15/18.
 //
+#ifndef VINTERVAL_H
+#define VINTERVAL_H
 
-#ifndef LOCALIZATION_VINTERVAL_H
-#define LOCALIZATION_VINTERVAL_H
+#include "vline.h"
+#include <algorithm>
 
-#include "vpoints.h"
-#include <eigen3/Eigen/Geometry>
-
-
+//=======================================================================================
 template <typename Point>
 class VInterval
 {
@@ -20,52 +19,62 @@ public:
 
     point_value_type distance_to(const Point &p) const;
 //    typename Point::value_type distance_to(const Point &p, bool *is_normal) const;
-    point_value_type lenght() const;
+    point_value_type length() const;
 
     bool is_normal(const Point &p) const;
 
     Point projection(const Point &p) const;
 
 private:
-    Eigen::Matrix<point_value_type,1,2> _p1, _p2;
-    Eigen::ParametrizedLine<point_value_type, 2> _line;
-//    Point _p1, _p2;
+    Point _p1, _p2;
+    VLine<Point> _line;
 };
+//=======================================================================================
 
 
+//=======================================================================================
 template <typename Point>
 VInterval<Point>::VInterval()
 {}
-
+//=======================================================================================
 template <typename Point>
 VInterval<Point>::VInterval( const Point &p1, const Point &p2 )
-    : _p1( p1.x(), p1.y() )
-    , _p2( p2.x(), p2.y() )
-    , _line( _p1, _p2 )
+    : _p1( p1 )
+    , _p2( p2 )
+    , _line( p1, p2 )
 {}
-
-template <typename Point>
-typename Point::value_type
-VInterval<Point>::distance_to(const Point &p) const
-{}
-
-template <typename Point>
-typename Point::value_type
-VInterval<Point>::lenght() const
-{}
-
-template <typename Point>
-bool VInterval<Point>::is_normal(const Point &p) const
-{}
-
-template <typename Point>
-Point VInterval<Point>::projection(const Point &p) const
+//=======================================================================================
+template <typename Point> typename Point::value_type
+VInterval<Point>::distance_to( const Point &p ) const
 {
-    auto res = _line.projection( {p.x(), p.y()} );
-
-    return { res.x(), res.y() };
+    assert(false);
 }
+//=======================================================================================
+template <typename Point> typename Point::value_type
+VInterval<Point>::length() const
+{
+    return _p1.distance_to( _p2 );
+}
+//=======================================================================================
+template <typename Point>
+bool VInterval<Point>::is_normal( const Point &p ) const
+{
+    auto pr = projection( p );
+
+    auto mmx = std::minmax( _p1.x(), _p2.x() );
+    auto mmy = std::minmax( _p1.y(), _p2.y() );
+
+    return pr.x() >= mmx.first && pr.x() <= mmx.second &&
+           pr.y() >= mmy.first && pr.y() <= mmy.second;
+}
+//=======================================================================================
+template <typename Point>
+Point VInterval<Point>::projection( const Point &p ) const
+{
+    return _line.projection( {p.x(), p.y()} );
+}
+//=======================================================================================
 
 
 
-#endif //LOCALIZATION_VINTERVAL_H
+#endif //VINTERVAL_H

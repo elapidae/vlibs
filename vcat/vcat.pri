@@ -30,8 +30,10 @@ isEmpty(qi_vcat) {
     HEADERS     += $$VLIBS_DIR/vcat/vcat_containers.h 
     HEADERS     += $$VLIBS_DIR/vcat/vcat.h 
     HEADERS     += $$VLIBS_DIR/vcat/_vcat_iface.h 
-    
+    HEADERS     += $$VLIBS_DIR/vcat/vcat_tuple.h
+
     SOURCES     += $$VLIBS_DIR/vcat/vcat.cpp 
 }
 # vcat.pri
 #========================================================================================
+

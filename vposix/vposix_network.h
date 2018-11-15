@@ -93,10 +93,10 @@ namespace vposix
         static bool listen( int fd, int queued_count );
 
         // 0 or errno
-        static int _connect_or_errno( bool *ok, int fd, const sockaddr *addr,
-                                      Socket::my_socklen_t len );
+        static int _connect_or_err( int fd, const sockaddr *addr,
+                                    Socket::my_socklen_t len );
         static void connect( int fd, uint32_t addr, uint16_t port );
-        static int  connect_or_errno( bool *ok, int fd, uint32_t addr, uint16_t port );
+        static int  connect_or_err( int fd, uint32_t addr, uint16_t port );
 
         static int _accept4( int fd, sockaddr* addr, my_socklen_t *addr_len, int flags );
         static int _accept4( int fd, sockaddr_in* addr, int flags );
@@ -126,7 +126,7 @@ namespace vposix
         static int32_t _getsockopt_int32( int fd, int level, int optname );
         static Type get_type( int fd );
 
-        static ssize_t _recv( int fd, void *buf, size_t n, int flags );
+        static ssize_t _recv_or_err( int fd, void *buf, size_t n, int flags );
         static ssize_t pending_datagram_size( int fd );
 
         static ssize_t _recvfrom( int fd, void *buf, size_t n,int flags,

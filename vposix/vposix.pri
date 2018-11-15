@@ -43,4 +43,10 @@ isEmpty(qi_vposix) {
 # vposix.pri
 #========================================================================================
 
+HEADERS += \
+    $$PWD/vposix_timerfd.h
+
+SOURCES += \
+    $$PWD/vposix_timerfd.cpp
+
 
