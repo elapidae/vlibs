@@ -44,6 +44,8 @@ class VPoint
 {
 public:
 
+    using value_type = T;
+
     //-----------------------------------------------------------------------------------
     VPoint();
     VPoint( const T& xx, const T& yy );
