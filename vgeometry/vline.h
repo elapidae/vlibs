@@ -47,10 +47,11 @@ VLine<Point>::VLine( const Point& p1, const Point& p2 )
 template<typename Point>
 bool VLine<Point>::is_valid() const
 {
+//    return true;
     return (_a != 0 || _b != 0) &&
-           !isnan(_a)           &&
-           !isnan(_b)           &&
-           !isnan(_c);
+           (_a == _a)           &&
+           (_b == _b)           &&
+           (_c == _c);
 }
 //=======================================================================================
 template<typename Point>
