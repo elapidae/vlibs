@@ -21,7 +21,8 @@ namespace vposix
     public:
         static constexpr auto Wait_Max_Events = 100;
 
-        static bool has_EPOLLIN( uint32_t events );
+        static bool has_EPOLLIN ( uint32_t events );
+        static bool has_EPOLLOUT( uint32_t events );
 
         EPoll();
         ~EPoll();

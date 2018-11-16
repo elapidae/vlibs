@@ -2,7 +2,7 @@
 #define VPOSIX_FILES_H
 
 #include <string>
-#include "vposix_core.h"
+
 
 
 //=======================================================================================
@@ -11,7 +11,7 @@ namespace vposix
     //===================================================================================
     class Files
     {
-        static constexpr bool trace = true;
+        static constexpr bool do_files_trace() { return true; }
     public:
         using cstr = const std::string&;
 

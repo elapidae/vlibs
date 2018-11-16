@@ -2,6 +2,7 @@
 
 #include <sys/epoll.h>
 #include <assert.h>
+#include <algorithm>
 
 #include "vposix_errno.h"
 #include "vposix_core.h"
@@ -16,19 +17,21 @@ using namespace vposix;
 int vposix::EPoll::_create()
 {
     if ( do_trace() ) vtrace( "V::epoll_create1(CLOEXEC);" );
+
     return Core::linux_call( ::epoll_create1, EPOLL_CLOEXEC );
 }
 //=======================================================================================
 int EPoll::_wait( int fd, epoll_event *events, int maxevents, int wait_ms )
 {
     if ( do_trace() ) vtrace( "V::epoll_wait(", fd, maxevents, wait_ms, ")" );
+
     return Core::linux_call( ::epoll_wait, fd, events, maxevents, wait_ms );
 }
 //=======================================================================================
 void EPoll::_add( int epoll_fd, int fd, epoll_event* event )
 {
     if ( do_trace() ) vtrace( "epoll_add(", epoll_fd, fd, event, ")" );
-    //auto res = Core::linux_call<int>( epoll_ctl, epoll_fd, EPOLL_CTL_ADD, fd, event );
+
     auto res = Core::linux_call( epoll_ctl, epoll_fd, EPOLL_CTL_ADD, fd, event );
     assert( res == 0 );
 }
@@ -36,7 +39,7 @@ void EPoll::_add( int epoll_fd, int fd, epoll_event* event )
 void EPoll::_mod( int epoll_fd, int fd, epoll_event* event )
 {
     if ( do_trace() ) vtrace( "epoll_mod(", epoll_fd, fd, event, ")" );
-    //auto res = Core::linux_call<int>( epoll_ctl, epoll_fd, EPOLL_CTL_MOD, fd, event );
+
     auto res = Core::linux_call( epoll_ctl, epoll_fd, EPOLL_CTL_MOD, fd, event );
     assert( res == 0 );
 }
@@ -44,8 +47,8 @@ void EPoll::_mod( int epoll_fd, int fd, epoll_event* event )
 void EPoll::_del( int epoll_fd, int fd )
 {
     if ( do_trace() ) vtrace( "epoll_del(", epoll_fd, fd, ")" );
+
     epoll_event event;
-    //auto res = Core::linux_call<int>( epoll_ctl, epoll_fd, EPOLL_CTL_DEL, fd, &event );
     auto res = Core::linux_call( epoll_ctl, epoll_fd, EPOLL_CTL_DEL, fd, &event );
     assert( res == 0 );
 }
@@ -56,6 +59,11 @@ void EPoll::_del( int epoll_fd, int fd )
 bool EPoll::has_EPOLLIN( uint32_t events )
 {
     return events & EPOLLIN;
+}
+//=======================================================================================
+bool EPoll::has_EPOLLOUT( uint32_t events )
+{
+    return events & EPOLLOUT;
 }
 //=======================================================================================
 EPoll::EPoll()
@@ -93,12 +101,6 @@ void EPoll::raw_add( int fd, epoll_event* event )
     ++_count;
 }
 //=======================================================================================
-//void EPoll::add( int fd, epoll_event *event )
-//{
-//    _add( _epoll_fd, fd, event );
-//    ++_count;
-//}
-//=======================================================================================
 void EPoll::raw_mod(int fd, epoll_event *event)
 {
     _mod( _epoll_fd, fd, event );
@@ -113,6 +115,7 @@ void EPoll::del( int fd )
 void EPoll::wait( CallBack cb, int maxevents, int wait_ms )
 {
     assert( maxevents > 0 );
+
     std::vector<epoll_event> events( (size_t(maxevents)) );
     auto wres = _wait( _epoll_fd, events.data(), maxevents, wait_ms );
     events.resize( size_t(wres) );

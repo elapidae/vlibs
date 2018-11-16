@@ -28,7 +28,6 @@ if ( NOT  VFILE_INCLUDED )
 
     
     set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vfile/vfile.h") 
-    
     set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vfile/vfile.cpp") 
 
     message( "vfile included" )

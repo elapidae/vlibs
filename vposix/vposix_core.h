@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <errno.h>
 #include <stdexcept>
+#include <string>
 #include "vposix_errno.h"
 #include "verror.h"
 
@@ -104,7 +105,7 @@ namespace vposix
 
         if ( res != -1 ) return res;
 
-        throw_err( errno, "linux_call2" );
+        throw_err( errno, "linux_call" );
     }
     //===================================================================================
     #pragma GCC diagnostic pop

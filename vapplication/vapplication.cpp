@@ -242,8 +242,7 @@ VApplication::Pid::~Pid()
 {
     if ( !p->file ) return;
 
-    //p->file.reset();
-    vposix::linux_call<int>( vposix::Files::remove, p->fname );
+    vposix::Files::remove( p->fname );
 }
 //=======================================================================================
 void VApplication::Pid::store( cstr path, cstr fname )
