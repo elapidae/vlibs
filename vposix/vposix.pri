@@ -1,15 +1,6 @@
 #========================================================================================
 # vposix.pri
-#
-#
-# Этот файл сгенерирован автоматически.
-#
-# Вносить изменения можно между строк:
-#   #<<< Start your code here
-#   Сохраненный код.
-#   #>>> Stop your code here
-# Все остальные изменения будут перезаписаны.
-#
+#   Edited manually
 #========================================================================================
 
 
@@ -29,10 +20,33 @@ isEmpty(qi_vposix) {
 
     
     HEADERS     += $$VLIBS_DIR/vposix/vposix_errno.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_files.h 
-    
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_errno.cpp 
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_errno.cpp
+
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_files.h
     SOURCES     += $$VLIBS_DIR/vposix/vposix_files.cpp 
+
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_network.h
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_network.cpp
+
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_core.h
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_core.cpp
+
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_eventfd.h
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_eventfd.cpp
+
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_epoll.h
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_epoll.cpp
+
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_alloca.h
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_alloca.cpp
 }
 # vposix.pri
 #========================================================================================
+
+HEADERS += \
+    $$PWD/vposix_timerfd.h
+
+SOURCES += \
+    $$PWD/vposix_timerfd.cpp
+
+

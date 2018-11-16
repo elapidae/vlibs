@@ -1,6 +1,7 @@
 #ifndef VPOINTS_H
 #define VPOINTS_H
 
+#include <math.h>
 #include <vector>
 #include <ostream>
 #include <algorithm>
@@ -92,6 +93,7 @@ template<typename T>
 VPoint<T> operator - ( const VPoint<T> &lhs, const VPoint<T> &rhs );
 //=======================================================================================
 using VPointF = VPoint<float>;
+using VPointD = VPoint<double>;
 //=======================================================================================
 //      VPoint // Cartesian
 //=======================================================================================
@@ -419,6 +421,36 @@ typename VPoint<T>::Vector VPolarPoint<T>::Vector::to_cartesian() const
 }
 //=======================================================================================
 //      IMPLEMENTATION VPolarPoint
+//=======================================================================================
+
+
+
+//=======================================================================================
+//#include <tuple>
+//namespace ishumi
+//{
+////===================================================================================
+//    template<typename T>
+//    struct Serialize;
+//    //===================================================================================
+//    //template<typename T>
+//    constexpr auto _reduce_VPointF = []( const VPointF& val )
+//    {
+//        return std::make_tuple( val.x(), val.y() );
+//    };
+//    //===================================================================================
+//    template<>
+//    struct Serialize< VPointF >
+//    {
+//        static constexpr const char* id()
+//        { return "VPoint version 1.0 2018-10-04 by Elapidae"; }
+
+//        result_of_arg1<decltype(_reduce_VPointF), VPointF>
+//        reduce( const VPointF& val )
+//        { return _reduce_VPointF(val); }
+//    };
+//    //===================================================================================
+//} // namespace ishumi
 //=======================================================================================
 
 

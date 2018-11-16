@@ -5,15 +5,15 @@ isEmpty(qi_qcustomplot) {
 
     QT      *= printsupport
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("qcustomplot: Need VLIBS_DIR correct path.")
 
-    INCLUDEPATH += $$VLibs_Dir/qcustomplot
+    INCLUDEPATH += $$VLIBS_DIR/qcustomplot
 
-    HEADERS     += $$VLibs_Dir/qcustomplot/qcustomplot.h
-    SOURCES     += $$VLibs_Dir/qcustomplot/qcustomplot.cpp
+    HEADERS     += $$VLIBS_DIR/qcustomplot/qcustomplot.h
+    SOURCES     += $$VLIBS_DIR/qcustomplot/qcustomplot.cpp
 
-    HEADERS     += $$VLibs_Dir/qcustomplot/vcustomplot.h
-    SOURCES     += $$VLibs_Dir/qcustomplot/vcustomplot.cpp
+    HEADERS     += $$VLIBS_DIR/qcustomplot/vcustomplot.h
+    SOURCES     += $$VLIBS_DIR/qcustomplot/vcustomplot.cpp
 }
 
 

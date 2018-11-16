@@ -21,10 +21,8 @@
 namespace vposix
 {
     //===================================================================================
-    struct Errno final
+    struct Errno_2 final
     {
-        static std::string str_error( int err );
-
         //std::string str_error() const;
         //int err_code;
         //  Проверяет возвращаемое значение, если оно равно -1, то бросается исключение
@@ -34,29 +32,10 @@ namespace vposix
         //operator int() const;
     };
     //===================================================================================
-    //  Кидает исключение в случае ошибки, иначе возвращает результат функции Fn.
-    //  Вызывается примерно так: auto fd = vposix::linux_call<int>(::open, O_RDWR);
-    template< typename RetType, typename Fn, typename ... Args >
-    RetType linux_call( Fn fn, Args ... args );
-    //===================================================================================
     //      FACE
     //===================================================================================
 
 
-    //===================================================================================
-    //      IMPLEMENTATION
-    //===================================================================================
-    template< typename RetType, typename Fn, typename ... Args >
-    RetType linux_call( Fn fn, Args ... args )
-    {
-        auto res = fn( args... );
-        static_assert( std::is_same<decltype(res),RetType>::value, "" );
-
-        if ( res != -1 ) return res;
-
-        throw std::runtime_error( Errno::str_error(errno) );
-    }
-    //===================================================================================
 } // namespace vposix
 //=======================================================================================
 

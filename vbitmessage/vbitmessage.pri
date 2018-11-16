@@ -4,12 +4,12 @@ isEmpty(qi_vbitmessage) {
     qi_vbitmessage = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vbitmessage appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("vbitmessage: Need VLIBS_DIR correct path.")
 
-    INCLUDEPATH += $$VLibs_Dir/vbitmessage
+    INCLUDEPATH += $$VLIBS_DIR/vbitmessage
 
-    HEADERS     += $$VLibs_Dir/vbitmessage/voutbitmessage.h
-    SOURCES     += $$VLibs_Dir/vbitmessage/voutbitmessage.cpp
+    HEADERS     += $$VLIBS_DIR/vbitmessage/voutbitmessage.h
+    SOURCES     += $$VLIBS_DIR/vbitmessage/voutbitmessage.cpp
 }
 #========================================================================================
 

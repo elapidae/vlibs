@@ -103,7 +103,7 @@ namespace _priv
     //-----------------------------------------------------------------------------------
     int _month_from_time_t(time_t tt)
     {
-        return gmtime(&tt)->tm_mon;
+        return gmtime(&tt)->tm_mon + 1;
     }
     //-----------------------------------------------------------------------------------
     int _day_from_time_t(time_t tt)
@@ -153,4 +153,28 @@ std::ostream &operator <<(std::ostream &os, const std::chrono::nanoseconds &val)
 }
 //=======================================================================================
 //      vtimepoint.cpp
+//=======================================================================================
+
+
+
+//=======================================================================================
+std::chrono::seconds operator "" _seconds( unsigned long long s )
+{
+    return std::chrono::seconds( s );
+}
+//=======================================================================================
+std::chrono::milliseconds operator "" _millisec( unsigned long long ms )
+{
+    return std::chrono::milliseconds( ms );
+}
+//=======================================================================================
+std::chrono::microseconds operator "" _microsec( unsigned long long us )
+{
+    return std::chrono::microseconds( us );
+}
+//=======================================================================================
+std::chrono::nanoseconds operator "" _nanosec( unsigned long long ns )
+{
+    return std::chrono::nanoseconds( ns );
+}
 //=======================================================================================

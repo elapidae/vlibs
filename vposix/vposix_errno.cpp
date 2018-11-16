@@ -1,21 +1,7 @@
 #include "vposix_errno.h"
 
-#include <vector>
-#include <stdexcept>
-#include <string.h>
 
-using namespace vposix;
 
-//=======================================================================================
-//  http://man7.org/linux/man-pages/man3/strerror.3.html
-std::string Errno::str_error( int err )
-{
-    //  TS версия.
-    constexpr auto buf_size = 1024;
-    std::vector<char> buf( buf_size );
-    return  strerror_r( err, buf.data(), buf_size );
-}
-//=======================================================================================
 //std::string Errno::str_error() const
 //{
 //    return str_error( err_code );

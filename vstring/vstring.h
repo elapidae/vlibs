@@ -92,6 +92,8 @@ public:
     template<typename T> void append_LE  ( T val );
     template<typename T> void append_BE  ( T val );
 
+    template<typename T> void append_Sys ( const T& val );
+    template<typename T> void prepend_Sys( const T& val );
     //-----------------------------------------------------------------------------------
     template<typename T> T front_LE() const;
     template<typename T> T front_BE() const;
@@ -150,9 +152,6 @@ public:
     //-----------------------------------------------------------------------------------
 
 private:
-    template<typename T> void _append_sys   ( const T &val );
-    template<typename T> void _prepend_sys  ( const T &val );
-
     template<typename T> typename std::enable_if<std::is_arithmetic<T>::value, T>::type
     _back_sys() const;
 
@@ -174,8 +173,8 @@ class VString::ForwardView
 public:
     //-----------------------------------------------------------------------------------
 
-    size_t remained() const;
-    bool   finished() const;
+    int  remained() const;
+    bool finished() const;
 
     //-----------------------------------------------------------------------------------
 
@@ -285,7 +284,7 @@ void VString::append_LE( T val )
     #if BYTE_ORDER == BIG_ENDIAN
     return _append_sys( reverse_T(val) );
     #else
-    return _append_sys( val );
+    return append_Sys( val );
     #endif
 }
 //=======================================================================================
@@ -295,7 +294,7 @@ void VString::append_BE( T val )
     #if BYTE_ORDER == BIG_ENDIAN
     return _append_sys( val );
     #else
-    return _append_sys( reverse_T(val) );
+    return append_Sys( reverse_T(val) );
     #endif
 }
 //=======================================================================================
@@ -305,7 +304,7 @@ void VString::prepend_LE( T val )
     #if BYTE_ORDER == BIG_ENDIAN
     return _prepend_sys( reverse_T(val) );
     #else
-    return _prepend_sys( val );
+    return prepend_Sys( val );
     #endif
 }
 //=======================================================================================
@@ -315,7 +314,7 @@ void VString::prepend_BE( T val )
     #if BYTE_ORDER == BIG_ENDIAN
     return _prepend_sys( val );
     #else
-    return _prepend_sys( reverse_T(val) );
+    return prepend_Sys( reverse_T(val) );
     #endif
 }
 //=======================================================================================
@@ -364,14 +363,14 @@ T VString::front_LE() const
 //      append & prepend
 //=======================================================================================
 template<typename T>
-void VString::_append_sys( const T &val )
+void VString::append_Sys( const T &val )
 {
     auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
     insert( size(), ch, sizeof(T) );
 }
 //=======================================================================================
 template<typename T>
-void VString::_prepend_sys( const T &val )
+void VString::prepend_Sys( const T &val )
 {
     auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
     insert( 0, ch, sizeof(T) );
