@@ -16,18 +16,18 @@ public:
     using point_value_type = typename Point::value_type;
 
     VInterval();
-    VInterval(const Point &p1, const Point &p2);
+    VInterval( const Point &p1, const Point &p2 );
 
-    point_value_type distance_to(const Point &p) const;
-//    typename Point::value_type distance_to(const Point &p, bool *is_normal) const;
+    point_value_type distance_to( const Point &p ) const;
     point_value_type length() const;
 
-    bool is_normal(const Point &p) const;
-    bool in_rectangle(const Point &p) const;
+    bool is_normal( const Point &p ) const;
+    bool in_rectangle( const Point &p ) const;
 
-    Point projection(const Point &p) const;
+    Point projection( const Point &p ) const;
 
     point_value_type angle() const;
+    point_value_type angle_degrees() const;
 
 private:
     Point _p1, _p2;
@@ -95,8 +95,13 @@ Point VInterval<Point>::projection( const Point &p ) const
 template <typename Point> typename Point::value_type
 VInterval<Point>::angle() const
 {
-    auto dp = _p1 - _p2;
-    return dp.angle();
+    return (_p2 - _p1).angle();
+}
+//=======================================================================================
+template <typename Point> typename Point::value_type
+VInterval<Point>::angle_degrees() const
+{
+    return (_p2 - _p1).angle_degrees();
 }
 //=======================================================================================
 

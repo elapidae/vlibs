@@ -19,9 +19,9 @@ add_subdirectory("${VLIBS_DIR}/vgio/keyfile/test_keyfile/")
 
 # VLIBS_PATH устарела, далее от нее надо избавиться.
 #set( VLIBS_PATH  "${VLIBS_DIR}" )
-add_subdirectory("${VLIBS_DIR}/vgeometry/tests/")
+add_subdirectory("${VLIBS_DIR}/vgeometry/test_vgeometry/")
 
 
 add_subdirectory("${VLIBS_DIR}/vcrc/test_vcrc/")
 add_subdirectory("${VLIBS_DIR}/vstring/test_vstring/")
-add_subdirectory("${VLIBS_DIR}/vpoints/test_vpoints/")
+#add_subdirectory("${VLIBS_DIR}/vpoints/test_vpoints/")
