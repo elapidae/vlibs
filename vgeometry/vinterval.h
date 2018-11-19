@@ -81,12 +81,16 @@ VInterval<Point>::length() const
 template <typename Point>
 bool VInterval<Point>::in_rectangle(const Point &p) const
 {
-    //auto mmx = std::minmax( _p1.x(), _p2.x() );
-    //auto mmy = std::minmax( _p1.y(), _p2.y() );
-    auto min_x = _p1.x() < _p2.x() ? _p1.x() : _p2.x();
-    auto max_x = _p1.x() > _p2.x() ? _p1.x() : _p2.x();
-    auto min_y = _p1.y() < _p2.y() ? _p1.y() : _p2.y();
-    auto max_y = _p1.y() > _p2.y() ? _p1.y() : _p2.y();
+    //  NB!!! Ни в коем случае не пользоваться функцией minmax!!!!!!!
+    //  Она не работает! Там UB!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+    //auto mmx = std::minmax( _p1.x(), _p2.x() ); < -- так нельзя!!!!
+    //auto mmy = std::minmax( _p1.y(), _p2.y() ); < -- так нельзя!!!!
+
+    auto min_x = std::min( _p1.x(), _p2.x() );
+    auto max_x = std::max( _p1.x(), _p2.x() );
+
+    auto min_y = std::min( _p1.y(), _p2.y() );
+    auto max_y = std::max( _p1.y(), _p2.y() );
 
     return min_x <= p.x() && p.x() <= max_x &&
            min_y <= p.y() && p.y() <= max_y;
