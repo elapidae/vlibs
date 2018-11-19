@@ -29,6 +29,11 @@ public:
     point_value_type angle() const;
     point_value_type angle_degrees() const;
 
+    //  Возвращает отрезок исходящий из текущего начала (start_point()), повернутый на
+    //  angle радиан. Если указана отрицательная длина, то возвращается отрезок
+    //  такой же длины как текущий.
+    VInterval<Point> rotated( point_value_type angle, point_value_type len = -1 ) const;
+
     //  Возвращает отрезок той же длины из start_point() с углом angle() + Pi/2.
     //  Отрицательная длина => будет текущая длина отрезка.
     VInterval<Point> normal_1( point_value_type len = -1 ) const;
@@ -126,24 +131,32 @@ const Point &VInterval<Point>::end_point() const
     return _p2;
 }
 //=======================================================================================
+//  1. Переносим отрезок в начало координат;
+//  2. Выбираем правильную длину;
+//  3. Через полярное представление разворачиваем на _a_ радиан;
+//  4. Переносим конечную точку в верную позицию относительно стартовой;
+//  5. Формируем и возвращаем повернутый отрезок.
+template<typename Point>
+VInterval<Point> VInterval<Point>::rotated( point_value_type a,
+                                            point_value_type len ) const
+{
+    auto dv = _p2 - _p1;                                                        // [1]
+    len = len > 0 ? len : dv.distance();                                        // [2]
+    auto rotated_vector = VPolarPoint<point_value_type>( len, dv.angle() + a ); // [3]
+    auto endpoint = rotated_vector.to_cartesian() + _p1;                        // [4]
+    return { _p1, endpoint };                                                   // [5]
+}
+//=======================================================================================
 template<typename Point>
 VInterval<Point> VInterval<Point>::normal_1( point_value_type len ) const
 {
-    auto dv = _p2 - _p1;
-    len = len > 0 ? len : dv.distance();
-    auto pol_norm = VPolarPoint<point_value_type>( len, dv.angle() + M_PI_2 );
-    auto endpoint = pol_norm.to_cartesian() + _p1;
-    return { _p1, endpoint };
+    return rotated( + M_PI_2, len );
 }
 //=======================================================================================
 template<typename Point>
 VInterval<Point> VInterval<Point>::normal_2( point_value_type len ) const
 {
-    auto dv = _p2 - _p1;
-    len = len > 0 ? len : dv.distance();
-    auto pol_norm = VPolarPoint<point_value_type>( len, dv.angle() - M_PI_2 );
-    auto endpoint = pol_norm.to_cartesian() + _p1;
-    return { _p1, endpoint };
+    return rotated( - M_PI_2, len );
 }
 //=======================================================================================
 
