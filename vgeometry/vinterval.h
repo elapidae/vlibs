@@ -29,6 +29,16 @@ public:
     point_value_type angle() const;
     point_value_type angle_degrees() const;
 
+    //  Возвращает отрезок той же длины из start_point() с углом angle() + Pi/2.
+    //  Отрицательная длина => будет текущая длина отрезка.
+    VInterval<Point> normal_1( point_value_type len = -1 ) const;
+    //  Возвращает отрезок той же длины из start_point() с углом angle() - Pi/2.
+    //  Отрицательная длина => будет текущая длина отрезка.
+    VInterval<Point> normal_2( point_value_type len = -1 ) const;
+
+    const Point& start_point()  const;
+    const Point& end_point()    const;
+
 private:
     Point _p1, _p2;
     VLine<Point> _line;
@@ -102,6 +112,38 @@ template <typename Point> typename Point::value_type
 VInterval<Point>::angle_degrees() const
 {
     return (_p2 - _p1).angle_degrees();
+}
+//=======================================================================================
+template<typename Point>
+const Point &VInterval<Point>::start_point() const
+{
+    return _p1;
+}
+//=======================================================================================
+template<typename Point>
+const Point &VInterval<Point>::end_point() const
+{
+    return _p2;
+}
+//=======================================================================================
+template<typename Point>
+VInterval<Point> VInterval<Point>::normal_1( point_value_type len ) const
+{
+    auto dv = _p2 - _p1;
+    len = len > 0 ? len : dv.distance();
+    auto pol_norm = VPolarPoint<point_value_type>( len, dv.angle() + M_PI_2 );
+    auto endpoint = pol_norm.to_cartesian() + _p1;
+    return { _p1, endpoint };
+}
+//=======================================================================================
+template<typename Point>
+VInterval<Point> VInterval<Point>::normal_2( point_value_type len ) const
+{
+    auto dv = _p2 - _p1;
+    len = len > 0 ? len : dv.distance();
+    auto pol_norm = VPolarPoint<point_value_type>( len, dv.angle() - M_PI_2 );
+    auto endpoint = pol_norm.to_cartesian() + _p1;
+    return { _p1, endpoint };
 }
 //=======================================================================================
 
