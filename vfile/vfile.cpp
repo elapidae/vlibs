@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <verror.h>
 
-#include "vposix_errno.h"
+//#include "vposix_errno.h"
 #include "vposix_files.h"
 
 #include <fcntl.h>
@@ -47,12 +47,12 @@ VFile::VFile( cstr fname, Mode_ReadWrite rw )
 
     mode_t mode = 0666;
 
-    _fd = vposix::linux_call<int>( vposix::Files::open_mode, fname, flags, mode );
+    _fd = vposix::Files::open_mode( fname, flags, mode );
 }
 //=======================================================================================
 void VFile::write( VFile::cstr buffer )
 {
-    auto count = vposix::linux_call<ssize_t>( vposix::Files::write, _fd, buffer );
+    auto count = vposix::Files::write( _fd, buffer );
 
     if ( count != ssize_t(buffer.size()) )
         throw verror << "count != buffer.size()";

@@ -5,6 +5,7 @@
 #include <vector>
 #include <ostream>
 #include <algorithm>
+#include <numeric>
 
 //=======================================================================================
 /*
@@ -51,13 +52,11 @@ public:
     VPoint();
     VPoint( const T& xx, const T& yy );
 
-    T x()           const;
-    T y()           const;
-    T distance()    const;
-    T angle()       const;
-
-    T& ref_x();
-    T& ref_y();
+    T x()               const;
+    T y()               const;
+    T distance()        const;
+    T angle()           const;
+    T angle_degrees()   const;
 
     VPolarPoint<T> to_polar() const;
 
@@ -67,9 +66,9 @@ public:
     bool operator == ( const VPoint<T> &rhs ) const;        //  Вещественные сравнивает
     bool operator != ( const VPoint<T> &rhs ) const;        //  через эпсилон.
 
-    T distance_to( const VPoint<T> & other ) const;
-
     bool is_valid() const;
+
+    T distance_to( const VPoint<T> & other ) const;
 
     //-----------------------------------------------------------------------------------
     class Vector : public std::vector<VPoint<T>>
@@ -111,19 +110,20 @@ public:
     VPolarPoint();
     VPolarPoint( const T& distance, const T& angle );
 
-    T x()           const;
-    T y()           const;
-    T distance()    const;
-    T angle()       const;
+    T x()               const;
+    T y()               const;
+    T distance()        const;
+    T angle()           const;
+    T angle_degrees()   const;
 
     VPoint<T> to_cartesian() const;
 
     bool operator == ( const VPolarPoint<T> &rhs ) const;   // Вещественные сравнивает
     bool operator != ( const VPolarPoint<T> &rhs ) const;   // через эпсилон.
 
-    T distance_to( const VPolarPoint & other );
-
     bool is_valid() const;
+
+    T distance_to( const VPolarPoint & other );
 
     //-----------------------------------------------------------------------------------
     class Vector : public std::vector<VPolarPoint<T>>
@@ -138,6 +138,7 @@ private:
 }; // VPolarPoint class
 //=======================================================================================
 using VPolarPointF = VPolarPoint<float>;
+using VPolarPointD = VPolarPoint<double>;
 //=======================================================================================
 //      VPolarPoint
 //=======================================================================================
@@ -204,15 +205,9 @@ T VPoint<T>::angle() const
 }
 //=======================================================================================
 template<typename T>
-T &VPoint<T>::ref_x()
+T VPoint<T>::angle_degrees() const
 {
-    return _x;
-}
-//=======================================================================================
-template<typename T>
-T &VPoint<T>::ref_y()
-{
-    return _y;
+    return angle() * 180 / M_PI;
 }
 //=======================================================================================
 template<typename T>
@@ -307,14 +302,9 @@ VPoint<T> VPoint<T>::Vector::average_center() const
     // Чтобы потом на 0 не поделить.
     if ( this->empty() ) return {NAN, NAN};
 
-    T sx = 0;
-    T sy = 0;
-    for ( auto && p: *this )
-    {
-        sx += p.x();
-        sy += p.y();
-    }
-    return { sx/this->size(), sy/this->size() };
+    VPoint<T> init(0,0);
+    auto acc = std::accumulate( this->cbegin(), this->cend(), init );
+    return { acc.x()/this->size(), acc.y()/this->size() };
 }
 //=======================================================================================
 //      IMPLEMENTATION VPoint
@@ -364,6 +354,12 @@ T VPolarPoint<T>::angle() const
 }
 //=======================================================================================
 template<typename T>
+T VPolarPoint<T>::angle_degrees() const
+{
+    return angle() * 180 / M_PI;
+}
+//=======================================================================================
+template<typename T>
 VPoint<T> VPolarPoint<T>::to_cartesian() const
 {
     return { x(), y() };
@@ -381,8 +377,8 @@ bool VPolarPoint<T>::operator == ( const VPolarPoint<T> &rhs ) const
         auto d = std::abs( _distance - rhs._distance );
         auto a = std::abs( _angle - rhs._angle );
 
-        return d <= std::numeric_limits<T>::epsilon() &&
-               a <= std::numeric_limits<T>::epsilon();
+        return d < std::numeric_limits<T>::epsilon() &&
+               a < std::numeric_limits<T>::epsilon();
     }
 }
 //=======================================================================================
