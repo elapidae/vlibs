@@ -16,14 +16,14 @@ int EventFD::_semaphore_create()
 {
     auto flags = EFD_CLOEXEC | EFD_NONBLOCK | EFD_SEMAPHORE;
 
-    if ( do_trace() ) vtrace( "::eventfd(", 0, flags, ");" );
+    if ( do_trace() ) vtrace( "V::eventfd(", 0, flags, ");" );
     return Core::linux_call( ::eventfd, 0, flags );
 }
 //=======================================================================================
 bool EventFD::_semaphore_read( int fd )
 {
     eventfd_t buf;
-    if ( do_trace() ) vtrace( "::eventfd_read(", fd, ");" );
+    if ( do_trace() ) vtrace( "V::eventfd_read(", fd, ");" );
     auto res = Core::linux_call_or_err( ::eventfd_read, fd, &buf );
     if ( res == -1 )
     {
@@ -39,7 +39,7 @@ bool EventFD::_semaphore_read( int fd )
 //=======================================================================================
 void EventFD::_semaphore_write( int fd )
 {
-    if ( do_trace() ) vtrace( "::eventfd_write(", fd, "1);" );
+    if ( do_trace() ) vtrace( "V::eventfd_write(", fd, "1);" );
     auto res = Core::linux_call( ::eventfd_write, fd, 1 );
     assert( res == 0 );
 }

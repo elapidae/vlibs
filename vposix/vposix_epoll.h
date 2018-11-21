@@ -3,38 +3,33 @@
 
 #include <stdint.h>
 #include <functional>
+#include <sys/epoll.h>
 #include <vector>
-//#include <sys/epoll.h>
-
 
 //=======================================================================================
 //  http://ru.manpages.org/epoll_ctl/2
 //=======================================================================================
 
 //=======================================================================================
-struct epoll_event;
+//struct epoll_event;
 //=======================================================================================
 namespace vposix
 {
     class EPoll final
     {
     public:
-        static constexpr auto Wait_Max_Events = 100;
-
         static bool has_EPOLLIN ( uint32_t events );
         static bool has_EPOLLOUT( uint32_t events );
 
         EPoll();
         ~EPoll();
 
-        void add( int fd, bool dir_in, bool dir_out, bool trigg );
-
-        void raw_add( int fd, epoll_event* event );
-        void raw_mod( int fd, epoll_event* event );
+        void add( int fd, void* arg, bool dir_in, bool dir_out, bool trigg );
+        void mod( int fd, void* arg, bool dir_in, bool dir_out, bool trigg );
         void del( int fd );
 
-        using CallBack = std::function<void(int,uint32_t)>; // (fd,events)
-        void wait( CallBack cb, int maxevents = Wait_Max_Events, int wait_ms = -1 );
+        int wait_many( std::vector<epoll_event>* res, int wait_ms = -1 );
+        epoll_event wait_1( int wait_ms = -1 );
 
     private:
         int _epoll_fd = -1;
@@ -46,6 +41,9 @@ namespace vposix
         static void _add( int epoll_fd, int fd, epoll_event *event );
         static void _mod( int epoll_fd, int fd, epoll_event *event );
         static void _del( int epoll_fd, int fd );
+
+        EPoll( const EPoll& ) = delete;
+        EPoll& operator = ( const EPoll& ) = delete;
     };
 
 } // epoll namespace
