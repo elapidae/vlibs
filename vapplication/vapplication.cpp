@@ -11,8 +11,13 @@
 #include "vposix_files.h"
 #include "vposix_errno.h"
 
+#include "vpoll/veventqueue.h"
+//#include "vpoll/vpoll_fds.h"
+
 //=======================================================================================
 //      VAPPLICATION
+//=======================================================================================
+
 //=======================================================================================
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
@@ -26,18 +31,28 @@ public:
 
     _pimpl( int argc, const char * const * const argv )
         : args( argc, argv )
+      //  , poll_queue( VPoll_Queue::init_fds_and_get_queue() )
     {
         if ( !mutex.try_lock() )
             throw verror << "Object VApplication must be created once!";
     }
-    //~_pimpl() { mutex.unlock(); } //  Не стоИт освобождать, пока нет гарантии
-                                    //  что получится сделать корректно.
+    ~_pimpl()
+    {
+     //   VPoll_Queue::del_queue();
+        VPoll::del_poll();
+
+        mutex.unlock();
+    }
 
     Args args;
     Pid  pid;
+
+  //  VPoll_Queue poll_queue;
+    volatile bool let_stop;
 };
-std::mutex VApplication::_pimpl::mutex;
 #pragma GCC diagnostic pop
+//=======================================================================================
+std::mutex VApplication::_pimpl::mutex;
 //=======================================================================================
 VApplication::VApplication()
     : p( new _pimpl(0, nullptr) )
@@ -47,8 +62,14 @@ VApplication::VApplication( int argc, const char * const * const argv )
     : p( new _pimpl(argc, argv) )
 {}
 //=======================================================================================
-VApplication::~VApplication()
-{}
+//VApplication::~VApplication()
+//{}
+//=======================================================================================
+//void VApplication::do_invoke( VPoll_Queue_Iface::InvokeFunc && func )
+//{
+//    assert( func );
+//    p->poll_queue.invoke( std::move(func) );
+//}
 //=======================================================================================
 const VApplication::Args &VApplication::args() const
 {
@@ -80,13 +101,17 @@ VApplication::Pid &VApplication::pid()
     return p->pid;
 }
 //=======================================================================================
-//void VApplication::store_and_catch_pid( cstr path, cstr fname )
-//{
-//    if ( p->pid )
-//        vwarning << "Reuse pid cell in VApplication.";
-
-//    p->pid.reset( new Pid(path, fname) );
-//}
+void VApplication::poll()
+{
+    p->let_stop = false;
+    VPoll::poll( &p->let_stop );
+}
+//=======================================================================================
+void VApplication::stop()
+{
+    p->let_stop = true;
+    //p->poll_queue.invoke( InvokeFunc() );
+}
 //=======================================================================================
 //      VAPPLICATION
 //=======================================================================================

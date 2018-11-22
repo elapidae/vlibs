@@ -1,11 +1,13 @@
 #include "vposix_eventfd.h"
 
-#include <assert.h>
-#include "verror.h"
+#include <sys/eventfd.h>
+
 #include "vposix_files.h"
 #include "vposix_errno.h"
-#include <sys/eventfd.h>
 #include "vposix_core.h"
+
+#include <assert.h>
+#include "verror.h"
 #include "vlog_pretty.h"
 
 
@@ -15,9 +17,10 @@ using namespace vposix;
 int EventFD::_semaphore_create()
 {
     auto flags = EFD_CLOEXEC | EFD_NONBLOCK | EFD_SEMAPHORE;
+    int count = 0; // initial count of events.
 
-    if ( do_trace() ) vtrace( "V::eventfd(", 0, flags, ");" );
-    return Core::linux_call( ::eventfd, 0, flags );
+    if ( do_trace() ) vtrace( "V::eventfd(", count, flags, ");" );
+    return Core::linux_call( ::eventfd, count, flags );
 }
 //=======================================================================================
 bool EventFD::_semaphore_read( int fd )
@@ -27,11 +30,11 @@ bool EventFD::_semaphore_read( int fd )
     auto res = Core::linux_call_or_err( ::eventfd_read, fd, &buf );
     if ( res == -1 )
     {
-        auto e = errno;
-        if ( e == EAGAIN )
+        Errno e;
+        if ( e.resource_unavailable_try_again() )
             return false;
 
-        Core::throw_err( e, "Very poor eventfd read" );
+        e.throw_verror();
     }
     assert( res == 0 && buf == 1 );
     return true;

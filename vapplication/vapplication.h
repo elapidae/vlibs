@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+//#include "vpoll/vpoll_queue_iface.h"
+
 //=======================================================================================
 /*  24-09-2018      by Elapidae
  *
@@ -21,7 +23,7 @@
 inline namespace tr1
 {
     //===================================================================================
-    class VApplication
+    class VApplication final //: public VPoll_Queue_Iface
     {
     public:
         //-------------------------------------------------------------------------------
@@ -30,7 +32,7 @@ inline namespace tr1
         //-------------------------------------------------------------------------------
         VApplication();
         VApplication( int argc, char const * const * const argv );
-        virtual ~VApplication();
+        //~VApplication() override;
 
         //-------------------------------------------------------------------------------
         class Args;
@@ -45,10 +47,15 @@ inline namespace tr1
         //-------------------------------------------------------------------------------
         class Pid;
         Pid& pid();
-        //const Pid& pid() const;
+
+        //-------------------------------------------------------------------------------
+        void poll();
+        void stop();
 
     private:
         class _pimpl; std::unique_ptr<_pimpl> p;
+
+        //void do_invoke( InvokeFunc&& func ) override;
     }; // VApplication
     //===================================================================================
     class VApplication::Args

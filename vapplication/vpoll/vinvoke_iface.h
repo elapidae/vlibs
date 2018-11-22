@@ -1,47 +1,60 @@
-#ifndef VPOLL_QUEUE_IFACE_H
-#define VPOLL_QUEUE_IFACE_H
+#ifndef VINVOKE_IFACE_H
+#define VINVOKE_IFACE_H
 
 #include <functional>
 
 //=======================================================================================
-class VPoll_Queue_Iface
+/*  22-11-2018  by Elapidae
+ *
+ *  CRTP контракт: Derived должен иметь метод do_invoke( InvokeFunc&& );
+ *
+*/
+//=======================================================================================
+
+
+//=======================================================================================
+template<typename Derived>
+class VInvoke_Iface
 {
 public:
     using InvokeFunc = std::function<void()>;
-    virtual ~VPoll_Queue_Iface() = default;
 
+    // Function type casting, use it as: some.invoke( [](int i){ vdeb << i; }, 42 );
     template< typename Fn, typename ... Args >
     void invoke( Fn fn, const Args& ... args );
 
+    // Class method casting, use it as: some.invoke( &cls, &Cls::foo, 42 );
     template< typename Cls, typename RetType, typename ... Args >
     void invoke( Cls *cls, RetType(Cls::*func)(Args...), const Args& ... args );
 
-protected:
-    //-----------------------------------------------------------------------------------
-    virtual void do_invoke( InvokeFunc&& func ) = 0;
-    //-----------------------------------------------------------------------------------
-}; // VPoll_Queue_Iface
+}; // VInvoke_Iface
 //=======================================================================================
 
 
 //=======================================================================================
 //      IMPLEMENTATION
 //=======================================================================================
+template<typename Derived>
 template< typename Fn, typename ... Args >
-void VPoll_Queue_Iface::invoke( Fn fn, const Args& ... args )
+void VInvoke_Iface<Derived>::invoke( Fn fn, const Args& ... args )
 {
     InvokeFunc f = [=](){ fn(args...); };
-    do_invoke( std::move(f) );
+
+    auto& d = static_cast<Derived&>(*this);
+    d.do_invoke( std::move(f) );
 }
 //=======================================================================================
+template<typename Derived>
 template< typename Cls, typename RetType, typename ... Args >
-void VPoll_Queue_Iface::invoke( Cls *cls, RetType(Cls::*func)(Args...),
-                                const Args& ... args )
+void VInvoke_Iface<Derived>::invoke( Cls *cls, RetType(Cls::*func)(Args...),
+                                     const Args& ... args )
 {
     InvokeFunc f = [=](){ (cls->*func)(args...); };
-    do_invoke( std::move(f) );
+
+    auto& d = static_cast<Derived&>(*this);
+    d.do_invoke( std::move(f) );
 }
 //=======================================================================================
 
 
-#endif // VPOLL_QUEUE_IFACE_H
+#endif // VINVOKE_IFACE_H

@@ -20,19 +20,22 @@ isEmpty(qi_vapplication) {
 
     isEmpty(VLIBS_DIR): error("vapplication: Need VLIBS_DIR correct path.")
 
-
     #<<< Start your code here -----------------------------------------------------------
-    #include( $$VLIBS_DIR/vstring/vstring.pri )
     include( $$VLIBS_DIR/vlog/vlog.pri )
     include( $$VLIBS_DIR/vfile/vfile.pri )
+    include( $$VLIBS_DIR/vpoll/vpoll.pri )
+
+    HEADERS     += $$VLIBS_DIR/vapplication/vpoll/veventqueue.h
+    SOURCES     += $$VLIBS_DIR/vapplication/vpoll/veventqueue.cpp
+
+    HEADERS     += $$VLIBS_DIR/vapplication/vpoll/vinvoke_iface.h
+
     OTHER_FILES += $$VLIBS_DIR/vapplication/README
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vapplication
-
     
     HEADERS     += $$VLIBS_DIR/vapplication/vapplication.h 
-    
     SOURCES     += $$VLIBS_DIR/vapplication/vapplication.cpp 
 }
 # vapplication.pri

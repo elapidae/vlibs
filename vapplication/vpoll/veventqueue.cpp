@@ -1,4 +1,5 @@
-#include "vpoll_queue.h"
+/*
+#include "veventqueue.h"
 
 
 //#include "vlog_pretty.h"
@@ -10,7 +11,7 @@
 #include <assert.h>
 #include "vposix_eventfd.h"
 #include <vstd_atomic_queue.h>
-#include "vpoll_fds.h"
+//#include "vpoll_fds.h"
 
 template<class T> class TD;
 
@@ -21,7 +22,7 @@ class VPoll_Queue::Pimpl : public VEventReceiver
 {
 public:
     // From semaphore
-    void event_received( VPoll_FDs::EventFlags flags ) override;
+    void event_received( VPoll::EventFlags flags ) override;
 
     vposix::Semaphore semaphore;
     vstd::atomic_queue<InvokeFunc> invoks;
@@ -32,7 +33,7 @@ public:
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
-void VPoll_Queue::Pimpl::event_received( VPoll_FDs::EventFlags flags )
+void VPoll_Queue::Pimpl::event_received( VPoll::EventFlags flags )
 {
     assert( flags.IN() );
 
@@ -54,12 +55,12 @@ void VPoll_Queue::Pimpl::event_received( VPoll_FDs::EventFlags flags )
 //=======================================================================================
 VPoll_Queue::Pimpl::Pimpl()
 {
-    VPoll_FDs::add_fd( semaphore.fd(), this );
+    VPoll::add_fd( semaphore.fd(), this );
 }
 //=======================================================================================
 VPoll_Queue::Pimpl::~Pimpl()
 {
-    VPoll_FDs::del_fd( semaphore.fd() );
+    VPoll::del_fd( semaphore.fd() );
 }
 //=======================================================================================
 
@@ -93,7 +94,7 @@ void VPoll_Queue::del_queue()
 //=======================================================================================
 VPoll_Queue VPoll_Queue::init_fds_and_get_queue()
 {
-    VPoll_FDs::add_poll();
+    VPoll::add_poll();
     add_queue();
     return get_queue();
 }
@@ -117,3 +118,4 @@ void VPoll_Queue::do_invoke( InvokeFunc && func )
     throw verror("Bad poll queue.");
 }
 //=======================================================================================
+*/

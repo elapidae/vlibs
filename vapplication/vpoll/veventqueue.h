@@ -1,6 +1,30 @@
-#ifndef VPOLL_QUEUE_H
-#define VPOLL_QUEUE_H
+#ifndef VEVENTQUEUE_H
+#define VEVENTQUEUE_H
 
+#include "vpoll.h"
+
+class VInvokeQueue : public VPoll::EventReceiver
+{
+public:
+
+    VInvokeQueue()
+    {
+        // semaphore
+    }
+
+    void open_polling()
+    {
+        //sem.fd
+    }
+
+
+    virtual void event_received( VPoll::EventFlags flags ) = 0;
+
+};
+
+
+
+/*
 #include <memory>
 #include <functional>
 
@@ -40,6 +64,7 @@ private:
     //-----------------------------------------------------------------------------------
 }; // VPoll
 //=======================================================================================
+*/
 
 
-#endif // VPOLL_QUEUE_H
+#endif // VEVENTQUEUE_H
