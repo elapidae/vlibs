@@ -22,7 +22,8 @@
 namespace vposix
 {
     //===================================================================================
-
+    // Общий флаг для отладки. По мере обкатывания модулей, можно будет переводить их
+    // на свой *_trace();
     constexpr bool do_trace() { return true; }
 
     //===================================================================================
@@ -36,9 +37,6 @@ namespace vposix
         static void throw_err( int err, const std::string& who );
         //===============================================================================
 
-        //  Тестовая версия.
-        template< typename Fn, typename ... Args >
-        static auto linux_call( Fn fn, Args ... args ) -> decltype( fn(args...) );
         //===============================================================================
         //
         //  linux_call сделан по образу Qt макроса EINTR_LOOP, который гоняет в
@@ -49,10 +47,9 @@ namespace vposix
         //  Кидает исключение в случае ошибки, иначе возвращает результат функции Fn.
         //  Вызывается примерно так: auto fd = vposix::linux_call<int>(::open, O_RDWR);
         //
-        //template< typename RetType, typename Fn, typename ... Args >
-        //static RetType linux_call_r( Fn fn, Args ... args );
+        template< typename Fn, typename ... Args >
+        static auto linux_call( Fn fn, Args ... args ) -> decltype( fn(args...) );
         //===============================================================================
-        //
         //  Не бросает исключение, возвращает как есть. Дальше ковыряйтесь с errno сами.
         //
         template< typename Fn, typename ... Args >
@@ -61,6 +58,7 @@ namespace vposix
     }; // Core
     //===================================================================================
 
+    //===================================================================================
     class Errno
     {
     public:
@@ -69,14 +67,15 @@ namespace vposix
         int has()  const;
         int code() const;
         std::string str() const;
-        [[noreturn]] void throw_verror() const; //  Вызввает исключение, если ошибка есть.
+        [[noreturn]] void throw_verror() const; // Вызввает исключение, если ошибка есть.
 
         bool eagain() const;
         bool resource_unavailable_try_again() const;    // as c++11.
 
     private:
         int _err;
-    };
+    }; // Errno
+    //===================================================================================
 
 
     //===================================================================================
@@ -90,9 +89,11 @@ namespace vposix
     {
         decltype(fn(args...)) res;
 
-        do {
+        do
+        {
             res = fn( args... );
-        } while ( res == -1 && errno == EINTR );
+        }
+        while ( res == -1 && errno == EINTR );
 
         return res;
     }

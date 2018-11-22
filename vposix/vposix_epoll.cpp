@@ -1,6 +1,6 @@
 #include "vposix_epoll.h"
 
-//#include <sys/epoll.h>
+#include <string.h>
 #include <assert.h>
 #include <algorithm>
 
@@ -134,6 +134,7 @@ epoll_event EPoll::wait_1( int wait_ms )
     assert( _count > 0 );
 
     epoll_event res;
+    bzero( &res, sizeof(res) );
     auto ev_count = _wait( _epoll_fd, &res, 1, wait_ms );
     assert( ev_count >= 0 );
     return res;
