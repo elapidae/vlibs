@@ -1,5 +1,5 @@
 #========================================================================================
-# vtimer.cmake
+# vnetwork.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -15,23 +15,29 @@
 
 #========================================================================================
 
-if ( NOT  VTIMER_INCLUDED )
-    set ( VTIMER_INCLUDED TRUE )
+if ( NOT  VNETWORK_INCLUDED )
+    set ( VNETWORK_INCLUDED TRUE )
 
-    message( "Include vtimer..." )
+    message( "Include vnetwork..." )
 
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vtimer/")
+    include_directories( "${VLIBS_DIR}/vnetwork/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vtimer/vtimer.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vnetwork/vtcpsocket.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vnetwork/vudpsocket.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vnetwork/vtcpserver.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vnetwork/vipaddress.h") 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vtimer/vtimer.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vnetwork/vtcpserver.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vnetwork/vudpsocket.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vnetwork/vtcpsocket.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vnetwork/vipaddress.cpp") 
 
-    message( "vtimer included" )
+    message( "vnetwork included" )
 
 endif()
-# vtimer.cmake
+# vnetwork.cmake
 #========================================================================================

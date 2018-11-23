@@ -60,6 +60,11 @@ bool EPoll::has_EPOLLIN( uint32_t events )
     return events & EPOLLIN;
 }
 //=======================================================================================
+bool EPoll::only_EPOLLIN( uint32_t events )
+{
+    return events == EPOLLIN;
+}
+//=======================================================================================
 bool EPoll::has_EPOLLOUT( uint32_t events )
 {
     return events & EPOLLOUT;

@@ -24,7 +24,7 @@ namespace vposix
     //===================================================================================
     class Socket
     {
-        //static constexpr bool trace = true;
+        static constexpr bool do_trace() { return false; }
 
     public:
         using my_socklen_t = unsigned int;

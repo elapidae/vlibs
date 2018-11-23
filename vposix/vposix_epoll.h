@@ -16,8 +16,11 @@ namespace vposix
     class EPoll final
     {
     public:
-        static bool has_EPOLLIN ( uint32_t events );
-        static bool has_EPOLLOUT( uint32_t events );
+        static constexpr bool do_trace() { return false; }
+
+        static bool has_EPOLLIN  ( uint32_t events );
+        static bool only_EPOLLIN ( uint32_t events );
+        static bool has_EPOLLOUT ( uint32_t events );
 
         EPoll();
         ~EPoll();

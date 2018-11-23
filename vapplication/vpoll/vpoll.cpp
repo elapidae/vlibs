@@ -162,3 +162,8 @@ bool VPoll::EventFlags::IN() const
     return vposix::EPoll::has_EPOLLIN( _events );
 }
 //=======================================================================================
+bool VPoll::EventFlags::IN_only() const
+{
+    return vposix::EPoll::only_EPOLLIN( _events );
+}
+//=======================================================================================

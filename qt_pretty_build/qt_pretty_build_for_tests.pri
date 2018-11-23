@@ -7,21 +7,21 @@ isEmpty(qt_pretty_build_for_tests) {
 #    system()
 
     # каталог, куда загонять результирующий исполняемый файл
-    DESTDIR = ../$$TARGET
+    DESTDIR = ../builds/$$TARGET
 
     # промежуточные файлы, созданные moc
-    MOC_DIR = ../$$TARGET/moc
+    MOC_DIR = ../builds/$$TARGET/moc
 
     # объектные файлы
-    OBJECTS_DIR = ../$$TARGET/obj
+    OBJECTS_DIR = ../builds/$$TARGET/obj
 
     # промежуточные файлы, созданные компилятором
     # ресурсов Qt (rcc)
-    RCC_DIR = ../$$TARGET/rcc
+    RCC_DIR = ../builds/$$TARGET/rcc
 
     # промежуточные файлы, созданные компилятором
     # файлов форм (.ui) Qt (uic)
-    UI_DIR = ../$$TARGET/uic
+    UI_DIR = ../builds/$$TARGET/uic
 }
 
 

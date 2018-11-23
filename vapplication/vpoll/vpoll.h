@@ -61,6 +61,8 @@ public:
     struct EventFlags final
     {
         bool IN()       const;
+        bool IN_only()  const;
+
         bool OUT()      const;
         bool RDHUP()    const;
         bool PRI()      const;

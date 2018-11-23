@@ -109,9 +109,8 @@ ssize_t Socket::recvfrom( int fd, void *buf, size_t n, int flags,
 int Socket::_socket( int domain, int type, int protocol )
 {
     if ( do_trace() )
-        vtrace.nospace()( " ::socket( ", domain, ", ", type, ", ", protocol, " )" );
+        vtrace.nospace()( "V::socket( ", domain, ", ", type, ", ", protocol, " )" );
 
-    //return Core::linux_call<int>( ::socket, domain, type, protocol );
     return Core::linux_call( ::socket, domain, type, protocol );
 }
 //=======================================================================================
