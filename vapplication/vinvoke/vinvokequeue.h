@@ -1,25 +1,27 @@
-#ifndef VEVENTQUEUE_H
-#define VEVENTQUEUE_H
+#ifndef VINVOKEQUEUE_H
+#define VINVOKEQUEUE_H
 
-#include "vpoll.h"
+#include <functional>
+#include "vpoll/vpoll.h"
+#include "vstd_atomic_queue.h"
+#include "vposix_eventfd.h"
+
 
 class VInvokeQueue : public VPoll::EventReceiver
 {
 public:
+    using InvokeFunc = std::function<void()>;
 
-    VInvokeQueue()
-    {
-        // semaphore
-    }
+    void open_polling( bool *stop_dst );
+    void close_polling();
 
-    void open_polling()
-    {
-        //sem.fd
-    }
+    void enqueue( InvokeFunc &&func );
 
-
-    virtual void event_received( VPoll::EventFlags flags ) = 0;
-
+private:
+    void event_received( VPoll::EventFlags flags ) override;
+    bool *stop_flag = nullptr;
+    vstd::atomic_queue<InvokeFunc> queue;
+    vposix::Semaphore semaphore;
 };
 
 
@@ -67,4 +69,4 @@ private:
 */
 
 
-#endif // VEVENTQUEUE_H
+#endif // VINVOKEQUEUE_H

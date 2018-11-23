@@ -23,14 +23,15 @@ isEmpty(qi_vapplication) {
     #<<< Start your code here -----------------------------------------------------------
     include( $$VLIBS_DIR/vlog/vlog.pri )
     include( $$VLIBS_DIR/vfile/vfile.pri )
-    include( $$VLIBS_DIR/vpoll/vpoll.pri )
+    include( $$VLIBS_DIR/vapplication/vpoll/vpoll.pri )
 
-    HEADERS     += $$VLIBS_DIR/vapplication/vpoll/veventqueue.h
-    SOURCES     += $$VLIBS_DIR/vapplication/vpoll/veventqueue.cpp
+    HEADERS     += $$VLIBS_DIR/vapplication/vinvoke/vinvokequeue.h
+    SOURCES     += $$VLIBS_DIR/vapplication/vinvoke/vinvokequeue.cpp
 
-    HEADERS     += $$VLIBS_DIR/vapplication/vpoll/vinvoke_iface.h
+    HEADERS     += $$VLIBS_DIR/vapplication/vinvoke/vinvoke_iface.h
 
     OTHER_FILES += $$VLIBS_DIR/vapplication/README
+    OTHER_FILES += $$VLIBS_DIR/vapplication/vapplication.cmake
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vapplication

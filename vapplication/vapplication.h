@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-//#include "vpoll/vpoll_queue_iface.h"
+#include "vinvoke/vinvoke_iface.h"
 
 //=======================================================================================
 /*  24-09-2018      by Elapidae
@@ -13,8 +13,11 @@
  *  VApplication -- аггрегатор:
  *      - аргументов командной строки;
  *      - pid приложения (его сохранения, удержания);
- *      - управление задачами главного потока (пока на распутье, с gio VS epoll);
  *
+ *      - UPD 23-11-2018 -- добавлен поллинг главного потока. Методы poll() и stop()
+ *          позволяют слушать сокеты и порты, которые используют механизм VPoll.
+ *      - Добавлен интерфейс VInvoke, позволяющий пробрасывать задачи в очередь главного
+ *          потока.
 */
 //=======================================================================================
 
@@ -23,7 +26,9 @@
 inline namespace tr1
 {
     //===================================================================================
-    class VApplication final //: public VPoll_Queue_Iface
+    //      VApplication
+    //===================================================================================
+    class VApplication final : public VInvoke_Iface<VApplication>
     {
     public:
         //-------------------------------------------------------------------------------
@@ -32,7 +37,7 @@ inline namespace tr1
         //-------------------------------------------------------------------------------
         VApplication();
         VApplication( int argc, char const * const * const argv );
-        //~VApplication() override;
+        ~VApplication();
 
         //-------------------------------------------------------------------------------
         class Args;
@@ -52,12 +57,28 @@ inline namespace tr1
         void poll();
         void stop();
 
+        void do_invoke( InvokeFunc&& func );
+
     private:
         class _pimpl; std::unique_ptr<_pimpl> p;
-
-        //void do_invoke( InvokeFunc&& func ) override;
     }; // VApplication
+
     //===================================================================================
+    //      Args
+    //===================================================================================
+    //  Методы take_* могут вызывать странные эффекты чтения аргументов:
+    //  Пусть поступили аргументы: arg1 val1 flag arg2 val2
+    //  Если запросить:
+    //      take_std_value("arg1"); // =val1,  remain=flag arg2 val2
+    //      take_std_value("arg2"); // =val2,  remain=flag
+    //      take_has_flag("flag");  // =true,  remain is empty
+    //  Все будет хорошо, а вот если устроить что-нибудь такое:
+    //      take_std_value("val1"); // =flag,  remain=arg1 arg2 val2
+    //      take_std_value("arg1"); // =arg2,  remain=val2
+    //      take_has_flag("flag");  // =false, remain=val2
+    //  То вырезанные первыми значения переместят аргументы с конца и выставят новый
+    //  порядок.
+    //  TODO: Вопрос: что делать и как жить дальше?
     class VApplication::Args
     {
     public:
@@ -86,6 +107,8 @@ inline namespace tr1
         std::string _full_app_name;
         std::vector<std::string> _args;
     };
+    //===================================================================================
+    //      Pid
     //===================================================================================
     class VApplication::Pid final
     {

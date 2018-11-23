@@ -4,7 +4,6 @@
 #include <assert.h>
 #include <algorithm>
 
-#include "vposix_errno.h"
 #include "vposix_core.h"
 #include "vposix_files.h"
 

@@ -27,6 +27,7 @@ public:
     template< typename Cls, typename RetType, typename ... Args >
     void invoke( Cls *cls, RetType(Cls::*func)(Args...), const Args& ... args );
 
+protected: ~VInvoke_Iface() = default;
 }; // VInvoke_Iface
 //=======================================================================================
 

@@ -5,11 +5,13 @@
 #include <errno.h>
 #include <stdexcept>
 #include <string>
-#include "vposix_errno.h"
 #include "verror.h"
 
 
 //=======================================================================================
+//
+//  class Core
+//
 //  class Errno
 //
 //  Соответствия ошибок есть здесь:
@@ -31,10 +33,8 @@ namespace vposix
     {
     public:
         //===============================================================================
-        static std::string str_error( int err );
-        //===============================================================================
-        [[noreturn]]
-        static void throw_err( int err, const std::string& who );
+        //  Ради одного вызова разводить файлы не хочется, пусть здесь поживет.
+        static pid_t pid();
         //===============================================================================
 
         //===============================================================================
@@ -67,10 +67,16 @@ namespace vposix
         int has()  const;
         int code() const;
         std::string str() const;
-        [[noreturn]] void throw_verror() const; // Вызввает исключение, если ошибка есть.
+
+        // Вызввает исключение, если ошибка есть.
+        [[noreturn]] void throw_verror( const std::string& src = std::string()) const;
+
 
         bool eagain() const;
         bool resource_unavailable_try_again() const;    // as c++11.
+
+        bool operation_in_progress() const;             //  EINPROGRESS
+        bool connection_already_in_progress() const;    //  EALREADY
 
     private:
         int _err;
@@ -106,7 +112,7 @@ namespace vposix
 
         if ( res != -1 ) return res;
 
-        throw_err( errno, "linux_call" );
+        Errno().throw_verror();
     }
     //===================================================================================
     #pragma GCC diagnostic pop

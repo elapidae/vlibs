@@ -3,7 +3,6 @@
 #include <sys/eventfd.h>
 
 #include "vposix_files.h"
-#include "vposix_errno.h"
 #include "vposix_core.h"
 
 #include <assert.h>

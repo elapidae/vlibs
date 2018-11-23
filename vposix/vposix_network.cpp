@@ -1,6 +1,5 @@
 #include "vposix_network.h"
 
-#include "vposix_errno.h"
 #include <sys/socket.h>
 #include "verror.h"
 #include "vlog_pretty.h"
@@ -64,8 +63,9 @@ ssize_t Socket::pending_datagram_size(int fd)
     auto res = _recv_or_err( fd, &c, 1, MSG_PEEK | MSG_TRUNC );
     if ( res == -1 )
     {
-        if ( errno == EAGAIN ) return 0;
-        Core::throw_err( errno, "pending_datagram_size" );
+        Errno e;
+        if ( e.eagain() ) return 0;
+        e.throw_verror( "pending_datagram_size" );
     }
     return res;
 }
@@ -237,8 +237,8 @@ void Socket::connect( int fd, uint32_t addr, uint16_t port )
     auto ptr = static_cast<sockaddr*>( static_cast<void*>(&sock) );
     _init_sockaddr_in( addr, port, &sock );
     auto res = _connect_or_err( fd, ptr, sizeof(sock) );
-    if ( res == -1 ) return;
-    Core::throw_err( errno, "Socket::connect" );
+    if ( res != -1 ) return;
+    Errno().throw_verror( "Socket::connect" );
 }
 //=======================================================================================
 int Socket::connect_or_err( int fd, uint32_t addr, uint16_t port )
