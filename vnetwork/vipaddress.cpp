@@ -33,6 +33,10 @@ uint32_t VIpAddress::raw_ip4() const
 VIpAddress::VIpAddress()
 {}
 //=======================================================================================
+VIpAddress::VIpAddress( const char *ip4 )
+    : _host( Socket::parse_ip(ip4) )
+{}
+//=======================================================================================
 uint32_t VIpAddress::_get_host() const
 {
     return _host;

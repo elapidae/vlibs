@@ -27,13 +27,13 @@ TEST_F( VNetwork_Test, dev_udp )
 
     VUdpSocket s1;
     s1.ready_read.connect( [&](){ vdeb << s1.receive(); });
-    s1.bind_any(12345);
+    s1.bind_any(12345); // port number
 
     VTimer timer;
     timer.timeout.connect( [](int c) { vdeb << "timeout " << c; });
     timer.start( 40ms );
 
-    VSysSignal::watch( [&]() { app.stop(); });
+    VSysSignal::watch( [&]() { app.stop(); });  // Ctrl+C
     app.poll();
 
     //EXPECT_EQ();

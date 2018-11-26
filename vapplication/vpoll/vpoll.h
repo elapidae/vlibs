@@ -60,19 +60,20 @@ public:
     //  По мере понимания какие флаги когда прилетают, интерфейс может меняться.
     struct EventFlags final
     {
-        bool IN()       const;
-        bool IN_only()  const;
+        bool take_IN();
+        bool take_OUT();
+        bool take_HangUp();
+        bool take_RD_HangUp();
+        bool take_ERR();
 
         bool OUT()      const;
-        bool RDHUP()    const;
         bool PRI()      const;
-        bool ERR()      const;
-        bool HUP()      const;
 
         //  Must be delete.
-        uint32_t raw() const { return _events; }
+        uint32_t raw() const;
 
     private:
+        bool _take_flag( uint32_t flag );
         friend class VPoll;
         EventFlags(uint32_t evs);
         uint32_t _events;
@@ -87,9 +88,7 @@ public:
 
     static void del_fd( int fd );
 
-    //  Поллит по одной штуке, если окажется, что надо больше -- работать здесь.
-    static constexpr auto Wait_Max_Events = 10;
-    //static void poll_once( int timeout_ms = -1 );
+    static constexpr auto Wait_Max_Events = 32;
     static void poll( bool *stop, int timeout_ms = -1 );
 
     static void add_poll();

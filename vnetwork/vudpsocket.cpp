@@ -34,7 +34,8 @@ public:
 //=======================================================================================
 void VUdpSocket::Pimpl::event_received( VPoll::EventFlags flags )
 {
-    assert( flags.IN() );
+    assert( flags.take_IN()  );
+    assert( flags.raw() == 0 );
     owner->ready_read();
 }
 //=======================================================================================

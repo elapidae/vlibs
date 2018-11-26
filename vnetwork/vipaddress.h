@@ -4,12 +4,15 @@
 #include <string>
 #include <stdint.h>
 
+
+//=======================================================================================
 class VIpAddress
 {
 public:
     static VIpAddress any();
 
     VIpAddress();
+    VIpAddress( const char* ip4 );
     VIpAddress( const std::string& ipv4 );
 
     uint32_t raw_ip4() const;
@@ -24,5 +27,8 @@ private:
     void _set_host( uint32_t h );
     VIpAddress( uint32_t host );
 };
+//=======================================================================================
+
+
 
 #endif // VIPADDRESS_H

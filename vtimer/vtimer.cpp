@@ -33,7 +33,8 @@ public:
     //-----------------------------------------------------------------------------------
     void event_received( VPoll::EventFlags flags ) override
     {
-        assert( flags.IN_only() );
+        assert( flags.take_IN()  );
+        assert( flags.raw() == 0 );
         owner->timeout( vposix::TimerFD::read(fd) );
     }
     //-----------------------------------------------------------------------------------

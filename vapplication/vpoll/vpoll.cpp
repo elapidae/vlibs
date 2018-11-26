@@ -8,6 +8,7 @@
 #include <assert.h>
 #include "vstd_atomic_map.h"
 #include "vlog_pretty.h"
+#include "verror.h"
 
 
 //=======================================================================================
@@ -58,7 +59,15 @@ public:
         //  Если ошибка произошла здесь, значит:
         //      - не было создано VApplication в главном потоке, или
         //      - поток был создан не через VThread и в нем нету механизма поллинга.
-        return th_2_poll.at( id );
+        try
+        {
+            return th_2_poll.at( id );
+        }
+        catch ( const std::out_of_range& )
+        {
+            throw verror("Poll loop is not ready for this thread. "
+                         "Use VApplication and VThread for nice.");
+        }
     }
     //-----------------------------------------------------------------------------------
     void del()
@@ -126,12 +135,12 @@ void VPoll::poll( bool *stop, int timeout_ms )
 
     while ( !*stop )
     {
-        auto cnt = poll.wait_many( &events, timeout_ms );
-        assert( cnt >= 0 && cnt <= int(events.size()) );
+        auto cnt = poll.wait( &events, timeout_ms );
+        assert( cnt <= events.size() );
 
         // Здесь может быть ситуация, когда попросили выключить очередь (*stop == true),
         // но после этого еще есть события. Будем считать, что их следует обработать.
-        for ( int i = 0; i < cnt; ++i )
+        for ( uint i = 0; i < cnt; ++i )
         {
             auto ev = events[i];
             auto event = static_cast<EventReceiver*>( ev.data.ptr );
@@ -153,17 +162,38 @@ void VPoll::del_poll()
 
 
 //=======================================================================================
+//      EventFlags
+//=======================================================================================
 VPoll::EventFlags::EventFlags(uint32_t evs)
     : _events(evs)
 {}
 //=======================================================================================
-bool VPoll::EventFlags::IN() const
+bool VPoll::EventFlags::take_IN()
+{ return _take_flag( vposix::EPoll::flag_IN() ); }
+//=======================================================================================
+bool VPoll::EventFlags::take_OUT()
+{ return _take_flag( vposix::EPoll::flag_OUT() ); }
+//=======================================================================================
+bool VPoll::EventFlags::take_HangUp()
+{ return _take_flag( vposix::EPoll::flag_HangUp() ); }
+//=======================================================================================
+bool VPoll::EventFlags::take_RD_HangUp()
+{ return _take_flag( vposix::EPoll::flag_RD_HangUp() ); }
+//=======================================================================================
+bool VPoll::EventFlags::take_ERR()
+{ return _take_flag( vposix::EPoll::flag_ERR() ); }
+//=======================================================================================
+uint32_t VPoll::EventFlags::raw() const
 {
-    return vposix::EPoll::has_EPOLLIN( _events );
+    return _events;
 }
 //=======================================================================================
-bool VPoll::EventFlags::IN_only() const
+bool VPoll::EventFlags::_take_flag( uint32_t flag )
 {
-    return vposix::EPoll::only_EPOLLIN( _events );
+    bool res = _events & flag;
+    _events &= ~flag;
+    return res;
 }
+//=======================================================================================
+//      EventFlags
 //=======================================================================================

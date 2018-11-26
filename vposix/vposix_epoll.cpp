@@ -20,11 +20,12 @@ int vposix::EPoll::_create()
     return Core::linux_call( ::epoll_create1, EPOLL_CLOEXEC );
 }
 //=======================================================================================
-int EPoll::_wait( int fd, epoll_event *events, int maxevents, int wait_ms )
+uint EPoll::_wait( int fd, epoll_event *events, int maxevents, int wait_ms )
 {
     if ( do_trace() ) vtrace( "V::epoll_wait(", fd, maxevents, wait_ms, ")" );
 
-    return Core::linux_call( ::epoll_wait, fd, events, maxevents, wait_ms );
+    auto res = Core::linux_call( ::epoll_wait, fd, events, maxevents, wait_ms );
+    return uint( res );
 }
 //=======================================================================================
 void EPoll::_add( int epoll_fd, int fd, epoll_event* event )
@@ -55,20 +56,41 @@ void EPoll::_del( int epoll_fd, int fd )
 
 
 //=======================================================================================
-bool EPoll::has_EPOLLIN( uint32_t events )
-{
-    return events & EPOLLIN;
-}
+uint32_t EPoll::flag_IN()
+{ return EPOLLIN; }
 //=======================================================================================
-bool EPoll::only_EPOLLIN( uint32_t events )
-{
-    return events == EPOLLIN;
-}
+uint32_t EPoll::flag_OUT()
+{ return EPOLLOUT; }
 //=======================================================================================
-bool EPoll::has_EPOLLOUT( uint32_t events )
-{
-    return events & EPOLLOUT;
-}
+uint32_t EPoll::flag_PRI()
+{ return EPOLLPRI; }
+//=======================================================================================
+uint32_t EPoll::flag_RDNORM()
+{ return EPOLLRDNORM; }
+//=======================================================================================
+uint32_t EPoll::flag_RDBAND()
+{ return EPOLLRDBAND; }
+//=======================================================================================
+uint32_t EPoll::flag_WRNORM()
+{ return EPOLLWRNORM; }
+//=======================================================================================
+uint32_t EPoll::flag_WRBAND()
+{ return EPOLLWRBAND; }
+//=======================================================================================
+uint32_t EPoll::flag_MSG()
+{ return EPOLLMSG; }
+//=======================================================================================
+uint32_t EPoll::flag_ERR()
+{ return EPOLLERR; }
+//=======================================================================================
+uint32_t EPoll::flag_HangUp()
+{ return EPOLLHUP; }
+//=======================================================================================
+uint32_t EPoll::flag_RD_HangUp()
+{ return EPOLLRDHUP; }
+//=======================================================================================
+
+
 //=======================================================================================
 EPoll::EPoll()
     : _epoll_fd( _create() )
@@ -88,8 +110,8 @@ compile_events( bool dir_in, bool dir_out, bool trigg )
     decltype(epoll_event().events)
     res =   EPOLLRDHUP  |
             EPOLLPRI    |
-            EPOLLERR    |
-            EPOLLHUP;
+            EPOLLERR    |   //  Судя по документации, можно не устанавливать
+            EPOLLHUP;       //
 
     if ( dir_in  ) res |= EPOLLIN;
     if ( dir_out ) res |= EPOLLOUT;
@@ -123,24 +145,11 @@ void EPoll::del( int fd )
     --_count;
 }
 //=======================================================================================
-int EPoll::wait_many( std::vector<epoll_event>* res, int wait_ms )
+uint EPoll::wait( std::vector<epoll_event>* res, int wait_ms )
 {
     assert( _count > 0 );
     assert( !res->empty() );
 
-    auto ev_count = _wait( _epoll_fd, res->data(), int(res->size()), wait_ms );
-    assert( ev_count >= 0 );
-    return ev_count;
-}
-//=======================================================================================
-epoll_event EPoll::wait_1( int wait_ms )
-{
-    assert( _count > 0 );
-
-    epoll_event res;
-    bzero( &res, sizeof(res) );
-    auto ev_count = _wait( _epoll_fd, &res, 1, wait_ms );
-    assert( ev_count >= 0 );
-    return res;
+    return _wait( _epoll_fd, res->data(), int(res->size()), wait_ms );
 }
 //=======================================================================================

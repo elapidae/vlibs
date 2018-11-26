@@ -3,17 +3,32 @@
 
 #include "vipaddress.h"
 #include <memory>
+#include "vsignal.h"
+#include "vstring.h"
 
-class VTcpSocket
+class VTcpSocket final
 {
-public:
-    VTcpSocket();
+    static auto constexpr Buffer_Size = 4096;
 
-    void connect_to_host(VIpAddress addr, uint16_t port );
-    void close();
+public:
+
+    VSignal<> ready_read;
+    VSignal<> socket_connected;
+    VSignal<> socket_disconnected;
+
+    VTcpSocket();
+    ~VTcpSocket();
+
+    bool is_connected() const;
+
+    void connect_to_host( VIpAddress addr, uint16_t port );
+
+    bool send( const std::string& data );
+
+    VString receive_all();
 
 private:
-    class Pimpl; Pimpl *p = nullptr;
+    class Pimpl; std::unique_ptr<Pimpl> p;
 };
 
 

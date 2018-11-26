@@ -75,7 +75,6 @@ ssize_t Socket::_recvfrom( int fd, void *buf, size_t n, int flags,
 {
     assert( buf && n > 0 );
 
-    //return Core::linux_call<ssize_t>( ::recvfrom, fd, buf, n, flags, addr, addr_len );
     return Core::linux_call( ::recvfrom, fd, buf, n, flags, addr, addr_len );
 }
 //=======================================================================================
@@ -99,6 +98,14 @@ ssize_t Socket::recvfrom( int fd, void *buf, size_t n, int flags,
     auto res = _recvfrom( fd, buf, n, flags, &res_addr );
     *host = _get_host( res_addr );
     *port = _get_port( res_addr );
+    return res;
+}
+//=======================================================================================
+ssize_t Socket::recv( int fd, void *buf, size_t n, int flags )
+{
+    auto res = _recv_or_err( fd, buf, n, flags );
+    if ( res < 0 )
+        Errno().throw_verror( "Socket::recv" );
     return res;
 }
 //=======================================================================================
@@ -137,19 +144,18 @@ void Socket::_setsockopt(int fd, int level, int optname,
     Core::linux_call( ::setsockopt, fd, level, optname, optval, optlen );
 }
 //=======================================================================================
-std::shared_ptr<sockaddr_in> Socket::new_sockaddr_in( uint32_t host, uint16_t port )
-{
-    auto res = std::make_shared<sockaddr_in>();
-    _init_sockaddr_in( host, port, res.get() );
-    return res;
-}
+//std::shared_ptr<sockaddr_in> Socket::new_sockaddr_in( uint32_t host, uint16_t port )
+//{
+//    auto res = std::make_shared<sockaddr_in>();
+//    _init_sockaddr_in( host, port, res.get() );
+//    return res;
+//}
 //=======================================================================================
 void Socket::_init_sockaddr_in( uint32_t host, uint16_t port, sockaddr_in *sock )
 {
     memset( sock, 0, sizeof(sockaddr_in));
     sock->sin_family        = AF_INET;
     sock->sin_port          = htons( port );
-    vtrace.hex() << host;
     sock->sin_addr.s_addr   = htonl( host );
 }
 //=======================================================================================
@@ -304,7 +310,6 @@ ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
 {
     if ( do_trace() ) vtrace("V::sendto(", fd, buf, n, flags, addr, addr_len, ")" );
 
-    //return Core::linux_call<ssize_t>( ::sendto, fd, buf, n, flags, addr, addr_len );
     return Core::linux_call( ::sendto, fd, buf, n, flags, addr, addr_len );
 }
 //=======================================================================================
@@ -317,6 +322,11 @@ ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
     return _sendto( fd, buf, n, flags, ptr, sizeof(::sockaddr_in) );
 }
 //=======================================================================================
+ssize_t Socket::_send(int fd, const void *buf, size_t n, int flags)
+{
+    return Core::linux_call( ::send, fd, buf, n, flags );
+}
+//=======================================================================================
 ssize_t Socket::sendto( int fd,
                         const void *buf, size_t n,
                         uint32_t addr, uint16_t port,
@@ -326,6 +336,11 @@ ssize_t Socket::sendto( int fd,
     sockaddr_in sock;
     _init_sockaddr_in( addr, port, &sock );
     return _sendto( fd, buf, n, flags, &sock );
+}
+//=======================================================================================
+ssize_t Socket::send( int fd, const std::string &buf, int flags )
+{
+    return _send( fd, buf.c_str(), buf.size(), flags | MSG_NOSIGNAL );
 }
 //=======================================================================================
 
