@@ -1,14 +1,37 @@
+#========================================================================================
+# vtimer.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vtimer..." )
+#========================================================================================
 
-include_directories( "${VLIBS_PATH}/vtimer/" )
+if ( NOT  VTIMER_INCLUDED )
+    set ( VTIMER_INCLUDED TRUE )
 
-FILE( GLOB_RECURSE HEADERS_VTIMER "${VLIBS_PATH}/vtimer/*.h"   )
-FILE( GLOB_RECURSE SOURCES_VTIMER "${VLIBS_PATH}/vtimer/*.cpp" )
+    message( "Include vtimer..." )
 
-set ( HEADERS ${HEADERS} ${HEADERS_VTIMER} )
-set ( SOURCES ${SOURCES} ${SOURCES_VTIMER} )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-message( "vtimer has included..." )
+    include_directories( "${VLIBS_DIR}/vtimer/")
 
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vtimer/vtimer.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vtimer/vtimer.cpp") 
+
+    message( "vtimer included" )
+
+endif()
+# vtimer.cmake
+#========================================================================================

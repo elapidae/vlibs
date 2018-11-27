@@ -24,7 +24,7 @@ namespace vposix
     //===================================================================================
     class Socket
     {
-        //static constexpr bool trace = true;
+        static constexpr bool do_trace() { return false; }
 
     public:
         using my_socklen_t = unsigned int;
@@ -76,7 +76,9 @@ namespace vposix
                                 const void *optval,
                                 my_socklen_t optlen );
 
-        static std::shared_ptr<sockaddr_in> new_sockaddr_in(uint32_t host,uint16_t port);
+//        static std::shared_ptr<sockaddr_in>
+//        new_sockaddr_in(uint32_t host,uint16_t port);
+
         static void _init_sockaddr_in( uint32_t host, uint16_t port, sockaddr_in* sock );
         static std::string _str_sockaddr_in( const sockaddr_in& addr );
 
@@ -115,11 +117,19 @@ namespace vposix
         static ssize_t _sendto( int fd, const void *buf, size_t n,
                                 int flags, const sockaddr_in* addr );
 
+        static ssize_t _send( int fd, const void *buf, size_t n, int flags );
+
+
         // Добавляет флаг MSG_NOSIGNAL, см. интернет.
         static ssize_t sendto( int fd,
                                const void* buf, size_t n,
                                uint32_t addr, uint16_t port,
                                int flags = 0 );
+
+        // Добавляет флаг MSG_NOSIGNAL, см. интернет.
+        static ssize_t send( int fd, const std::string& buf, int flags = 0 );
+
+
 
         static void _getsockopt( int fd, int level, int optname,
                                  void *optval, my_socklen_t *optlen );
@@ -136,6 +146,8 @@ namespace vposix
 
         static ssize_t recvfrom( int fd, void *buf, size_t n, int flags,
                                  uint32_t* host, uint16_t* port );
+
+        static ssize_t recv( int fd, void *buf, size_t n, int flags = 0 );
     }; // Socket
     //===================================================================================
 

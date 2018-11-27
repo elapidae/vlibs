@@ -1,78 +1,66 @@
 #include "vtimer.h"
 
-#include <unistd.h>
+#include "vposix_timerfd.h"
+#include "vposix_files.h"
+#include "vpoll/vpoll.h"
 
-#include "vlogger.h"
+#include <assert.h>
 
-VTimer::VTimer( int ms )
-    : _thread( "timer" )
-    , _timeout( &timeout )      // Sync threading.
-    , _need_stop( true )
-    , _stopped( true )
+//=======================================================================================
+class VTimer::Pimpl : public VPoll::EventReceiver
 {
-    if ( ms > 0 )
-        start( ms );
-}
-
-VTimer::~VTimer()
-{
-    stop();
-}
-
-void VTimer::start( int ms )
-{
-    _need_stop = false;
-
-    _thread.finvoke( [ms,this]()
+public:
+    //-----------------------------------------------------------------------------------
+    int fd;
+    //-----------------------------------------------------------------------------------
+    Pimpl( VTimer* owner )
+        : owner( owner )
     {
-        _stopped = false;
-        while (1)
-        {
-            usleep(ms * 1000);
-
-            if (_need_stop)
-                return;
-
-            _timeout();     // Sync threading.
-        }
-        _stopped = true;
-    });
+        fd = vposix::TimerFD::create_monotonic();
+        VPoll::add_fd( fd, this );
+    }
+    //-----------------------------------------------------------------------------------
+    ~Pimpl() override
+    {
+        stop();
+        VPoll::del_fd( fd );
+    }
+    //-----------------------------------------------------------------------------------
+    void stop()
+    {
+        vposix::TimerFD::stop( fd );
+    }
+    //-----------------------------------------------------------------------------------
+    void event_received( VPoll::EventFlags flags ) override
+    {
+        assert( flags.take_IN()  );
+        assert( flags.raw() == 0 );
+        owner->timeout( vposix::TimerFD::read(fd) );
+    }
+    //-----------------------------------------------------------------------------------
+private:
+    VTimer* owner;
+};
+//=======================================================================================
+VTimer::VTimer()
+    : p( new Pimpl(this) )
+{}
+//=======================================================================================
+VTimer::~VTimer()
+{}
+//=======================================================================================
+void VTimer::start( const std::chrono::nanoseconds &ns )
+{
+    vposix::TimerFD::start_monotonic( p->fd, ns );
 }
-
+//=======================================================================================
+void VTimer::singleshot( const std::chrono::nanoseconds &ns )
+{
+    vposix::TimerFD::singleshot_monotonic( p->fd, ns );
+}
+//=======================================================================================
 void VTimer::stop()
 {
-    _need_stop = true;
+    p->stop();
 }
-
-bool VTimer::stopped() const
-{
-    return _stopped;
-}
-
-
-//void VTimeCounter::start()
-//{
-//    _point = std::chrono::steady_clock::now();
-//}
-
-//VTimeCounter::duration VTimeCounter::elapsed() const
-//{
-//    return std::chrono::steady_clock::now() - _point;
-//}
-
-//VTimeCounter::duration VTimeCounter::restart()
-//{
-//    auto res = elapsed();
-//    start();
-//    return res;
-//}
-
-//int VTimeCounter::elapsed_ms() const
-//{
-//    return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed()).count();
-//}
-
-//int VTimeCounter::restart_ms()
-//{
-//    return std::chrono::duration_cast<std::chrono::milliseconds>(restart()).count();
-//}
+//=======================================================================================

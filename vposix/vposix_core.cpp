@@ -6,28 +6,18 @@
 
 #include "vposix_alloca.h"
 
+#include <unistd.h> // Здесь живет getpid(), правда логично?
+
 
 using namespace vposix;
 
 //=======================================================================================
-//
-//  http://man7.org/linux/man-pages/man3/strerror.3.html
-//
-std::string vposix::Core::str_error( int err )
+pid_t Core::pid()
 {
-    //  TS версия.
-    constexpr auto buf_size = 1024;
-    auto buf = Alloca::allocate<char>( buf_size );
-    return  strerror_r( err, buf, buf_size );
+    return linux_call( ::getpid );
 }
 //=======================================================================================
-[[noreturn]]
-void vposix::Core::throw_err( int err, const std::string& who )
-{
-    throw verror( "Linux error in '", who,"': [",
-                  err, "]: '", str_error(err), "'" );
-}
-//=======================================================================================
+
 
 //=======================================================================================
 Errno::Errno()
@@ -44,14 +34,20 @@ int Errno::code() const
     return _err;
 }
 //=======================================================================================
+//  http://man7.org/linux/man-pages/man3/strerror.3.html
 std::string Errno::str() const
 {
-    return Core::str_error( _err );
+    //  TS версия.
+    constexpr auto buf_size = 1024;
+    auto buf = Alloca::allocate<char>( buf_size );
+    return  strerror_r( _err, buf, buf_size );
 }
 //=======================================================================================
-[[noreturn]] void Errno::throw_verror() const
+//[[noreturn]]
+void Errno::throw_verror( const std::string &src ) const
 {
-    throw verror( str() );
+    auto msg = src.empty() ? str() : vcat(src, ": ", str()).str();
+    throw verror( msg );
 }
 //=======================================================================================
 bool Errno::eagain() const
@@ -62,5 +58,15 @@ bool Errno::eagain() const
 bool Errno::resource_unavailable_try_again() const
 {
     return eagain();
+}
+//=======================================================================================
+bool Errno::operation_in_progress() const
+{
+    return _err == EINPROGRESS;
+}
+//=======================================================================================
+bool Errno::connection_already_in_progress() const
+{
+    return _err == EALREADY;
 }
 //=======================================================================================
