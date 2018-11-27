@@ -28,21 +28,23 @@ isEmpty(qi_vposix) {
     INCLUDEPATH += $$VLIBS_DIR/vposix
 
     
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_core.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_files.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_network.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_eventfd.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_epoll.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_timerfd.h 
-    HEADERS     += $$VLIBS_DIR/vposix/vposix_alloca.h 
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_core.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_files.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_network.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_signal.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_eventfd.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_epoll.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_timerfd.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_alloca.h
     
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_network.cpp 
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_timerfd.cpp 
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_epoll.cpp 
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_alloca.cpp 
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_eventfd.cpp 
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_files.cpp 
-    SOURCES     += $$VLIBS_DIR/vposix/vposix_core.cpp 
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_network.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_timerfd.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_epoll.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_signal.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_alloca.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_eventfd.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_files.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_core.cpp
 }
 # vposix.pri
 #========================================================================================

@@ -35,6 +35,7 @@ inline namespace tr1
         using cstr = const std::string&;
 
         //-------------------------------------------------------------------------------
+        static VApplication* app(); // Экземпляр, если был создан | nullptr.
         VApplication();
         VApplication( int argc, char const * const * const argv );
         ~VApplication();
@@ -56,6 +57,8 @@ inline namespace tr1
         //-------------------------------------------------------------------------------
         void poll();
         void stop();
+        // Будут вызваны из деструктора ~VApplication().
+        void add_post_routine( const InvokeFunc& func );
 
         void do_invoke( InvokeFunc&& func );
 

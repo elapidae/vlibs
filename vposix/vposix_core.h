@@ -72,7 +72,7 @@ namespace vposix
         [[noreturn]] void throw_verror( const std::string& src = std::string()) const;
 
 
-        bool eagain() const;
+        bool eagain() const;                            //  EAGAIN
         bool resource_unavailable_try_again() const;    // as c++11.
 
         bool operation_in_progress() const;             //  EINPROGRESS

@@ -3,6 +3,7 @@
 
 #include "vposix_files.h"
 #include "vposix_core.h"
+#include "vposix_signal.h"
 #include "vfile.h"
 
 #include "verror.h"
@@ -17,6 +18,7 @@
 #include "vpoll/vpoll.h"
 
 
+
 //=======================================================================================
 //      VAPPLICATION
 //=======================================================================================
@@ -28,20 +30,39 @@ class VApplication::_pimpl final
     static std::mutex mutex;
 
 public:
+    static std::atomic<VApplication*> app;
+    static bool signals_registered;
 
-    _pimpl( int argc, const char * const * const argv );
+    static void on_signal( int )
+    {}
+
+    _pimpl( int argc, const char * const * const argv, VApplication* own );
     ~_pimpl();
 
 
     Args args;
     Pid  pid;
 
-    VInvokeQueue inv_queue;
+    VInvokeQueue invoke_queue;
     bool let_stop_poll;
+
+    std::vector<InvokeFunc> dtor_funcs;
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
-std::mutex VApplication::_pimpl::mutex;
+std::mutex                  VApplication::_pimpl::mutex;
+std::atomic<VApplication*>  VApplication::_pimpl::app {nullptr};
+//---------------------------------------------------------------------------------------
+static void signals_cb(int)
+{
+    VApplication::app()->stop();
+}
+//---------------------------------------------------------------------------------------
+bool VApplication::_pimpl::signals_registered = []()
+{
+    vposix::Signal::register_std_stops( signals_cb );
+    return true;
+}();
 //=======================================================================================
 
 //=======================================================================================
@@ -49,7 +70,9 @@ std::mutex VApplication::_pimpl::mutex;
 //  1. Зафиксировать факт создания одного и только одного экземпляра класса;
 //  2. Инициировать поллинг потока;
 //  3. Зарегистрировать invoke очередь (очередь вызовов).
-VApplication::_pimpl::_pimpl( int argc, const char * const * const argv )
+//  4. Зафиксировать статическое представление приложения.
+VApplication::_pimpl::_pimpl( int argc, const char * const * const argv,
+                              VApplication* own )
     : args( argc, argv )
 {
     if ( !mutex.try_lock() )
@@ -57,23 +80,36 @@ VApplication::_pimpl::_pimpl( int argc, const char * const * const argv )
 
     VPoll::add_poll();
 
-    inv_queue.open_polling( &let_stop_poll );
+    invoke_queue.open_polling( &let_stop_poll );
+
+    app = own;
 }
 //=======================================================================================
 //
 VApplication::_pimpl::~_pimpl()
 {
-    inv_queue.close_polling();
+    app = nullptr;
+
+    invoke_queue.close_polling();
+
     VPoll::del_poll();
+
+    for ( auto& f: dtor_funcs ) f();
+
     mutex.unlock();
 }
 //=======================================================================================
+VApplication* VApplication::app()
+{
+    return _pimpl::app;
+}
+//=======================================================================================
 VApplication::VApplication()
-    : p( new _pimpl(0, nullptr) )
+    : p( new _pimpl(0, nullptr, this) )
 {}
 //=======================================================================================
 VApplication::VApplication( int argc, const char * const * const argv )
-    : p( new _pimpl(argc, argv) )
+    : p( new _pimpl(argc, argv, this) )
 {}
 //=======================================================================================
 VApplication::~VApplication()
@@ -81,7 +117,7 @@ VApplication::~VApplication()
 //=======================================================================================
 void VApplication::do_invoke( InvokeFunc && func )
 {
-    p->inv_queue.enqueue( std::move(func) );
+    p->invoke_queue.enqueue( std::move(func) );
 }
 //=======================================================================================
 void VApplication::poll()
@@ -93,7 +129,12 @@ void VApplication::poll()
 //  nullptr as InvokeFunc is a stop signal.
 void VApplication::stop()
 {
-    p->inv_queue.enqueue( nullptr );
+    p->invoke_queue.enqueue( nullptr );
+}
+//=======================================================================================
+void VApplication::add_post_routine( const VInvoke_Iface::InvokeFunc &func )
+{
+    p->dtor_funcs.push_back( func );
 }
 //=======================================================================================
 
