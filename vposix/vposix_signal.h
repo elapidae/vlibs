@@ -14,6 +14,8 @@ namespace vposix
 
     class Signal
     {
+        static constexpr bool do_trace() { return false; }
+
     public:
         using CallBack = void(*)(int);
 

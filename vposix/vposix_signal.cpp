@@ -31,7 +31,10 @@ Signal::CallBack Signal::_signal( int sig, Signal::CallBack cb )
 {
     if ( do_trace() ) VTRACE( "V::signal(",sig,")" );
 
-    auto res = ::signal(sig, cb);
+    //  Здесь не получается завернуть в linux_call, т.к. результат -- указатель.
+    //  Происходит ошибка кастования. Можно ухойдокать вызов, в проверке сделать
+    //  кастование, но очень не хочется вносить кашу в шаблон.
+    auto res = ::signal( sig, cb );
 
     if ( is_sigerr(res) )
         Errno().throw_verror( "SIGERR" );
