@@ -48,7 +48,8 @@ namespace vposix
         //  Вызывается примерно так: auto fd = vposix::linux_call<int>(::open, O_RDWR);
         //
         template< typename Fn, typename ... Args >
-        static auto linux_call( Fn fn, Args ... args ) -> decltype( fn(args...) );
+        static auto linux_call( Fn fn, const std::string& src, Args ... args )
+                                                            -> decltype( fn(args...) );
         //===============================================================================
         //  Не бросает исключение, возвращает как есть. Дальше ковыряйтесь с errno сами.
         //
@@ -69,7 +70,7 @@ namespace vposix
         std::string str() const;
 
         // Вызввает исключение, если ошибка есть.
-        [[noreturn]] void throw_verror( const std::string& src = std::string()) const;
+        [[noreturn]] void throw_verror( const std::string& event ) const;
 
 
         bool eagain() const;                            //  EAGAIN
@@ -105,14 +106,15 @@ namespace vposix
     }
     //===================================================================================
     template< typename Fn, typename ... Args >
-    auto Core::linux_call( Fn fn, Args ... args ) -> decltype( fn(args...) )
+    auto Core::linux_call( Fn fn, const std::string& src, Args ... args )
+                                                               -> decltype( fn(args...) )
     {
         auto res = linux_call_or_err( std::forward<Fn>(fn),
                                       std::forward<Args>(args)... );
 
         if ( res != -1 ) return res;
 
-        Errno().throw_verror();
+        Errno().throw_verror( src );
     }
     //===================================================================================
     #pragma GCC diagnostic pop

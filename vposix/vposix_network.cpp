@@ -75,7 +75,8 @@ ssize_t Socket::_recvfrom( int fd, void *buf, size_t n, int flags,
 {
     assert( buf && n > 0 );
 
-    return Core::linux_call( ::recvfrom, fd, buf, n, flags, addr, addr_len );
+    return Core::linux_call( ::recvfrom, "Socket::_recvfrom",
+                             fd, buf, n, flags, addr, addr_len );
 }
 //=======================================================================================
 ssize_t Socket::_recvfrom( int fd, void *buf, size_t n, int flags, sockaddr_in *addr )
@@ -116,13 +117,14 @@ ssize_t Socket::recv( int fd, void *buf, size_t n, int flags )
 int Socket::_socket( int domain, int type, int protocol )
 {
     if ( do_trace() )
-        vtrace.nospace()( "V::socket( ", domain, ", ", type, ", ", protocol, " )" );
+        vtrace.nospace()( "V::socket( ", Net::domain_str(domain), ", ",
+                          Net::type_str(type), ", protocol=", protocol, " )" );
 
-    return Core::linux_call( ::socket, domain, type, protocol );
+    return Core::linux_call( ::socket, "::socket", domain, type, protocol );
 }
 //=======================================================================================
-void Socket::_setsockopt(int fd, int level, int optname,
-                         const void *optval, my_socklen_t optlen )
+void Socket::_setsockopt( int fd, int level, int optname,
+                          const void *optval, my_socklen_t optlen )
 {
     static_assert ( std::is_same<my_socklen_t, ::socklen_t>::value, "" );
 
@@ -130,26 +132,18 @@ void Socket::_setsockopt(int fd, int level, int optname,
     {
         std::string val;
         if ( optlen == sizeof(int) )
-            val = vcat('[', *static_cast<const int*>(optval), ']');
+            val = vcat("[int=", *static_cast<const int*>(optval), ']');
+        else throw verror("Crypted optval with size = ", optlen);
+
         vtrace.nospace()( "V::setsockopt("
                           "fd:", fd,
-                          ", lvl:", level,
-                          ", name:", optname,
-                          ", val*:",optval,
-                          ", sz:", optlen,
-                          val, " )" );
+                          ", ", Net::level_str(level),
+                          ", ", Net::option_str(optname),
+                          ", ", val, " )" );
     }
 
-    //Core::linux_call<int>( ::setsockopt, fd, level, optname, optval, optlen );
-    Core::linux_call( ::setsockopt, fd, level, optname, optval, optlen );
+    Core::linux_call( ::setsockopt, "::setsockopt", fd, level, optname, optval, optlen );
 }
-//=======================================================================================
-//std::shared_ptr<sockaddr_in> Socket::new_sockaddr_in( uint32_t host, uint16_t port )
-//{
-//    auto res = std::make_shared<sockaddr_in>();
-//    _init_sockaddr_in( host, port, res.get() );
-//    return res;
-//}
 //=======================================================================================
 void Socket::_init_sockaddr_in( uint32_t host, uint16_t port, sockaddr_in *sock )
 {
@@ -178,7 +172,7 @@ int Socket::_bind( int fd, const sockaddr *addr, Socket::my_socklen_t len )
     if ( do_trace() ) vtrace.nospace()( "V::bind( ", fd, ", ", addr, ", ", len, " )" );
 
     //return Core::linux_call<int>( ::bind, fd, addr, len );
-    return Core::linux_call( ::bind, fd, addr, len );
+    return Core::linux_call( ::bind, "::bind", fd, addr, len );
 }
 //=======================================================================================
 int Socket::_bind( int fd, const sockaddr_in& addr )
@@ -190,7 +184,7 @@ int Socket::_bind( int fd, const sockaddr_in& addr )
 int Socket::_getsockname( int fd, sockaddr* addr, Socket::my_socklen_t *len )
 {
     //return Core::linux_call<int>( ::getsockname, fd, addr, len );
-    return Core::linux_call( ::getsockname, fd, addr, len );
+    return Core::linux_call( ::getsockname, "::getsockname", fd, addr, len );
 }
 //=======================================================================================
 int Socket::_getsockname( int fd, sockaddr_in* addr )
@@ -226,7 +220,7 @@ bool Socket::listen( int fd, int queued_count )
 {
     if ( do_trace() ) vtrace( "V::listen(", fd, queued_count, ")" );
     //return 0 == Core::linux_call<int>( ::listen, fd, queued_count );
-    return 0 == Core::linux_call( ::listen, fd, queued_count );
+    return 0 == Core::linux_call( ::listen, "::listen", fd, queued_count );
 }
 //=======================================================================================
 int Socket::_connect_or_err( int fd, const sockaddr *addr,
@@ -257,34 +251,45 @@ int Socket::connect_or_err( int fd, uint32_t addr, uint16_t port )
 
 
 //=======================================================================================
-int Socket::_accept4( int fd, sockaddr* addr, my_socklen_t *addr_len, int flags)
+int Socket::_accept4_or_err( int fd, sockaddr* addr, my_socklen_t *addr_len, int flags)
 {
     if ( do_trace() ) vtrace("V::accept(", fd, addr->sa_family, addr_len, flags, ");");
 
-    //return Core::linux_call<int>( ::accept4, fd, addr, addr_len, flags );
-    return Core::linux_call( ::accept4, fd, addr, addr_len, flags );
+    return Core::linux_call_or_err( ::accept4, fd, addr, addr_len, flags );
 }
 //=======================================================================================
-int Socket::_accept4( int fd, sockaddr_in *addr, int flags )
+int Socket::_accept4_or_err( int fd, sockaddr_in *addr, int flags )
 {
     auto ptr = static_cast<sockaddr*>( static_cast<void*>(addr) );
     ::socklen_t slen = sizeof( sockaddr_in );
-    auto res = _accept4( fd, ptr, &slen, flags );
+    auto res = _accept4_or_err( fd, ptr, &slen, flags );
+    if (res < 0) return res;
+
     assert( slen == sizeof(sockaddr_in) );
+    assert( addr->sin_family == AF_INET );
+    return res;
+}
+//=======================================================================================
+int Socket::accept_or_err( int fd, uint32_t *host, uint16_t *port )
+{
+    assert( host && port );
+
+    int flags = SOCK_NONBLOCK | SOCK_CLOEXEC;
+
+    sockaddr_in sock;
+    bzero( &sock, sizeof(sock) );
+    auto res = _accept4_or_err( fd, &sock, flags );
+    if ( res < 0 ) return res;
+
+    *host = ntohl( sock.sin_addr.s_addr );
+    *port = ntohs( sock.sin_port        );
     return res;
 }
 //=======================================================================================
 int Socket::accept( int fd, uint32_t *host, uint16_t *port )
 {
-    int flags = SOCK_NONBLOCK | SOCK_CLOEXEC;
-
-    sockaddr_in sock;
-    auto res = _accept4( fd, &sock, flags );
-
-    assert( sock.sin_family = AF_INET );
-
-    *host = ntohl( sock.sin_addr.s_addr );
-    *port = ntohs( sock.sin_port        );
+    auto res = accept_or_err( fd, host, port );
+    if (res < 0) Errno().throw_verror( vcat("accept(", fd, ")") );
     return res;
 }
 //=======================================================================================
@@ -310,7 +315,7 @@ ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
 {
     if ( do_trace() ) vtrace("V::sendto(", fd, buf, n, flags, addr, addr_len, ")" );
 
-    return Core::linux_call( ::sendto, fd, buf, n, flags, addr, addr_len );
+    return Core::linux_call( ::sendto, "::sendto", fd, buf, n, flags, addr, addr_len );
 }
 //=======================================================================================
 ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
@@ -324,7 +329,7 @@ ssize_t Socket::_sendto( int fd, const void *buf, size_t n, int flags,
 //=======================================================================================
 ssize_t Socket::_send(int fd, const void *buf, size_t n, int flags)
 {
-    return Core::linux_call( ::send, fd, buf, n, flags );
+    return Core::linux_call( ::send, "::send", fd, buf, n, flags );
 }
 //=======================================================================================
 ssize_t Socket::sendto( int fd,
@@ -393,7 +398,8 @@ void Socket::_getsockopt( int fd, int level, int optname,
                           void *optval, my_socklen_t *optlen )
 {
     //auto res = Core::linux_call<int>(::getsockopt, fd, level, optname, optval, optlen);
-    auto res = Core::linux_call( ::getsockopt, fd, level, optname, optval, optlen );
+    auto res = Core::linux_call( ::getsockopt, "::getsockopt",
+                                 fd, level, optname, optval, optlen );
     assert( res == 0 );
 }
 //=======================================================================================
@@ -404,5 +410,83 @@ int32_t Socket::_getsockopt_int32( int fd, int level, int optname )
     _getsockopt( fd, level, optname, &opt, &len );
     assert( len == sizeof(opt) );
     return opt;
+}
+//=======================================================================================
+
+
+
+//=======================================================================================
+//  Используется, чтобы проверять и сразу же сбрасывать флаги и значения.
+//  Пример использования см. в Net::type_str()
+static bool check_and_clear( int* smth, int flag )
+{
+    bool res = *smth & flag;
+    *smth &= ~flag;
+    return res;
+}
+//=======================================================================================
+std::string Net::level_str( int lvl )
+{
+    switch ( lvl )
+    {
+    case SOL_SOCKET:    return "SOL_SOCKET";
+    case IPPROTO_TCP:   return "IPPROTO_TCP";
+    case IPPROTO_IPV6:  return "IPPROTO_IPV6";
+    case IPPROTO_IP:    return "IPPROTO_IP";
+    }
+    throw verror( "Unknown Net::level type: ", lvl );
+}
+//=======================================================================================
+std::string Net::option_str( int opt )
+{
+    switch (opt)
+    {
+    case SO_OOBINLINE: return "SO_OOBINLINE";
+    case SO_REUSEADDR: return "SO_REUSEADDR";
+    }
+    throw verror( "Unknown Net::option type: ", opt );
+}
+//=======================================================================================
+std::string Net::domain_str( int domain )
+{
+    switch (domain)
+    {
+    case AF_INET:  return "AF_INET";
+    case AF_INET6: return "AF_INET_6";
+    }
+    throw verror( "Unknown Net::domain type: ", domain );
+}
+//=======================================================================================
+std::string Net::type_str( int type )
+{
+    std::string res;
+
+    if      ( check_and_clear(&type, SOCK_DGRAM)  ) res = "SOCK_DGRAM";
+    else if ( check_and_clear(&type, SOCK_STREAM) ) res = "SOCK_STREAM";
+    else throw verror("Unknown Net::type = ", type);
+
+    if ( check_and_clear(&type, SOCK_CLOEXEC)  ) res += "|CLOEXEC";
+    if ( check_and_clear(&type, SOCK_NONBLOCK) ) res += "|NONBLOCK";
+
+    if ( type != 0 ) throw verror("Not all flags cauched, type = ", type);
+
+    return res;
+}
+//=======================================================================================
+
+
+
+//=======================================================================================
+std::string SockAddr::_ntop( int af, const void *src, char *dst, size_t cnt )
+{
+    auto cres = ::inet_ntop( af, src, dst, socklen_t(cnt) );
+    assert( cres );
+    return cres;
+}
+//=======================================================================================
+std::string SockAddr::str( const in_addr& src )
+{
+    char buf[INET_ADDRSTRLEN];
+    return _ntop( AF_INET, &src, buf, INET_ADDRSTRLEN );
 }
 //=======================================================================================

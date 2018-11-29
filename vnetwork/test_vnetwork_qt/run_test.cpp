@@ -2,17 +2,20 @@
 #include "main.cpp"
 
 
-int main_1(int argc, char **argv)
+int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
 
+#include <new>
+
 
 #include "vtcpsocket.h"
 
-int main()
+int main_1()
 {
+    //LOG4CPLUS_DEBUG_FMT(IsdModule::ModuleLogger::logger(), "Socket closed: %d", fd_socket);
     VApplication app;
 
     VTcpSocket sock;

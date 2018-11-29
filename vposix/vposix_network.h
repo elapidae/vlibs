@@ -8,12 +8,19 @@
 
 //=======================================================================================
 //  https://linux.die.net/man/2/sendmsg
+//
+// Парсинг строк-адресов. Для Ip6 тоже.
+//  http://www.opennet.ru/man.shtml?topic=inet_pton&category=3&russian=2
+//
+//  О чудо! Нормальное описание поведения epoll!
+//  https://habr.com/post/416669/
 //=======================================================================================
 
 
 //=======================================================================================
 struct sockaddr;
 struct sockaddr_in;
+struct in_addr;
 struct msghdr;
 //=======================================================================================
 
@@ -21,10 +28,36 @@ struct msghdr;
 //=======================================================================================
 namespace vposix
 {
+    class Net
+    {
+    public:
+        // level_str() и option_str() предназначен по convertToLevelAndOption
+
+        //  Так понимаю, что используется для вызова setsockopt
+        // SOL_SOCKET, IPPROTO_TCP, IPPROTO_IPV6, IPPROTO_IP
+        static std::string level_str( int lvl );
+
+        //  TODO: descr
+        static std::string option_str( int opt );
+
+        // AF_INET, AF_INET6, etc...
+        static std::string domain_str( int domain );
+
+        //  SOCK_DGRAM, SOCK_STREAM + flags NONBLOCK, CLOEXEC etc.
+        static std::string type_str( int type );
+    };
     //===================================================================================
+    class SockAddr
+    {
+    public:
+        static std::string _ntop( int af, const void *src, char *dst, size_t cnt );
+        static std::string str( const in_addr& src );
+    };
+
     class Socket
     {
-        static constexpr bool do_trace() { return false; }
+        //static constexpr bool do_trace() { return false; }
+        static constexpr bool do_trace() { return true; }
 
     public:
         using my_socklen_t = unsigned int;
@@ -100,13 +133,16 @@ namespace vposix
         static void connect( int fd, uint32_t addr, uint16_t port );
         static int  connect_or_err( int fd, uint32_t addr, uint16_t port );
 
-        static int _accept4( int fd, sockaddr* addr, my_socklen_t *addr_len, int flags );
-        static int _accept4( int fd, sockaddr_in* addr, int flags );
+        static int _accept4_or_err( int fd, sockaddr* addr, my_socklen_t *addr_len,
+                                    int flags );
+        static int _accept4_or_err( int fd, sockaddr_in* addr, int flags );
 
         //  With NONBLOCK & CLOEXEC
+        static int accept_or_err( int fd, uint32_t* host, uint16_t* port );
         static int accept( int fd, uint32_t* host, uint16_t* port );
 
         // http://www.opennet.ru/man.shtml?topic=inet_ntoa&category=3&russian=0
+        //  UPD 29-11-2018: Надо смотреть в сторону inet_ntop
         static uint32_t parse_ip( cstr addr );
 
         // Не реализована, там трэшшшшЪ.

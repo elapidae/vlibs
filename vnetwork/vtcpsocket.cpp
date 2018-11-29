@@ -10,6 +10,8 @@
 
 #include "vpoll/vpoll.h"
 
+#include <assert.h>
+
 using namespace vposix;
 
 //=======================================================================================
@@ -27,7 +29,7 @@ public:
     void connection_ok();
 
     bool is_connected = false;
-    int fd = -1;
+    int fd;
 
 private:
     VTcpSocket *owner;
@@ -43,6 +45,7 @@ VTcpSocket::Pimpl::Pimpl( int fd_, VTcpSocket *owner_ )
 //=======================================================================================
 VTcpSocket::Pimpl::~Pimpl()
 {
+    vtrace << "tcp ~pimpl";
     close();
 }
 //=======================================================================================
@@ -58,8 +61,8 @@ void VTcpSocket::Pimpl::close()
 //=======================================================================================
 void VTcpSocket::Pimpl::event_received( VPoll::EventFlags flags )
 {
-    vdeb << "err" << (flags.take_ERR() ? "Need to see in Qt" : "");
-    vdeb << "hup" << flags.take_HangUp();
+    //vdeb << "err" << (flags.take_ERR() ? "Need to see in Qt" : "");
+    //vdeb << "hup" << flags.take_HangUp();
 
     if ( flags.take_RD_HangUp() )
     {
@@ -73,7 +76,7 @@ void VTcpSocket::Pimpl::event_received( VPoll::EventFlags flags )
     if ( flags.take_IN() )
         owner->ready_read();
 
-    vdeb.hex() << flags.raw();
+    //vdeb.hex() << flags.raw();
 }
 //=======================================================================================
 void VTcpSocket::Pimpl::connection_ok()
@@ -89,6 +92,12 @@ void VTcpSocket::Pimpl::connection_ok()
 VTcpSocket::VTcpSocket()
 {}
 //=======================================================================================
+VTcpSocket::VTcpSocket( VTcpSocket::Peer *peer )
+    : p( new Pimpl(peer->take_fd(),this) )
+{
+    p->is_connected = true;
+}
+//=======================================================================================
 VTcpSocket::~VTcpSocket()
 {}
 //=======================================================================================
@@ -99,16 +108,19 @@ bool VTcpSocket::is_connected() const
 //=======================================================================================
 void VTcpSocket::connect_to_host( VIpAddress addr, uint16_t port )
 {
+    p.reset();
     auto fd = Socket::socket( Socket::Domain::Inet4, Socket::Type::STREAM );
     Socket::set_out_of_band_data( fd );
     p.reset( new Pimpl(fd, this) );
+
     auto res = Socket::connect_or_err( fd, addr._get_host(), port );
     if ( res == -1 )
     {
         Errno e ;
         if ( e.operation_in_progress() || e.connection_already_in_progress() )
         {
-            vtrace << "Need to set in write polling." << e.str();
+            return;
+            //vtrace << "Need to set in write polling." << e.str();
         }
         else
             e.throw_verror( "VTcpSocket::connect_to_host" );
@@ -136,7 +148,7 @@ VString VTcpSocket::receive_all()
             Errno e;
             if ( e.resource_unavailable_try_again() )
                 return res;
-            e.throw_verror();
+            e.throw_verror("VTcpSocket::receive_all");
         }
 
         res.append( buf, buf + has_read );
@@ -147,4 +159,27 @@ VString VTcpSocket::receive_all()
 }
 //=======================================================================================
 
+//=======================================================================================
+static void kill_unused_tcp( void* atom_int )
+{
+    auto ai_ptr = static_cast<std::atomic_int*>(atom_int);
+    auto fd = ai_ptr->fetch_or( -1 );
+    delete ai_ptr;
+
+    if ( fd < 0 ) return;
+    vwarning << "Server side VTcpSocket has not attached";
+    Files::close( fd );
+}
+//=======================================================================================
+VTcpSocket::Peer::Peer( int fd )
+    : _ptr( new std::atomic<int>(fd), kill_unused_tcp )
+{}
+//=======================================================================================
+int VTcpSocket::Peer::take_fd()
+{
+    assert( _ptr );
+    auto res = _ptr->fetch_or( -1 );
+    _ptr.reset();
+    return res;
+}
 //=======================================================================================

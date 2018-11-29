@@ -66,11 +66,14 @@ public:
         bool take_RD_HangUp();
         bool take_ERR();
 
-        bool OUT()      const;
-        bool PRI()      const;
+        bool OUT()          const;
+        bool PRI()          const;
 
         //  Must be delete.
-        uint32_t raw() const;
+        uint32_t raw()      const;
+        bool     empty()    const;
+
+        void throw_not_empty() const;
 
     private:
         bool _take_flag( uint32_t flag );
