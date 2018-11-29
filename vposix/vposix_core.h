@@ -5,11 +5,13 @@
 #include <errno.h>
 #include <stdexcept>
 #include <string>
-#include "vposix_errno.h"
 #include "verror.h"
 
 
 //=======================================================================================
+//
+//  class Core
+//
 //  class Errno
 //
 //  Соответствия ошибок есть здесь:
@@ -22,7 +24,8 @@
 namespace vposix
 {
     //===================================================================================
-
+    // Общий флаг для отладки. По мере обкатывания модулей, можно будет переводить их
+    // на свой *_trace();
     constexpr bool do_trace() { return true; }
 
     //===================================================================================
@@ -30,15 +33,10 @@ namespace vposix
     {
     public:
         //===============================================================================
-        static std::string str_error( int err );
-        //===============================================================================
-        [[noreturn]]
-        static void throw_err( int err, const std::string& who );
+        //  Ради одного вызова разводить файлы не хочется, пусть здесь поживет.
+        static pid_t pid();
         //===============================================================================
 
-        //  Тестовая версия.
-        template< typename Fn, typename ... Args >
-        static auto linux_call( Fn fn, Args ... args ) -> decltype( fn(args...) );
         //===============================================================================
         //
         //  linux_call сделан по образу Qt макроса EINTR_LOOP, который гоняет в
@@ -49,10 +47,10 @@ namespace vposix
         //  Кидает исключение в случае ошибки, иначе возвращает результат функции Fn.
         //  Вызывается примерно так: auto fd = vposix::linux_call<int>(::open, O_RDWR);
         //
-        //template< typename RetType, typename Fn, typename ... Args >
-        //static RetType linux_call_r( Fn fn, Args ... args );
+        template< typename Fn, typename ... Args >
+        static auto linux_call( Fn fn, const std::string& src, Args ... args )
+                                                            -> decltype( fn(args...) );
         //===============================================================================
-        //
         //  Не бросает исключение, возвращает как есть. Дальше ковыряйтесь с errno сами.
         //
         template< typename Fn, typename ... Args >
@@ -61,6 +59,7 @@ namespace vposix
     }; // Core
     //===================================================================================
 
+    //===================================================================================
     class Errno
     {
     public:
@@ -69,14 +68,21 @@ namespace vposix
         int has()  const;
         int code() const;
         std::string str() const;
-        [[noreturn]] void throw_verror() const; //  Вызввает исключение, если ошибка есть.
 
-        bool eagain() const;
+        // Вызввает исключение, если ошибка есть.
+        [[noreturn]] void throw_verror( const std::string& event ) const;
+
+
+        bool eagain() const;                            //  EAGAIN
         bool resource_unavailable_try_again() const;    // as c++11.
+
+        bool operation_in_progress() const;             //  EINPROGRESS
+        bool connection_already_in_progress() const;    //  EALREADY
 
     private:
         int _err;
-    };
+    }; // Errno
+    //===================================================================================
 
 
     //===================================================================================
@@ -90,22 +96,25 @@ namespace vposix
     {
         decltype(fn(args...)) res;
 
-        do {
+        do
+        {
             res = fn( args... );
-        } while ( res == -1 && errno == EINTR );
+        }
+        while ( res == -1 && errno == EINTR );
 
         return res;
     }
     //===================================================================================
     template< typename Fn, typename ... Args >
-    auto Core::linux_call( Fn fn, Args ... args ) -> decltype( fn(args...) )
+    auto Core::linux_call( Fn fn, const std::string& src, Args ... args )
+                                                               -> decltype( fn(args...) )
     {
         auto res = linux_call_or_err( std::forward<Fn>(fn),
                                       std::forward<Args>(args)... );
 
         if ( res != -1 ) return res;
 
-        throw_err( errno, "linux_call" );
+        Errno().throw_verror( src );
     }
     //===================================================================================
     #pragma GCC diagnostic pop

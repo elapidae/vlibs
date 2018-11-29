@@ -11,6 +11,8 @@ namespace vposix
     //  Выделение памяти на стеке.
     class Alloca
     {
+        static constexpr bool do_trace() { return false; }
+
     public:
         static void* do_allocate( size_t sz );
 

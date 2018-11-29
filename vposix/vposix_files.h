@@ -11,7 +11,7 @@ namespace vposix
     //===================================================================================
     class Files
     {
-        static constexpr bool do_files_trace() { return true; }
+        static constexpr bool do_trace() { return false; }
     public:
         using cstr = const std::string&;
 

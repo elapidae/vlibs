@@ -7,6 +7,7 @@
 
 using namespace vposix;
 
+//=======================================================================================
 void *Alloca::do_allocate( size_t sz )
 {
     if ( do_trace() ) vtrace("V::alloca(", sz, ")" );
@@ -16,3 +17,4 @@ void *Alloca::do_allocate( size_t sz )
 
     return res;
 }
+//=======================================================================================
