@@ -46,14 +46,14 @@ void Errno::throw_verror(const std::string &event ) const
     throw verror( vcat(event, ": ", str()).str() );
 }
 //=======================================================================================
-bool Errno::eagain() const
+bool Errno::again_or_wouldblock() const
 {
-    return _err == EAGAIN;
+    return _err == EAGAIN || _err == EWOULDBLOCK;
 }
 //=======================================================================================
 bool Errno::resource_unavailable_try_again() const
 {
-    return eagain();
+    return again_or_wouldblock();
 }
 //=======================================================================================
 bool Errno::operation_in_progress() const

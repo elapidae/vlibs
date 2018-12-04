@@ -31,6 +31,7 @@ isEmpty(qi_vposix) {
     HEADERS     += $$VLIBS_DIR/vposix/vposix_core.h
     HEADERS     += $$VLIBS_DIR/vposix/vposix_files.h
     HEADERS     += $$VLIBS_DIR/vposix/vposix_network.h
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_network_ip.h
     HEADERS     += $$VLIBS_DIR/vposix/vposix_signal.h
     HEADERS     += $$VLIBS_DIR/vposix/vposix_eventfd.h
     HEADERS     += $$VLIBS_DIR/vposix/vposix_epoll.h
@@ -45,6 +46,10 @@ isEmpty(qi_vposix) {
     SOURCES     += $$VLIBS_DIR/vposix/vposix_eventfd.cpp
     SOURCES     += $$VLIBS_DIR/vposix/vposix_files.cpp
     SOURCES     += $$VLIBS_DIR/vposix/vposix_core.cpp
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_network_ip.cpp
+
 }
 # vposix.pri
 #========================================================================================
+
+

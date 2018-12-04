@@ -28,7 +28,7 @@ public:
 
     bool is_connected() const;
 
-    void connect_to_host( VIpAddress addr, uint16_t port );
+    void connect_to_host(const VIpAddress &addr, uint16_t port );
 
     bool send( const std::string& data );
 

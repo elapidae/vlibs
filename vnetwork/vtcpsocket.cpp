@@ -1,6 +1,8 @@
 #include "vtcpsocket.h"
 
 #include "vposix_network.h"
+#include "vposix_network_ip.h"
+
 #include "vposix_core.h"
 #include "vposix_files.h"
 #include "vposix_alloca.h"
@@ -40,12 +42,14 @@ VTcpSocket::Pimpl::Pimpl( int fd_, VTcpSocket *owner_ )
     : fd( fd_ )
     , owner( owner_ )
 {
+    if ( fd < 0 )
+        throw verror( "VTcpSocket fd < 0" );
+
     VPoll::add_fd( fd, this, VPoll::Direction::InOut );
 }
 //=======================================================================================
 VTcpSocket::Pimpl::~Pimpl()
 {
-    vtrace << "tcp ~pimpl";
     close();
 }
 //=======================================================================================
@@ -53,9 +57,11 @@ void VTcpSocket::Pimpl::close()
 {
     is_connected = false;
     if ( fd < 0 ) return;
+
     VPoll::del_fd( fd );
     vposix::Files::close( fd );
     fd = -1;
+
     owner->socket_disconnected();
 }
 //=======================================================================================
@@ -76,6 +82,7 @@ void VTcpSocket::Pimpl::event_received( VPoll::EventFlags flags )
     if ( flags.take_IN() )
         owner->ready_read();
 
+    flags.throw_not_empty();
     //vdeb.hex() << flags.raw();
 }
 //=======================================================================================
@@ -92,7 +99,7 @@ void VTcpSocket::Pimpl::connection_ok()
 VTcpSocket::VTcpSocket()
 {}
 //=======================================================================================
-VTcpSocket::VTcpSocket( VTcpSocket::Peer *peer )
+VTcpSocket::VTcpSocket( VTcpSocket::Peer* peer )
     : p( new Pimpl(peer->take_fd(),this) )
 {
     p->is_connected = true;
@@ -106,14 +113,14 @@ bool VTcpSocket::is_connected() const
     return p && p->is_connected;
 }
 //=======================================================================================
-void VTcpSocket::connect_to_host( VIpAddress addr, uint16_t port )
+void VTcpSocket::connect_to_host( const VIpAddress& addr, uint16_t port )
 {
     p.reset();
-    auto fd = Socket::socket( Socket::Domain::Inet4, Socket::Type::STREAM );
+    auto fd = Socket::tcp_socket( addr._addr() );
     Socket::set_out_of_band_data( fd );
     p.reset( new Pimpl(fd, this) );
 
-    auto res = Socket::connect_or_err( fd, addr._get_host(), port );
+    auto res = Socket::connect_or_err( fd, addr._addr(), port );
     if ( res == -1 )
     {
         Errno e ;

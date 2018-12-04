@@ -20,7 +20,7 @@ public:
     ~VTcpServer();
 
     bool is_listening() const;
-    void listen( VIpAddress addr, uint16_t port );
+    void listen(const VIpAddress &addr, uint16_t port );
     void listen_any( uint16_t port );
     void close();
 

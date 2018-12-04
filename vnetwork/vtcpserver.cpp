@@ -76,16 +76,16 @@ bool VTcpServer::is_listening() const
     return p && p->port != 0;
 }
 //=======================================================================================
-void VTcpServer::listen( VIpAddress addr, uint16_t port )
+void VTcpServer::listen( const VIpAddress& addr, uint16_t port )
 {
     p.reset();
-    auto fd = Socket::socket( Socket::Domain::Inet4, Socket::Type::STREAM );
+    auto fd = Socket::tcp_socket( addr._addr() );
     p.reset( new Pimpl(fd, this) );
 
     Socket::set_out_of_band_data( fd );
     Socket::set_reuse_address( fd );
 
-    Socket::bind( fd, addr._get_host(), port );
+    Socket::bind( fd, addr._addr(), port );
 
     Socket::listen( fd, _queued_connections_count );
 

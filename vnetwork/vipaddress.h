@@ -3,29 +3,38 @@
 
 #include <string>
 #include <stdint.h>
+#include <memory>
 
 
+//=======================================================================================
+namespace vposix { struct my_ip_addr; }
 //=======================================================================================
 class VIpAddress
 {
 public:
-    static VIpAddress any();
+    static VIpAddress any();        // Will return as ip4.
+    static VIpAddress any_ip4();
+    static VIpAddress any_ip6();
+
+    static VIpAddress loopback();        // Will return as ip4.
+    static VIpAddress loopback_ip4();
+    static VIpAddress loopback_ip6();
 
     VIpAddress();
-    VIpAddress( const char* ip4 );
-    VIpAddress( const std::string& ipv4 );
+    VIpAddress( const char* ip );
+    VIpAddress( const std::string& ip );
 
-    uint32_t raw_ip4() const;
+    std::string str() const;
 
 private:
-    uint32_t _host = 0;
+    VIpAddress( const vposix::my_ip_addr& maddr );
+    class Pimpl; std::shared_ptr<Pimpl> p;
 
     friend class VTcpServer;
     friend class VTcpSocket;
     friend class VUdpSocket;
-    uint32_t _get_host() const;
-    void _set_host( uint32_t h );
-    VIpAddress( uint32_t host );
+    const vposix::my_ip_addr& _addr() const;
+    vposix::my_ip_addr* _addr_ptr();
 };
 //=======================================================================================
 

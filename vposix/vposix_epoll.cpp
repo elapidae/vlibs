@@ -115,7 +115,7 @@ compile_events( bool dir_in, bool dir_out, bool trigg )
     res =   EPOLLRDHUP  |
             EPOLLPRI    |
             EPOLLERR    |   //  Судя по документации, можно не устанавливать
-            EPOLLHUP;       //
+            EPOLLHUP;       //  Судя по документации, можно не устанавливать
 
     if ( dir_in  ) res |= EPOLLIN;
     if ( dir_out ) res |= EPOLLOUT;
