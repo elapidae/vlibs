@@ -13,6 +13,8 @@ namespace vposix
     class EventFD
     {
     public:
+        static constexpr bool do_trace() { return false; }
+
         //  Неблокируемые.
         static int  _semaphore_create();
         static bool _semaphore_read  ( int fd );

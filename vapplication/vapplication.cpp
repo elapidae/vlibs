@@ -1,54 +1,143 @@
 #include "vapplication.h"
 
+
+#include "vposix_files.h"
+#include "vposix_core.h"
+#include "vposix_signal.h"
+#include "vfile.h"
+
 #include "verror.h"
 #include "vcat_containers.h"
 #include "vlog_pretty.h"
 #include <assert.h>
+
 #include <algorithm>
 #include <mutex>
-#include <unistd.h>
-#include "vfile.h"
-#include "vposix_files.h"
-#include "vposix_errno.h"
+
+#include "vinvoke/vinvokequeue.h"
+#include "vpoll/vpoll.h"
+
+
 
 //=======================================================================================
 //      VAPPLICATION
 //=======================================================================================
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
-class VApplication::_pimpl
+class VApplication::_pimpl final
 {
     //  Мьютекс используется, чтобы ограничить создание класса одним экземпляром.
-    //  В будущем планируется контролировать классом главный поток.
     static std::mutex mutex;
 
 public:
+    static std::atomic<VApplication*> app;
+    static bool signals_registered;
 
-    _pimpl( int argc, const char * const * const argv )
-        : args( argc, argv )
-    {
-        if ( !mutex.try_lock() )
-            throw verror << "Object VApplication must be created once!";
-    }
-    //~_pimpl() { mutex.unlock(); } //  Не стоИт освобождать, пока нет гарантии
-                                    //  что получится сделать корректно.
+    static void on_signal( int )
+    {}
+
+    _pimpl( int argc, const char * const * const argv, VApplication* own );
+    ~_pimpl();
+
 
     Args args;
     Pid  pid;
+
+    VInvokeQueue invoke_queue;
+    bool let_stop_poll;
+
+    std::vector<InvokeFunc> dtor_funcs;
 };
-std::mutex VApplication::_pimpl::mutex;
 #pragma GCC diagnostic pop
 //=======================================================================================
+std::mutex                  VApplication::_pimpl::mutex;
+std::atomic<VApplication*>  VApplication::_pimpl::app {nullptr};
+//---------------------------------------------------------------------------------------
+static void signals_cb(int)
+{
+    VApplication::app()->stop();
+}
+//---------------------------------------------------------------------------------------
+bool VApplication::_pimpl::signals_registered = []()
+{
+    vposix::Signal::register_std_stops( signals_cb );
+    return true;
+}();
+//=======================================================================================
+
+//=======================================================================================
+//  Решаются задачи:
+//  1. Зафиксировать факт создания одного и только одного экземпляра класса;
+//  2. Инициировать поллинг потока;
+//  3. Зарегистрировать invoke очередь (очередь вызовов).
+//  4. Зафиксировать статическое представление приложения.
+VApplication::_pimpl::_pimpl( int argc, const char * const * const argv,
+                              VApplication* own )
+    : args( argc, argv )
+{
+    if ( !mutex.try_lock() )
+        throw verror << "Object VApplication must be created once!";
+
+    VPoll::add_poll();
+
+    invoke_queue.open_polling( &let_stop_poll );
+
+    app = own;
+}
+//=======================================================================================
+//
+VApplication::_pimpl::~_pimpl()
+{
+    app = nullptr;
+
+    invoke_queue.close_polling();
+
+    VPoll::del_poll();
+
+    for ( auto& f: dtor_funcs ) f();
+
+    mutex.unlock();
+}
+//=======================================================================================
+VApplication* VApplication::app()
+{
+    return _pimpl::app;
+}
+//=======================================================================================
 VApplication::VApplication()
-    : p( new _pimpl(0, nullptr) )
+    : p( new _pimpl(0, nullptr, this) )
 {}
 //=======================================================================================
 VApplication::VApplication( int argc, const char * const * const argv )
-    : p( new _pimpl(argc, argv) )
+    : p( new _pimpl(argc, argv, this) )
 {}
 //=======================================================================================
 VApplication::~VApplication()
 {}
+//=======================================================================================
+void VApplication::do_invoke( InvokeFunc && func )
+{
+    p->invoke_queue.enqueue( std::move(func) );
+}
+//=======================================================================================
+void VApplication::poll()
+{
+    p->let_stop_poll = false;
+    VPoll::poll( &p->let_stop_poll );
+}
+//=======================================================================================
+//  nullptr as InvokeFunc is a stop signal.
+void VApplication::stop()
+{
+    p->invoke_queue.enqueue( nullptr );
+}
+//=======================================================================================
+void VApplication::add_post_routine( const VInvoke_Iface::InvokeFunc &func )
+{
+    p->dtor_funcs.push_back( func );
+}
+//=======================================================================================
+
 //=======================================================================================
 const VApplication::Args &VApplication::args() const
 {
@@ -79,14 +168,6 @@ VApplication::Pid &VApplication::pid()
 {
     return p->pid;
 }
-//=======================================================================================
-//void VApplication::store_and_catch_pid( cstr path, cstr fname )
-//{
-//    if ( p->pid )
-//        vwarning << "Reuse pid cell in VApplication.";
-
-//    p->pid.reset( new Pid(path, fname) );
-//}
 //=======================================================================================
 //      VAPPLICATION
 //=======================================================================================
@@ -231,7 +312,7 @@ public:
 //=======================================================================================
 pid_t VApplication::Pid::pid()
 {
-    return ::getpid();
+    return vposix::Core::pid();
 }
 //=======================================================================================
 VApplication::Pid::Pid()
@@ -263,3 +344,4 @@ void VApplication::Pid::store( cstr path, cstr fname )
 //=======================================================================================
 //      PID
 //=======================================================================================
+

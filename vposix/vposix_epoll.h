@@ -3,49 +3,56 @@
 
 #include <stdint.h>
 #include <functional>
+#include <sys/epoll.h>
 #include <vector>
-//#include <sys/epoll.h>
-
 
 //=======================================================================================
 //  http://ru.manpages.org/epoll_ctl/2
 //=======================================================================================
 
 //=======================================================================================
-struct epoll_event;
-//=======================================================================================
 namespace vposix
 {
     class EPoll final
     {
     public:
-        static constexpr auto Wait_Max_Events = 100;
+        static constexpr bool do_trace() { return false; }
 
-        static bool has_EPOLLIN ( uint32_t events );
-        static bool has_EPOLLOUT( uint32_t events );
+        static uint32_t flag_IN();
+        static uint32_t flag_OUT();
+        static uint32_t flag_PRI();
+        static uint32_t flag_RDNORM();
+        static uint32_t flag_RDBAND();
+        static uint32_t flag_WRNORM();
+        static uint32_t flag_WRBAND();
+        static uint32_t flag_MSG();
+        static uint32_t flag_ERR();
+        static uint32_t flag_HangUp();
+        static uint32_t flag_RD_HangUp();
+        //static uint32_t flag_();
 
         EPoll();
         ~EPoll();
 
-        void add( int fd, bool dir_in, bool dir_out, bool trigg );
-
-        void raw_add( int fd, epoll_event* event );
-        void raw_mod( int fd, epoll_event* event );
+        void add( int fd, void* arg, bool dir_in, bool dir_out, bool trigg );
+        void mod( int fd, void* arg, bool dir_in, bool dir_out, bool trigg );
         void del( int fd );
 
-        using CallBack = std::function<void(int,uint32_t)>; // (fd,events)
-        void wait( CallBack cb, int maxevents = Wait_Max_Events, int wait_ms = -1 );
+        uint wait( std::vector<epoll_event>* res, int wait_ms = -1 );
 
     private:
         int _epoll_fd = -1;
         int _count = 0;
 
-        static int _create();
-        static int _wait( int efd, epoll_event* events, int maxevents, int wait_ms );
+        static int  _create();
+        static uint _wait( int efd, epoll_event* events, int maxevents, int wait_ms );
 
         static void _add( int epoll_fd, int fd, epoll_event *event );
         static void _mod( int epoll_fd, int fd, epoll_event *event );
         static void _del( int epoll_fd, int fd );
+
+        EPoll( const EPoll& ) = delete;
+        EPoll& operator = ( const EPoll& ) = delete;
     };
 
 } // epoll namespace

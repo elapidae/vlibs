@@ -2,7 +2,7 @@
 
 
 #include <signal.h>
-
+#include "vlog_pretty.h"
 
 //=======================================================================================
 bool VSysSignal::_cb_registered = false;
@@ -37,8 +37,12 @@ void VSysSignal::_register_cb()
 {
     if ( _cb_registered ) return;
 
+    vwarning << "Механизм VSysSignal::watch устарел. "
+                "Используйте вместо него VApplication.\nВ него встроен механизм "
+                "остановки app.poll() по сигналам Ctrl+C и kill <pid>.";
+
     signal( SIGINT,  _on_signals );
-    signal( SIGKILL, _on_signals );
+    signal( SIGKILL, _on_signals ); //  Эту вообще нельзя установить.
     signal( SIGTERM, _on_signals );
 
     _cb_registered = true;

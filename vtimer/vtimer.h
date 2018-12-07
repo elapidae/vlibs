@@ -3,53 +3,46 @@
 
 
 #include "vsignal.h"
-#include "vslot.h"
-#include "vthread.h"
-
 #include <chrono>
+#include <memory>
 
+//=======================================================================================
 class VTimer final
 {
 public:
-    explicit VTimer( int ms = 0 );
+    VSignal<int> timeout; // argument -- count of elapsed episodes.
+
+    explicit VTimer();
     ~VTimer();
 
-    VSignal<> timeout;
+    void start( const std::chrono::nanoseconds& ns );
+    void singleshot( const std::chrono::nanoseconds& ns );
 
-    void start( int ms );
+    template<typename Duration>
+    void start( const Duration& duration );
+
+    template<typename Duration>
+    void singleshot( const Duration& duration );
+
     void stop();
 
-    bool stopped() const;
-
 private:    
-    VThread _thread;
-    VSlot<> _timeout;
-    bool _need_stop;
-    bool _stopped;
+    class Pimpl; std::unique_ptr<Pimpl> p;
 };
-
-
-
-//class VTimeCounter
-//{
-//public:
-
-//    using duration = decltype( std::chrono::steady_clock::now() -
-//                               std::chrono::steady_clock::now() );
-
-//    void start();
-
-//    duration elapsed() const;
-
-//    duration restart();
-
-//    int elapsed_ms() const;
-
-//    int restart_ms();
-
-
-//private:
-//    decltype(std::chrono::steady_clock::now()) _point;
-//};
+//=======================================================================================
+//      IMPLEMENTATION
+//=======================================================================================
+template<typename Duration>
+void VTimer::start( const Duration& duration )
+{
+    start( std::chrono::duration_cast<std::chrono::nanoseconds>(duration) );
+}
+//=======================================================================================
+template<typename Duration>
+void VTimer::singleshot( const Duration& duration )
+{
+    singleshot( std::chrono::duration_cast<std::chrono::nanoseconds>(duration) );
+}
+//=======================================================================================
 
 #endif // VTIMER_H

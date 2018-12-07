@@ -11,9 +11,8 @@ set( GTEST_LIBRARYS ${GTEST_LIBRARYS} ${GTEST_LIBRARY} )
 
 
 include( "${VLIBS_DIR}/vapplication/vapplication.cmake" )
-#include( "${VLIBS_DIR}/vlog/vlog.cmake" )
 
-add_executable( ${PROJECT_NAME} ${V_SOURCES} "main.cpp" )
+add_executable( ${PROJECT_NAME} ${V_HEADERS} ${V_SOURCES} "main.cpp" )
 
 # libgtest_main
 find_library(GTEST_MAIN_LIBRARY NAMES libgtest_main.a PATHS ${EXT_LIBS_PATH})
