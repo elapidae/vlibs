@@ -17,14 +17,15 @@ int vposix::EPoll::_create()
 {
     if ( do_trace() ) vtrace( "V::epoll_create1(CLOEXEC);" );
 
-    return Core::linux_call( ::epoll_create1, EPOLL_CLOEXEC );
+    return Core::linux_call( ::epoll_create1, "::epoll_create1", EPOLL_CLOEXEC );
 }
 //=======================================================================================
 uint EPoll::_wait( int fd, epoll_event *events, int maxevents, int wait_ms )
 {
     if ( do_trace() ) vtrace( "V::epoll_wait(", fd, maxevents, wait_ms, ")" );
 
-    auto res = Core::linux_call( ::epoll_wait, fd, events, maxevents, wait_ms );
+    auto res = Core::linux_call( ::epoll_wait, "::epoll_wait",
+                                 fd, events, maxevents, wait_ms );
     return uint( res );
 }
 //=======================================================================================
@@ -32,7 +33,8 @@ void EPoll::_add( int epoll_fd, int fd, epoll_event* event )
 {
     if ( do_trace() ) vtrace( "V::epoll_add(", epoll_fd, fd, event, ")" );
 
-    auto res = Core::linux_call( epoll_ctl, epoll_fd, EPOLL_CTL_ADD, fd, event );
+    auto res = Core::linux_call( ::epoll_ctl, "::epoll_ctl",
+                                 epoll_fd, EPOLL_CTL_ADD, fd, event );
     assert( res == 0 );
 }
 //=======================================================================================
@@ -40,7 +42,8 @@ void EPoll::_mod( int epoll_fd, int fd, epoll_event* event )
 {
     if ( do_trace() ) vtrace( "V::epoll_mod(", epoll_fd, fd, event, ")" );
 
-    auto res = Core::linux_call( epoll_ctl, epoll_fd, EPOLL_CTL_MOD, fd, event );
+    auto res = Core::linux_call( ::epoll_ctl, "::epoll-> _mod",
+                                 epoll_fd, EPOLL_CTL_MOD, fd, event );
     assert( res == 0 );
 }
 //=======================================================================================
@@ -49,7 +52,8 @@ void EPoll::_del( int epoll_fd, int fd )
     if ( do_trace() ) vtrace( "V::epoll_del(", epoll_fd, fd, ")" );
 
     epoll_event event;
-    auto res = Core::linux_call( epoll_ctl, epoll_fd, EPOLL_CTL_DEL, fd, &event );
+    auto res = Core::linux_call( ::epoll_ctl, vcat("::epoll-> _del[", fd, "]"),
+                                 epoll_fd, EPOLL_CTL_DEL, fd, &event );
     assert( res == 0 );
 }
 //=======================================================================================
@@ -111,7 +115,7 @@ compile_events( bool dir_in, bool dir_out, bool trigg )
     res =   EPOLLRDHUP  |
             EPOLLPRI    |
             EPOLLERR    |   //  Судя по документации, можно не устанавливать
-            EPOLLHUP;       //
+            EPOLLHUP;       //  Судя по документации, можно не устанавливать
 
     if ( dir_in  ) res |= EPOLLIN;
     if ( dir_out ) res |= EPOLLOUT;

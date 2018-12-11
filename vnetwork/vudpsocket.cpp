@@ -26,9 +26,6 @@ public:
 
     const int fd;
     VUdpSocket* owner;
-
-    VIpAddress local_host;
-    uint16_t local_port;
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
@@ -60,26 +57,23 @@ VUdpSocket::VUdpSocket()
 VUdpSocket::~VUdpSocket()
 {}
 //=======================================================================================
-void VUdpSocket::bind( VIpAddress host, uint16_t port )
+void VUdpSocket::bind( const VIpAddress& addr, uint16_t port )
 {
-    auto fd = Socket::socket( Socket::Domain::Inet4, Socket::Type::DGRAM );
+    auto fd = Socket::udp_socket( addr._addr() );
+    p.reset( new Pimpl(fd,this) );
 
     Socket::set_broadcast( fd );
     Socket::set_ip_receive_packet_information( fd );
     Socket::set_ip_receive_hop_limit( fd );
 
-    Socket::bind( fd, host._get_host(), port );
+    Socket::bind( fd, addr._addr(), port );
 
-    auto type = Socket::get_type( fd );
-    assert( type == Socket::Type::DGRAM );
-
-    uint32_t local_host;
-    uint16_t local_port;
-    Socket::get_bind_point( fd, &local_host, &local_port );
-
-    p.reset( new Pimpl(fd,this) );
-    p->local_host._set_host( local_host );
-    p->local_port = local_port;
+    // Were checks, but, may be not need...
+    //
+    //assert( Socket::get_type(fd) == Socket::Type::DGRAM );
+//    uint32_t local_host;
+//    uint16_t local_port;
+//    Socket::get_bind_point( fd, &local_host, &local_port );
 }
 //=======================================================================================
 void VUdpSocket::bind_any( uint16_t port )
@@ -92,11 +86,11 @@ bool VUdpSocket::is_bound() const
     return bool(p);
 }
 //=======================================================================================
-void VUdpSocket::send_to( const std::string &buf, VIpAddress host, uint16_t port )
+void VUdpSocket::send_to( const std::string& buf, const VIpAddress& addr, uint16_t port )
 {
     if ( !is_bound() ) bind_any();
 
-    auto sz = Socket::sendto( p->fd, buf.c_str(), buf.size(), host._get_host(), port );
+    auto sz = Socket::send_to( p->fd, buf, addr._addr(), port );
     if ( sz != ssize_t(buf.size()) )
         throw verror << "Cannot send UDP packet.";
 }
@@ -108,13 +102,11 @@ VString VUdpSocket::receive( VIpAddress* ip, uint16_t* port )
     if ( res_size <= 0 ) return {};
     size_t ures_size = size_t( res_size );
 
-    // std::vector<char> buf( ures_size );
     auto buf = Alloca::allocate<char>( ures_size );
 
-    uint32_t host;
-    auto recv_sz = Socket::recvfrom( p->fd, buf, ures_size, 0, &host, port );
+    auto recv_sz = Socket::receive_from( p->fd, buf, ures_size, ip->_addr_ptr(), port );
     assert( recv_sz == res_size );
-    ip->_set_host( host );
+
     return { buf, ures_size };
 }
 //=======================================================================================

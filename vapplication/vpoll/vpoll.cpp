@@ -188,6 +188,17 @@ uint32_t VPoll::EventFlags::raw() const
     return _events;
 }
 //=======================================================================================
+bool VPoll::EventFlags::empty() const
+{
+    return _events == 0;
+}
+//=======================================================================================
+void VPoll::EventFlags::throw_not_empty() const
+{
+    if ( !empty() )
+        throw verror( "Event flags not read at all, leaved:", _events );
+}
+//=======================================================================================
 bool VPoll::EventFlags::_take_flag( uint32_t flag )
 {
     bool res = _events & flag;

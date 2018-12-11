@@ -24,10 +24,10 @@ int TimerFD::create_monotonic()
     auto id = CLOCK_MONOTONIC;
     auto flags = TFD_NONBLOCK | TFD_CLOEXEC;
 
-    return Core::linux_call( ::timerfd_create, id, flags );
+    return Core::linux_call( ::timerfd_create, "::timerfd_create", id, flags );
 }
 //=======================================================================================
-void TimerFD::start_monotonic( int fd, const TimerFD::nanosecs &duration)
+void TimerFD::start_monotonic( int fd, const TimerFD::nanosecs &duration )
 {
     auto sec = duration.count()  / 1000000000;
     auto nsec = duration.count() % 1000000000;
@@ -42,7 +42,7 @@ void TimerFD::start_monotonic( int fd, const TimerFD::nanosecs &duration)
     _settime( fd, spec );
 }
 //=======================================================================================
-void TimerFD::singleshot_monotonic(int fd, const TimerFD::nanosecs &duration)
+void TimerFD::singleshot_monotonic( int fd, const TimerFD::nanosecs &duration )
 {
     auto sec = duration.count()  / 1000000000;
     auto nsec = duration.count() % 1000000000;
@@ -78,7 +78,7 @@ int TimerFD::read( int fd )
     {
         Errno e;
         if ( !e.resource_unavailable_try_again() )
-            e.throw_verror();
+            e.throw_verror("TimerFD::read");
     }
     return int(res);
 }
@@ -89,14 +89,16 @@ void TimerFD::_settime( int fd,
 {
     int flags = 0; // May be TFD_TIMER_ABSTIME
 
-    auto res = Core::linux_call( ::timerfd_settime, fd, flags, &new_value, old_value );
+    auto res = Core::linux_call( ::timerfd_settime, "::timerfd_settime",
+                                 fd, flags, &new_value, old_value );
     assert( res == 0 );
 }
 //=======================================================================================
 void TimerFD::_gettime( int fd, itimerspec *cur_value )
 {
 
-    auto res = Core::linux_call( ::timerfd_gettime, fd, cur_value );
+    auto res = Core::linux_call( ::timerfd_gettime, "::timerfd_gettime",
+                                 fd, cur_value );
     assert( res == 0 );
 }
 //=======================================================================================

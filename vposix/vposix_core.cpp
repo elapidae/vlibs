@@ -3,6 +3,7 @@
 #include <vector>
 #include <stdexcept>
 #include <string.h>
+#include <assert.h>
 
 #include "vposix_alloca.h"
 
@@ -14,7 +15,7 @@ using namespace vposix;
 //=======================================================================================
 pid_t Core::pid()
 {
-    return linux_call( ::getpid );
+    return linux_call( ::getpid, "::getpid" );
 }
 //=======================================================================================
 
@@ -23,11 +24,6 @@ pid_t Core::pid()
 Errno::Errno()
     : _err( errno )
 {}
-//=======================================================================================
-int Errno::has() const
-{
-    return _err != 0;
-}
 //=======================================================================================
 int Errno::code() const
 {
@@ -44,20 +40,20 @@ std::string Errno::str() const
 }
 //=======================================================================================
 //[[noreturn]]
-void Errno::throw_verror( const std::string &src ) const
+void Errno::throw_verror( const std::string &event ) const
 {
-    auto msg = src.empty() ? str() : vcat(src, ": ", str()).str();
-    throw verror( msg );
+    assert( !event.empty() );
+    throw verror( vcat(event, ": ", str()).str() );
 }
 //=======================================================================================
-bool Errno::eagain() const
+bool Errno::again_or_wouldblock() const
 {
-    return _err == EAGAIN;
+    return _err == EAGAIN || _err == EWOULDBLOCK;
 }
 //=======================================================================================
 bool Errno::resource_unavailable_try_again() const
 {
-    return eagain();
+    return again_or_wouldblock();
 }
 //=======================================================================================
 bool Errno::operation_in_progress() const

@@ -10,7 +10,8 @@
 class VTimer final
 {
 public:
-    VSignal<int> timeout; // argument -- count of elapsed episodes.
+    VSignal<int> timeout_count;     // argument -- count of elapsed episodes.
+    VSignal<>    timeout;           // simaple, without elapsed episodes.
 
     explicit VTimer();
     ~VTimer();
