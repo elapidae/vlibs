@@ -89,8 +89,7 @@ void VTcpServer::listen( const VIpAddress& addr, uint16_t port )
 
     Socket::listen( fd, _queued_connections_count );
 
-    p->addr = addr;
-    p->port = port;
+    Socket::get_sock_addr( fd, p->addr._addr_ptr(), &p->port );
 }
 //=======================================================================================
 void VTcpServer::listen_any( uint16_t port )
@@ -101,5 +100,17 @@ void VTcpServer::listen_any( uint16_t port )
 void VTcpServer::close()
 {
     p.reset();
+}
+//=======================================================================================
+const VIpAddress & VTcpServer::address() const
+{
+    assert( is_listening() );
+    return p->addr;
+}
+//=======================================================================================
+uint16_t VTcpServer::port() const
+{
+    assert( is_listening() );
+    return p->port;
 }
 //=======================================================================================

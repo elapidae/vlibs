@@ -27,7 +27,7 @@ int TimerFD::create_monotonic()
     return Core::linux_call( ::timerfd_create, "::timerfd_create", id, flags );
 }
 //=======================================================================================
-void TimerFD::start_monotonic( int fd, const TimerFD::nanosecs &duration)
+void TimerFD::start_monotonic( int fd, const TimerFD::nanosecs &duration )
 {
     auto sec = duration.count()  / 1000000000;
     auto nsec = duration.count() % 1000000000;
@@ -42,7 +42,7 @@ void TimerFD::start_monotonic( int fd, const TimerFD::nanosecs &duration)
     _settime( fd, spec );
 }
 //=======================================================================================
-void TimerFD::singleshot_monotonic(int fd, const TimerFD::nanosecs &duration)
+void TimerFD::singleshot_monotonic( int fd, const TimerFD::nanosecs &duration )
 {
     auto sec = duration.count()  / 1000000000;
     auto nsec = duration.count() % 1000000000;

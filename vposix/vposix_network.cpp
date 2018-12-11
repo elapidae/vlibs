@@ -95,7 +95,7 @@ ssize_t Socket::receive_from( int fd, void *buf, size_t n,
         assert( len == sizeof(*sa4) );
 
         dst->set_a4( sa4->sin_addr );
-        *port = ntohs( sa4->sin_port );
+        *port = _port_of_sa( *sa4 );
         return res;
     }
 
@@ -104,7 +104,7 @@ ssize_t Socket::receive_from( int fd, void *buf, size_t n,
         assert( len == sizeof(sa6) );
 
         dst->set_a6( sa6.sin6_addr );
-        *port = ntohs( sa6.sin6_port );
+        *port = _port_of_sa( sa6 );
         return res;
     }
 
@@ -202,6 +202,16 @@ void Socket::_init_sa6( sockaddr_in6 *sa, const in6_addr& a, uint16_t port )
     sa->sin6_port   = htons( port );
 }
 //=======================================================================================
+uint16_t Socket::_port_of_sa( const sockaddr_in& sa4 )
+{
+    return ntohs( sa4.sin_port );
+}
+//=======================================================================================
+uint16_t Socket::_port_of_sa( const sockaddr_in6& sa6 )
+{
+    return ntohs( sa6.sin6_port );
+}
+//=======================================================================================
 void Socket::_bind( int fd, const sockaddr *addr, my_socklen_t len )
 {
     if ( do_trace() ) vtrace.nospace()( "V::bind( ", fd, ", ", addr, ", ", len, " )" );
@@ -240,10 +250,6 @@ void Socket::bind( int fd, const my_ip_addr& addr, uint16_t port )
     throw verror("Bind to unknown address.");
 }
 //=======================================================================================
-//int Socket::_getsockname( int fd, sockaddr* addr, Socket::my_socklen_t *len )
-//{
-//    return Core::linux_call( ::getsockname, "::getsockname", fd, addr, len );
-//}
 //=======================================================================================
 //int Socket::_getsockname( int fd, sockaddr_in* addr )
 //{
@@ -263,7 +269,7 @@ void Socket::bind( int fd, const my_ip_addr& addr, uint16_t port )
 //uint16_t Socket::_get_port( const sockaddr_in& sock )
 //{
 //    assert( sock.sin_family == AF_INET );
-//    return ntohs( sock.sin_port );
+//    return ntffohs_BADDDD( sock.sin_port );
 //}
 //=======================================================================================
 //void Socket::get_bind_point( int fd, uint32_t* host, uint16_t* port )
@@ -302,22 +308,15 @@ int Socket::_connect_a6_or_err( int fd, const in6_addr& addr, uint16_t port )
     return _connect_or_err( fd, ptr, sizeof(sa) );
 }
 //=======================================================================================
-//void Socket::connect( int fd, uint32_t addr, uint16_t port )
-//{
-//    sockaddr_in sock;
-//    auto ptr = static_cast<sockaddr*>( static_cast<void*>(&sock) );
-//    _init_sa4(ockaddr_in( addr, port, &sock );
-//    auto res = _connect_or_err( fd, ptr, sizeof(sock) );
-//    if ( res != -1 ) return;
-//    Errno().throw_verror( "Socket::connect" );
-//}
-//=======================================================================================
 int Socket::connect_or_err( int fd, const my_ip_addr& addr, uint16_t port )
 {
-    sockaddr_in sock;
-    auto ptr = static_cast<sockaddr*>( static_cast<void*>(&sock) );
-    assert(false); //_init_sockaddr_in( addr, port, &sock );
-    return _connect_or_err( fd, ptr, sizeof(sock) );
+    if ( addr.ip_type == IpType::Ip4 )
+        return _connect_a4_or_err( fd, addr.ip4, port );
+
+    if ( addr.ip_type == IpType::Ip6 )
+        return _connect_a6_or_err( fd, addr.ip6, port );
+
+    throw verror("Bad ip");
 }
 //=======================================================================================
 
@@ -354,7 +353,7 @@ int Socket::accept_or_err( int fd, uint32_t *host, uint16_t *port )
     if ( res < 0 ) return res;
 
     *host = ntohl( sock.sin_addr.s_addr );
-    *port = ntohs( sock.sin_port        );
+    *port = _port_of_sa( sock );
     return res;
 }
 //=======================================================================================
@@ -416,26 +415,50 @@ ssize_t Socket::send_to( int fd, const std::string &buf, const my_ip_addr &addr,
     throw verror("Bad ip type");
 }
 //=======================================================================================
-ssize_t Socket::_send(int fd, const void *buf, size_t n, int flags)
+ssize_t Socket::_send( int fd, const void *buf, size_t n, int flags )
 {
     return Core::linux_call( ::send, "::send", fd, buf, n, flags );
 }
 //=======================================================================================
-//ssize_t Socket::sendto( int fd,
-//                        const void *buf, size_t n,
-//                        uint32_t addr, uint16_t port,
-//                        int flags )
-//{
-//    flags |= MSG_NOSIGNAL;
-//    sockaddr_in sock;
-//    assert(false);
-//    _init_sa4( &sock, in_addr{addr}, port );
-//    return _sendto( fd, buf, n, flags, &sock );
-//}
-//=======================================================================================
 ssize_t Socket::send( int fd, const std::string &buf, int flags )
 {
     return _send( fd, buf.c_str(), buf.size(), flags | MSG_NOSIGNAL );
+}
+//=======================================================================================
+
+
+//=======================================================================================
+int Socket::_getsockname( int fd, sockaddr* addr, my_socklen_t* len )
+{
+    return Core::linux_call( ::getsockname, "::getsockname", fd, addr, len );
+}
+//=======================================================================================
+void Socket::get_sock_addr( int fd, my_ip_addr* addr, uint16_t *port )
+{
+    sockaddr_in6 sa6;
+    auto v_ptr = static_cast<void*>(&sa6);
+    auto *sa_ptr = static_cast<sockaddr*>( v_ptr );
+    my_socklen_t len = sizeof( sa6 );
+    _getsockname( fd, sa_ptr, &len );
+
+    if ( sa_ptr->sa_family == AF_INET )
+    {
+        auto sa4 = static_cast<sockaddr_in*>(v_ptr);
+        assert( len == sizeof(*sa4) );
+        addr->set_a4( sa4->sin_addr );
+        *port = _port_of_sa( *sa4 );
+        return;
+    }
+
+    if ( sa_ptr->sa_family == AF_INET6 )
+    {
+        assert( len == sizeof(sa6) );
+        addr->set_a6( sa6.sin6_addr );
+        *port = _port_of_sa( sa6 );
+        return;
+    }
+
+    throw verror("Bad socket address");
 }
 //=======================================================================================
 
@@ -632,22 +655,23 @@ std::string Socket::addr_to_str( const my_ip_addr& src )
 //
 bool Socket::_inet_pton( int af, const char *cp, void *buf )
 {
-    if ( do_trace() ) vtrace( "::inet_pton(", NetDebug::sa_family(af), ");" );
+    if ( do_trace() )
+        vtrace( "::inet_pton(", NetDebug::sa_family(af), cp, ");" );
 
     return 1 == Core::linux_call( ::inet_pton, "::inet_pton", af, cp, buf );
 }
 //=======================================================================================
-static bool from_str_ip4( const std::string& src, in_addr *dst )
+static bool from_str_ip4( const std::string& src, in_addr* dst )
 {
     return Socket::_inet_pton( AF_INET, src.c_str(), dst );
 }
 //=======================================================================================
-static bool from_str_ip6( const std::string& src, in6_addr *dst )
+static bool from_str_ip6( const std::string& src, in6_addr* dst )
 {
     return Socket::_inet_pton( AF_INET6, src.c_str(), dst );
 }
 //=======================================================================================
-bool Socket::str_to_addr( const std::string &src, my_ip_addr *dst )
+bool Socket::str_to_addr( const std::string &src, my_ip_addr* dst )
 {
     dst->ip_type = IpType::Unknown;
 

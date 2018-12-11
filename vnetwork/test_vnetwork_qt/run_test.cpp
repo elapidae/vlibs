@@ -32,6 +32,7 @@ int main_1()
         sock.send( VString::any_to_text(++num) );
     });
     //sock.connect_to_host( "127.0.0.1", 2345 );
+    //VIpAddress
     sock.connect_to_host( "192.168.0.65", 2345 );
 
     vdeb << "before polling";

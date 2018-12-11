@@ -18,7 +18,7 @@ VIpAddress VIpAddress::any_ip4()
     static my_ip_addr res = []()
     {
         my_ip_addr maddr;
-        maddr.set_a4( {INADDR_ANY} );
+        maddr.set_a4( {htonl(INADDR_ANY)} );
         return maddr;
     }();
     return {res};
@@ -29,7 +29,7 @@ VIpAddress VIpAddress::loopback_ip4()
     static my_ip_addr res = []()
     {
         my_ip_addr maddr;
-        maddr.set_a4( {INADDR_LOOPBACK} );
+        maddr.set_a4( {htonl(INADDR_LOOPBACK)} );
         return maddr;
     }();
     return {res};
@@ -82,14 +82,43 @@ VIpAddress::VIpAddress()
     : p( std::make_shared<Pimpl>() )
 {}
 //=======================================================================================
-VIpAddress::VIpAddress( const std::string &ip )
+VIpAddress::VIpAddress( const char* ip )
     : p( std::make_shared<Pimpl>() )
+{
+    _set( ip );
+}
+//=======================================================================================
+VIpAddress::VIpAddress( const std::string& ip )
+    : p( std::make_shared<Pimpl>() )
+{
+    _set( ip );
+}
+//=======================================================================================
+bool VIpAddress::is_ip4() const
+{
+    return p->addr.ip_type == IpType::Ip4;
+}
+//=======================================================================================
+bool VIpAddress::is_ip6() const
+{
+    return p->addr.ip_type == IpType::Ip6;
+}
+//=======================================================================================
+bool VIpAddress::inited() const
+{
+    return is_ip4() || is_ip6();
+}
+//=======================================================================================
+std::string VIpAddress::str() const
+{
+    return Socket::addr_to_str( p->addr );
+}
+//=======================================================================================
+void VIpAddress::_set( const std::string& ip )
 {
     bool ok = vposix::Socket::str_to_addr( ip, &p->addr );
     if (!ok)
-    {
         throw verror("Ip '", ip, "' cannot be parsed. May replace without exceptions.");
-    }
 }
 //=======================================================================================
 VIpAddress::VIpAddress(const my_ip_addr &maddr)
@@ -111,18 +140,15 @@ my_ip_addr* VIpAddress::_addr_ptr()
     return &p->addr;
 }
 //=======================================================================================
-//uint16_t VIpAddress::port() const
-//{
-//    switch ( p->addr.stype )
-//    {
-//    case SockAddr::my_addr::Ip4: return ntohs( p->addr.sa4.sin_port  );
-//    case SockAddr::my_addr::Ip6: return ntohs( p->addr.sa6.sin6_port );
-//    default: throw verror( "Cannot get port" );
-//    }
-//}
-//=======================================================================================
-//SockAddr::my_addr *VIpAddress::my_addr()
-//{
-//    return &p->addr;
-//}
+std::ostream &operator << ( std::ostream &os, const VIpAddress &addr )
+{
+    os << "VIpAddress(";
+
+    if ( !addr.inited() ) os << "unknown";
+    else                  os << addr.str();
+
+    os << ")";
+
+    return os;
+}
 //=======================================================================================

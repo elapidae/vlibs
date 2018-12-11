@@ -4,6 +4,7 @@
 #include <string>
 #include <stdint.h>
 #include <memory>
+#include <iostream>
 
 
 //=======================================================================================
@@ -24,9 +25,13 @@ public:
     VIpAddress( const char* ip );
     VIpAddress( const std::string& ip );
 
+    bool is_ip4() const;
+    bool is_ip6() const;
+    bool inited() const;
     std::string str() const;
 
 private:
+    void _set( const std::string& ip );
     VIpAddress( const vposix::my_ip_addr& maddr );
     class Pimpl; std::shared_ptr<Pimpl> p;
 
@@ -36,6 +41,8 @@ private:
     const vposix::my_ip_addr& _addr() const;
     vposix::my_ip_addr* _addr_ptr();
 };
+//=======================================================================================
+std::ostream& operator << (std::ostream& os, const VIpAddress& addr );
 //=======================================================================================
 
 

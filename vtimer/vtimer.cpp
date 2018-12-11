@@ -2,7 +2,7 @@
 
 #include "vposix_timerfd.h"
 #include "vposix_files.h"
-#include "vpoll/vpoll.h"
+#include "../vapplication/vpoll/vpoll.h"
 
 #include <assert.h>
 
@@ -35,7 +35,8 @@ public:
     {
         assert( flags.take_IN()  );
         assert( flags.raw() == 0 );
-        owner->timeout( vposix::TimerFD::read(fd) );
+        owner->timeout_count( vposix::TimerFD::read(fd) );
+        owner->timeout();
     }
     //-----------------------------------------------------------------------------------
 private:

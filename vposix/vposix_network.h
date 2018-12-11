@@ -93,6 +93,10 @@ namespace vposix
         //
         static void _init_sa4( sockaddr_in*  sa, const in_addr&  a, uint16_t port );
         static void _init_sa6( sockaddr_in6* sa, const in6_addr& a, uint16_t port );
+
+        //  При чтении пользоваться только ими!
+        static uint16_t _port_of_sa( const sockaddr_in& sa4 );
+        static uint16_t _port_of_sa( const sockaddr_in6& sa6 );
         //===============================================================================
 
         //===============================================================================
@@ -144,7 +148,7 @@ namespace vposix
         // Не реализована, там трэшшшшЪ.
         static ssize_t _sendmsg( int fd, const struct msghdr *message, int flags );
 
-        // http://www.opennet.ru/man.shtml?category=2&russian=&topic=sendto
+        //  http://www.opennet.ru/man.shtml?category=2&russian=&topic=sendto
         //  flags -- битовая маска, м/б флаг NOPIPE...
         static ssize_t _sendto( int fd, const void *buf, size_t n, int flags,
                                 const sockaddr* addr, my_socklen_t addr_len );
@@ -170,12 +174,18 @@ namespace vposix
         static ssize_t send( int fd, const std::string& buf, int flags = 0 );
         //===============================================================================
 
-//        static int _getsockname( int fd, sockaddr* addr, my_socklen_t *len );
+        //===============================================================================
+        static int _getsockname( int fd, sockaddr* addr, my_socklen_t* len );
+
+        static void get_sock_addr( int fd, my_ip_addr* addr, uint16_t* port );
+
 //        static int _getsockname( int fd, sockaddr_in* addr );
 //        static uint32_t _get_host( const sockaddr_in& sock );
 //        static uint16_t _get_port( const sockaddr_in& sock );
 //        static void get_bind_point( int fd, uint32_t* host, uint16_t* port );
+        //===============================================================================
 
+        //===============================================================================
         // 0 or errno
         static int _connect_or_err( int fd, const sockaddr* addr,
                                     Socket::my_socklen_t len );
@@ -192,14 +202,15 @@ namespace vposix
         //  With NONBLOCK & CLOEXEC
         static int accept_or_err( int fd, uint32_t* host, uint16_t* port );
         static int accept( int fd, uint32_t* host, uint16_t* port );
-
+        //===============================================================================
 
         static void _getsockopt( int fd, int level, int optname,
                                  void *optval, my_socklen_t *optlen );
         static int32_t _getsockopt_int32( int fd, int level, int optname );
         //static Type get_type( int fd );
+        //===============================================================================
 
-        //-------------------------------------------------------------------------------
+        //===============================================================================
         static ssize_t _recv_or_err( int fd, void *buf, size_t n, int flags );
         static ssize_t _recv( int fd, void *buf, size_t n, int flags = 0 );
         static ssize_t pending_datagram_size( int fd );
@@ -214,38 +225,14 @@ namespace vposix
         //  src used for seems to need protocol.
         static ssize_t receive_from(int fd, void *buf, size_t n,
                                      my_ip_addr* dst, uint16_t* port );
-        //-------------------------------------------------------------------------------
-
-//        static ssize_t recvfrom( int fd, void *buf, size_t n, int flags,
-//                                 uint32_t* host, uint16_t* port );
+        //===============================================================================
 
     }; // Socket
     //===================================================================================
 
     //===================================================================================
-} // namespace vposix
+}  // namespace vposix
 //=======================================================================================
-
-
-////  Wrapper for SOCK_* defines.
-//enum class Type
-//{
-//    STREAM = 1,         //  Sequenced, reliable, connection-based byte streams.
-//    DGRAM = 2,          //  Connectionless, unreliable datagrams of fixed
-//                        //  maximum length.
-//    RAW = 3,			//  Raw protocol interface.
-//    RDM = 4,			//  Reliably-delivered messages.
-//    SEQPACKET = 5,		//  Sequenced, reliable, connection-based, datagrams of
-//                        //  fixed maximum length.
-//    DCCP = 6,           //  Datagram Congestion Control Protocol.
-//    PACKET = 10,		//  Linux specific way of getting packets
-//                        //  at the dev level.  For writing rarp and
-//                        //  other similar things on the user level.
-
-//    //  Flags to be ORed into the type parameter of socket and socketpair and
-//    //  used for the flags parameter of paccept.
-//};
-
 
 
 

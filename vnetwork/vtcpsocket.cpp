@@ -31,7 +31,7 @@ public:
     void connection_ok();
 
     bool is_connected = false;
-    int fd;
+    int fd = -1;
 
 private:
     VTcpSocket *owner;
@@ -42,6 +42,7 @@ VTcpSocket::Pimpl::Pimpl( int fd_, VTcpSocket *owner_ )
     : fd( fd_ )
     , owner( owner_ )
 {
+    vdeb << "VTcpSocket::Pimpl::Pimpl" << this;
     if ( fd < 0 )
         throw verror( "VTcpSocket fd < 0" );
 
@@ -102,6 +103,7 @@ VTcpSocket::VTcpSocket()
 VTcpSocket::VTcpSocket( VTcpSocket::Peer* peer )
     : p( new Pimpl(peer->take_fd(),this) )
 {
+    vdeb << "Connected as server socket..." << p->fd;
     p->is_connected = true;
 }
 //=======================================================================================
@@ -167,19 +169,19 @@ VString VTcpSocket::receive_all()
 //=======================================================================================
 
 //=======================================================================================
-static void kill_unused_tcp( void* atom_int )
+static void del_and_close_tcp( void* atom_int )
 {
     auto ai_ptr = static_cast<std::atomic_int*>(atom_int);
     auto fd = ai_ptr->fetch_or( -1 );
     delete ai_ptr;
 
     if ( fd < 0 ) return;
-    vwarning << "Server side VTcpSocket has not attached";
+    vwarning << "Server side VTcpSocket has not attached (and will close)";
     Files::close( fd );
 }
 //=======================================================================================
 VTcpSocket::Peer::Peer( int fd )
-    : _ptr( new std::atomic<int>(fd), kill_unused_tcp )
+    : _ptr( new std::atomic<int>(fd), del_and_close_tcp )
 {}
 //=======================================================================================
 int VTcpSocket::Peer::take_fd()

@@ -40,7 +40,7 @@ std::string Errno::str() const
 }
 //=======================================================================================
 //[[noreturn]]
-void Errno::throw_verror(const std::string &event ) const
+void Errno::throw_verror( const std::string &event ) const
 {
     assert( !event.empty() );
     throw verror( vcat(event, ": ", str()).str() );
