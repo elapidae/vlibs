@@ -13,6 +13,10 @@ using std::string;
 using std::pair;
 
 //=======================================================================================
+HDLC_Parser::HDLC_Parser(HDLC_Parser::ThrowErrors te)
+    : _throw_errors( te )
+{}
+//=======================================================================================
 void HDLC_Parser::append( const std::string &app_data )
 {
     for ( char ch: app_data )
@@ -29,7 +33,7 @@ void HDLC_Parser::append( const std::string &app_data )
         {
             if      ( ch == ch_5D ) _buffer.append( ch_7D );
             else if ( ch == ch_5E ) _buffer.append( ch_7E );
-            else    throw verror.hex()( "Unexpected escape symbol: ", int(ch) );
+            else    _error( vcat().hex()("Unexpected escape symbol: ", int(ch)) );
             _escaped = false;
             continue;
         }
@@ -38,7 +42,7 @@ void HDLC_Parser::append( const std::string &app_data )
         if ( ch == ch_7E )
         {
             if ( _escaped )
-                throw verror.hex()( "Unexpected escape before 0x7E." );
+                _error( vcat().hex()("Unexpected escape before 0x7E.") );
 
             if ( !_buffer.empty() )
                 received( _buffer );
@@ -58,6 +62,18 @@ void HDLC_Parser::append( const std::string &app_data )
         _buffer.append( ch );
 
     } // for ( char ch: app_data )
+}
+//=======================================================================================
+void HDLC_Parser::_error( const std::string &msg )
+{
+    if ( _throw_errors == ThrowErrors::Yes )
+        throw verror( msg );
+    else
+        VWARNING << msg;
+
+    _buffer.clear();
+    _packet_began = false;
+    _escaped = false;
 }
 //=======================================================================================
 void HDLC_Parser::test()
