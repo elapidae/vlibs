@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include "vbytearray.h"
+//#include "vbytearray.h"
 //#include "vserialport.h"
 struct termios;
 
@@ -75,8 +75,8 @@ public:
     bool cread()  const;                        // CREAD    разрешены.
 
     //-----------------------------------------------------------------------------------
-    VByteArray save() const;
-    static VSerialPortOptions restore( const VByteArray& saved );
+//    VByteArray save() const;
+//    static VSerialPortOptions restore( const VByteArray& saved );
 
     //-----------------------------------------------------------------------------------
 private:

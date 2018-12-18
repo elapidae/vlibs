@@ -1,21 +1,39 @@
+#========================================================================================
+# vserialsocket.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
+
+#========================================================================================
 isEmpty(qi_vserialsocket) {
     qi_vserialsocket = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vserialsocket appended ===")
 
-    isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("vserialsocket: Need VLIBS_DIR correct path.")
 
-    include($$VLibs_Dir/vthread/vthread.pri)
 
-    INCLUDEPATH += $$VLibs_Dir/vserialsocket
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-    HEADERS     += $$VLibs_Dir/vserialsocket/vserialport.h
-    SOURCES     += $$VLibs_Dir/vserialsocket/vserialport.cpp
+    INCLUDEPATH += $$VLIBS_DIR/vserialsocket
 
-    HEADERS     += $$VLibs_Dir/vserialsocket/vserialportoptions.h
-    SOURCES     += $$VLibs_Dir/vserialsocket/vserialportoptions.cpp
-
-    HEADERS     += $$VLibs_Dir/vserialsocket/vserialsocket.h
-    SOURCES     += $$VLibs_Dir/vserialsocket/vserialsocket.cpp
+    
+    HEADERS     += $$VLIBS_DIR/vserialsocket/vserialportoptions.h 
+    HEADERS     += $$VLIBS_DIR/vserialsocket/vserialsocket.h 
+    HEADERS     += $$VLIBS_DIR/vserialsocket/vserialport.h 
+    
+    SOURCES     += $$VLIBS_DIR/vserialsocket/vserialport.cpp 
+    SOURCES     += $$VLIBS_DIR/vserialsocket/vserialportoptions.cpp 
+    SOURCES     += $$VLIBS_DIR/vserialsocket/vserialsocket.cpp 
 }
-
+# vserialsocket.pri
+#========================================================================================

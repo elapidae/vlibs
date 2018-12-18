@@ -15,11 +15,11 @@ using namespace std;
 
 //=======================================================================================
 //  Считано с перезагруженной системы.
-static const auto def_options =
-VByteArray::from_hex( "0005000005000000bd0c00003b8a000000031c7f150400010011131a0"
-                      "0120f1716000000000000000000000000000000000d0000000d000000" );
+//static const auto def_options =
+//VByteArray::from_hex( "0005000005000000bd0c00003b8a000000031c7f150400010011131a0"
+//                      "0120f1716000000000000000000000000000000000d0000000d000000" );
 //=======================================================================================
-static termios _restore( VByteArray saved );
+//static termios _restore( VByteArray saved );
 //=======================================================================================
 
 
@@ -88,8 +88,8 @@ class VSerialPortOptions::Pimpl
 public:
     Pimpl()
     {
-        static const auto def_trm = _restore( def_options );
-        trm = def_trm;
+        //static const auto def_trm = _restore( def_options );
+        //trm = def_trm;
     }
     termios trm;
 };
@@ -131,7 +131,7 @@ bool VSerialPortOptions::set_options( const string &portname ) const
 //=======================================================================================
 VSerialPortOptions VSerialPortOptions::default_options()
 {
-    return _restore(def_options);
+    //return _restore(def_options);
 }
 //=======================================================================================
 // static
@@ -323,53 +323,53 @@ bool VSerialPortOptions::cread() const
 //#define _HAVE_STRUCT_TERMIOS_C_OSPEED 1
 //  };
 //---------------------------------------------------------------------------------------
-static termios _restore( VByteArray saved )
-{
-    termios trm;
+//static termios _restore( VByteArray saved )
+//{
+//    termios trm;
 
-    if (saved.empty())
-        saved = def_options;
+//    if (saved.empty())
+//        saved = def_options;
 
-    trm.c_iflag = saved.pop_front_little<decltype(trm.c_iflag)>();
-    trm.c_oflag = saved.pop_front_little<decltype(trm.c_oflag)>();
-    trm.c_cflag = saved.pop_front_little<decltype(trm.c_cflag)>();
-    trm.c_lflag = saved.pop_front_little<decltype(trm.c_lflag)>();
+//    trm.c_iflag = saved.pop_front_little<decltype(trm.c_iflag)>();
+//    trm.c_oflag = saved.pop_front_little<decltype(trm.c_oflag)>();
+//    trm.c_cflag = saved.pop_front_little<decltype(trm.c_cflag)>();
+//    trm.c_lflag = saved.pop_front_little<decltype(trm.c_lflag)>();
 
-    trm.c_line = saved.pop_front_little<decltype(trm.c_line)>();
+//    trm.c_line = saved.pop_front_little<decltype(trm.c_line)>();
 
-    for (int i = 0; i < NCCS; ++i)
-        trm.c_cc[i] = saved.pop_front_little< cc_t >();
+//    for (int i = 0; i < NCCS; ++i)
+//        trm.c_cc[i] = saved.pop_front_little< cc_t >();
 
-    trm.c_ispeed = saved.pop_front_little<decltype(trm.c_ispeed)>();
-    trm.c_ospeed = saved.pop_front_little<decltype(trm.c_ospeed)>();
+//    trm.c_ispeed = saved.pop_front_little<decltype(trm.c_ispeed)>();
+//    trm.c_ospeed = saved.pop_front_little<decltype(trm.c_ospeed)>();
 
-    return trm;
-}
+//    return trm;
+//}
 //=======================================================================================
-VByteArray VSerialPortOptions::save() const
-{
-    VByteArray res;
+//VByteArray VSerialPortOptions::save() const
+//{
+//    VByteArray res;
 
-    auto & trm = p->trm;
-    res.push_back_little(trm.c_iflag);
-    res.push_back_little(trm.c_oflag);
-    res.push_back_little(trm.c_cflag);
-    res.push_back_little(trm.c_lflag);
+//    auto & trm = p->trm;
+//    res.push_back_little(trm.c_iflag);
+//    res.push_back_little(trm.c_oflag);
+//    res.push_back_little(trm.c_cflag);
+//    res.push_back_little(trm.c_lflag);
 
-    res.push_back_little(trm.c_line);
+//    res.push_back_little(trm.c_line);
 
-    for (int i = 0; i < NCCS; ++i)
-        res.push_back_little(trm.c_cc[i]);
+//    for (int i = 0; i < NCCS; ++i)
+//        res.push_back_little(trm.c_cc[i]);
 
-    res.push_back_little(trm.c_ispeed);
-    res.push_back_little(trm.c_ospeed);
+//    res.push_back_little(trm.c_ispeed);
+//    res.push_back_little(trm.c_ospeed);
 
-    return res;
-}
+//    return res;
+//}
 //=======================================================================================
 // static
-VSerialPortOptions VSerialPortOptions::restore( const VByteArray &saved )
-{
-    return _restore( saved );
-}
+//VSerialPortOptions VSerialPortOptions::restore( const VByteArray &saved )
+//{
+//    return _restore( saved );
+//}
 //=======================================================================================

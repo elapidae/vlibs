@@ -1,21 +1,41 @@
+#========================================================================================
+# vserialsocket.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vserialsocket..." )
+#========================================================================================
 
-include( "${VLIBS_PATH}/vsignal/vsignal.cmake" )
-include( "${VLIBS_PATH}/vbytearray/vbytearray.cmake" )
-include( "${VLIBS_PATH}/vthread/vthread.cmake" )
+if ( NOT  VSERIALSOCKET_INCLUDED )
+    set ( VSERIALSOCKET_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vserialsocket/" )
+    message( "Include vserialsocket..." )
 
-FILE( GLOB HEADERS_vserialsocket "${VLIBS_PATH}/vserialsocket/*.h"   )
-FILE( GLOB SOURCES_vserialsocket "${VLIBS_PATH}/vserialsocket/*.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_vserialsocket} )
-set ( SOURCES ${SOURCES} ${SOURCES_vserialsocket} )
+    include_directories( "${VLIBS_DIR}/vserialsocket/")
 
-FILE( GLOB VSERIAL_README "${VLIBS_PATH}/vserialsocket/vserial-readme.txt" )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialsocket/vserialportoptions.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialsocket/vserialsocket.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialsocket/vserialport.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialsocket/vserialport.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialsocket/vserialportoptions.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialsocket/vserialsocket.cpp") 
 
+    message( "vserialsocket included" )
 
-message( "vserialsocket has included..." )
-
+endif()
+# vserialsocket.cmake
+#========================================================================================
