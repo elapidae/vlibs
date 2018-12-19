@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <atomic>
-
+#include "vposix_files.h"
 
 //=======================================================================================
 /*      21-11-2018  by Elapidae
@@ -109,6 +109,31 @@ public:
 
     virtual void event_received( VPoll::EventFlags flags ) = 0;
     //virtual void about_to_close() = 0;
+};
+//=======================================================================================
+class FD_Polled final
+{
+public:
+    explicit FD_Polled();
+    explicit FD_Polled( int fd,
+                        VPoll::EventReceiver *receiver,
+                        VPoll::Direction d = VPoll::Direction::In,
+                        VPoll::Triggered t = VPoll::Triggered::Level );
+
+    explicit FD_Polled( FD_Polled && rhs );
+    FD_Polled& operator = ( FD_Polled && rhs );
+    ~FD_Polled();
+
+    bool valid() const;
+    void close();
+
+    int raw() const;
+
+private:
+    vposix::FD _fd;
+
+    FD_Polled( const FD_Polled& rhs ) = delete;
+    FD_Polled& operator = ( const FD_Polled& ) = delete;
 };
 //=======================================================================================
 

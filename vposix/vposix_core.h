@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include "verror.h"
-
+#include "vcompiler.h"
 
 //=======================================================================================
 //
@@ -89,7 +89,9 @@ namespace vposix
     //      IMPLEMENTATION
     //===================================================================================
     #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wnoexcept-type"
+    #if (V_NOEXCEPT_SIGNATURE_WARNING_ENABLED)
+        #pragma GCC diagnostic ignored "-Wnoexcept-type"
+    #endif
     //===================================================================================
     template<typename Fn, typename ... Args>
     auto Core::linux_call_or_err( Fn fn, Args ... args ) -> decltype( fn(args...) )

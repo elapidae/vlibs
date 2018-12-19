@@ -101,6 +101,7 @@ VApplication::_pimpl::~_pimpl()
 //=======================================================================================
 VApplication* VApplication::app()
 {
+    assert( _pimpl::app && "Create VApplication object first." );
     return _pimpl::app;
 }
 //=======================================================================================

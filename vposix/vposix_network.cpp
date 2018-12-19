@@ -600,6 +600,7 @@ std::string NetDebug::sa4_str( const sockaddr_in& addr )
 std::string NetDebug::sa6_str( const sockaddr_in6 &addr )
 {
     assert(false);
+    (void)addr;
 }
 //=======================================================================================
 //      NetDebug

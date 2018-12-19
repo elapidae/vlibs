@@ -29,7 +29,33 @@ namespace vposix
 
         static void close( int fd );
 
+        static void _ioctl( int fd, unsigned long ctl );
+        static void _set_TIOCEXCL( int fd ); // For serial port. If defined, call ioctl.
+
     private:
+    };
+    //===================================================================================
+
+    //===================================================================================
+    class FD final
+    {
+    public:
+        explicit FD( int fd = -1 );
+        explicit FD( FD&& rhs );
+        FD& operator = ( FD&& rhs );
+
+        ~FD();
+
+        bool valid() const;
+        void close();
+
+        int raw() const;
+
+    private:
+        int _fd = -1;
+
+        FD( const FD& rhs ) = delete;
+        FD& operator = ( const FD& ) = delete;
     };
     //===================================================================================
 

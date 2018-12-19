@@ -1,5 +1,5 @@
 #========================================================================================
-# vserialsocket.cmake
+# vserialport.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -15,27 +15,23 @@
 
 #========================================================================================
 
-if ( NOT  VSERIALSOCKET_INCLUDED )
-    set ( VSERIALSOCKET_INCLUDED TRUE )
+if ( NOT  VSERIALPORT_INCLUDED )
+    set ( VSERIALPORT_INCLUDED TRUE )
 
-    message( "Include vserialsocket..." )
+    message( "Include vserialport..." )
 
     #<<< Start your code here -----------------------------------------------------------
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vserialsocket/")
+    include_directories( "${VLIBS_DIR}/vserialport/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialsocket/vserialportoptions.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialsocket/vserialsocket.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialsocket/vserialport.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vserialport/vserialport.h") 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialsocket/vserialport.cpp") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialsocket/vserialportoptions.cpp") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialsocket/vserialsocket.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vserialport/vserialport.cpp") 
 
-    message( "vserialsocket included" )
+    message( "vserialport included" )
 
 endif()
-# vserialsocket.cmake
+# vserialport.cmake
 #========================================================================================

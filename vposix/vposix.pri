@@ -23,6 +23,8 @@ isEmpty(qi_vposix) {
 
     #<<< Start your code here -----------------------------------------------------------
     OTHER_FILES += $$VLIBS_DIR/vposix/README
+
+    include( $$VLIBS_DIR/vmacroses/vmacroses.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vposix
@@ -34,11 +36,13 @@ isEmpty(qi_vposix) {
     HEADERS     += $$VLIBS_DIR/vposix/vposix_signal.h 
     HEADERS     += $$VLIBS_DIR/vposix/vposix_eventfd.h 
     HEADERS     += $$VLIBS_DIR/vposix/vposix_epoll.h 
+    HEADERS     += $$VLIBS_DIR/vposix/vposix_serial.h 
     HEADERS     += $$VLIBS_DIR/vposix/vposix_timerfd.h 
     HEADERS     += $$VLIBS_DIR/vposix/vposix_network_ip.h 
     HEADERS     += $$VLIBS_DIR/vposix/vposix_alloca.h 
     
     SOURCES     += $$VLIBS_DIR/vposix/vposix_network.cpp 
+    SOURCES     += $$VLIBS_DIR/vposix/vposix_serial.cpp 
     SOURCES     += $$VLIBS_DIR/vposix/vposix_timerfd.cpp 
     SOURCES     += $$VLIBS_DIR/vposix/vposix_epoll.cpp 
     SOURCES     += $$VLIBS_DIR/vposix/vposix_signal.cpp 
