@@ -43,6 +43,8 @@ public:
     //bool try_open( const std::string& fname, std::string *errmsg );
     void close();
 
+    void flush();
+
     void write( const std::string& data );
 
     bool is_opened() const;

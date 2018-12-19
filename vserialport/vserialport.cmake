@@ -21,6 +21,10 @@ if ( NOT  VSERIALPORT_INCLUDED )
     message( "Include vserialport..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    include( "${VLIBS_DIR}/vsignal/vsignal.cmake" )
+    include( "${VLIBS_DIR}/vstring/vstring.cmake" )
+    include( "${VLIBS_DIR}/vapplication/vapplication.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vserialport/")
