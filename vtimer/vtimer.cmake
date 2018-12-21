@@ -22,7 +22,7 @@ if ( NOT  VTIMER_INCLUDED )
 
     #<<< Start your code here -----------------------------------------------------------
     include( "${VLIBS_DIR}/vlog/vlog.cmake" )
-    include( "${VLIBS_DIR}/vsignal/vsignal.cmake" )
+    include( "${VLIBS_DIR}/vcallback/vcallback.cmake" )
     include( "${VLIBS_DIR}/vposix/vposix.cmake" )
     include( "${VLIBS_DIR}/vapplication/vapplication.cmake" )
     #>>> Stop your code here ------------------------------------------------------------

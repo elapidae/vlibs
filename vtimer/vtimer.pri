@@ -23,6 +23,8 @@ isEmpty(qi_vtimer) {
 
     #<<< Start your code here -----------------------------------------------------------
     include( $$VLIBS_DIR/vposix/vposix.pri )
+    include( $$VLIBS_DIR/vcallback/vcallback.pri )
+    include( $$VLIBS_DIR/vapplication/vapplication.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vtimer
