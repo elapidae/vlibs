@@ -70,7 +70,10 @@ namespace vposix
         std::string str() const;
 
         // Вызввает исключение, если ошибка есть.
-        [[noreturn]] void throw_verror( const std::string& event ) const;
+        #if (V_NORETURN_ENABLED)
+            [[noreturn]]
+        #endif
+        void throw_verror( const std::string& event ) const;
 
 
         bool again_or_wouldblock() const;               //  EAGAIN | EWOULDBLOCK

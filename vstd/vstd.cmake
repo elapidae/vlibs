@@ -30,7 +30,6 @@ if ( NOT  VSTD_INCLUDED )
     set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vstd/vstd_atomic_map.h") 
     
     set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vstd/vstd_atomic_queue.cpp") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vstd/vstd_atomic_map.cpp") 
 
     message( "vstd included" )
 

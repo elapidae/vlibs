@@ -31,7 +31,6 @@ isEmpty(qi_vstd) {
     HEADERS     += $$VLIBS_DIR/vstd/vstd_atomic_map.h 
     
     SOURCES     += $$VLIBS_DIR/vstd/vstd_atomic_queue.cpp 
-    SOURCES     += $$VLIBS_DIR/vstd/vstd_atomic_map.cpp 
 }
 # vstd.pri
 #========================================================================================

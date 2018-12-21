@@ -105,10 +105,8 @@ private:
 class VPoll::EventReceiver
 {
 public:
-    virtual ~EventReceiver() = default;
-
+    virtual ~EventReceiver();
     virtual void event_received( VPoll::EventFlags flags ) = 0;
-    //virtual void about_to_close() = 0;
 };
 //=======================================================================================
 class FD_Polled final

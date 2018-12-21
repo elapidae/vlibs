@@ -2,6 +2,7 @@
 #define VINVOKE_IFACE_H
 
 #include <functional>
+#include "vcompiler.h"
 
 //=======================================================================================
 /*  22-11-2018  by Elapidae
@@ -11,7 +12,7 @@
 */
 //=======================================================================================
 
-
+#if (V_CAN_VARIADIC_TEMPLATES_IN_LAMBDAS)
 //=======================================================================================
 template<typename Derived>
 class VInvoke_Iface
@@ -55,6 +56,10 @@ void VInvoke_Iface<Derived>::invoke( Cls *cls, RetType(Cls::*func)(Args...),
     auto& d = static_cast<Derived&>(*this);
     d.do_invoke( std::move(f) );
 }
+//=======================================================================================
+#else // V_CAN_VARIADIC_TEMPLATES_IN_LAMBDAS
+    #include "vinvoke/old_compiler_vinvoke_iface.h"
+#endif // V_CAN_VARIADIC_TEMPLATES_IN_LAMBDAS
 //=======================================================================================
 
 

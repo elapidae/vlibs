@@ -48,7 +48,12 @@ namespace vstd
     bool atomic_map<K, V>::emplace( Args&& ... args )
     {
         std::lock_guard<std::mutex> lock( _mutex );
-        return _map.emplace( std::forward<Args>(args)... ).second;
+
+        #if (V_CONTAINERS_HAS_EMPLACE)
+            return _map.emplace( std::forward<Args>(args)... ).second;
+        #else
+            return _map.insert( {std::forward<Args>(args)...} ).second;
+        #endif
     }
     //===================================================================================
     template<typename K, typename V>
