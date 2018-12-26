@@ -2,7 +2,7 @@
 #define VTIMER_H
 
 
-#include "vsignal.h"
+#include "vcallback.h"
 #include <chrono>
 #include <memory>
 
@@ -10,8 +10,8 @@
 class VTimer final
 {
 public:
-    VSignal<int> timeout_count;     // argument -- count of elapsed episodes.
-    VSignal<>    timeout;           // simaple, without elapsed episodes.
+    VCallBack<int> timeout_count;     // argument -- count of elapsed episodes.
+    VCallBack<>    timeout;           // simple, without elapsed episodes.
 
     explicit VTimer();
     ~VTimer();

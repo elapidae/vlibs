@@ -2,7 +2,7 @@
 
 #include "vposix_timerfd.h"
 #include "vposix_files.h"
-#include "../vapplication/vpoll/vpoll.h"
+#include "vpoll/vpoll.h"
 
 #include <assert.h>
 

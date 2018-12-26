@@ -369,5 +369,27 @@ TEST_F( VString_Test, substr )
     EXPECT_THROW( str.front_str(str.size() + 1), std::out_of_range );
 }
 //=======================================================================================
+TEST_F( VString_Test, app_prep_new_syntax )
+{
+    //  Хочется проверить, что все нормально возвращается, синтаксис работает.
+    //  Имеет смысл применять, чтобы, например, переводить одну или несколько переменных
+    //  в бинарный буффер "на лету". А также делать преобразования из/в шестнадцатеричный
+    //  вид.
+    VString str = VString().append_LE  ( uint16_t(0x1234) )
+                           .prepend_BE ( uint16_t(0x5678) );
+
+    EXPECT_TRUE( (str.to_Hex() == "56 78 34 12") );
+
+    //------------------------------
+
+    VString nmea_msg = "AnyMany";
+    uint8_t crc = 0xAC; // some crc value.
+
+    // port.send (
+        auto nmea_res = nmea_msg + '*' + VString().append_as_sys(crc).toHex() + "\r\n";
+    // );
+    EXPECT_TRUE( (nmea_res == "AnyMany*AC\r\n") );
+}
+//=======================================================================================
 
 

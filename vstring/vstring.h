@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <linux/swab.h>
 #include <algorithm>
+#include <sstream>
 
 //=======================================================================================
 /*  2018-02-02
@@ -76,24 +77,25 @@ public:
     VString to_hex( char separator = ' ' ) const;   // с разделителями, строчными.
     VString to_Hex( char separator = ' ' ) const;   // с разделителями, Заглавными.
 
+    static bool is_hex_symbol( char ch );
     //-----------------------------------------------------------------------------------
-    void prepend( const std::string &s );
-    template<typename It> void prepend ( It b, It e );  // Только для однобайтовых типов.
+    VString& prepend( const std::string &s );
+    VString& append ( const std::string &s );
 
-    void append( const std::string &s );
-    template<typename It> void append ( It b, It e );  // Только для однобайтовых типов.
+    template<typename It> VString& prepend ( It b, It e );  // Только для
+    template<typename It> VString& append  ( It b, It e );  // однобайтовых типов.
 
-    void prepend ( char ch );
-    void append  ( char ch );
+    VString& prepend ( char ch );
+    VString& append  ( char ch );
     //-----------------------------------------------------------------------------------
-    template<typename T> void prepend_LE ( T val );
-    template<typename T> void prepend_BE ( T val );
+    template<typename T> VString& prepend_LE ( T val );
+    template<typename T> VString& prepend_BE ( T val );
 
-    template<typename T> void append_LE  ( T val );
-    template<typename T> void append_BE  ( T val );
+    template<typename T> VString& append_LE  ( T val );
+    template<typename T> VString& append_BE  ( T val );
 
-    template<typename T> void append_Sys ( const T& val );
-    template<typename T> void prepend_Sys( const T& val );
+    template<typename T> VString& append_as_sys ( const T& val );
+    template<typename T> VString& prepend_as_sys( const T& val );
     //-----------------------------------------------------------------------------------
     template<typename T> T front_LE() const;
     template<typename T> T front_BE() const;
@@ -123,22 +125,26 @@ public:
     void chop_back  ( size_t n );
 
     //-----------------------------------------------------------------------------------
+    //  Проверяет наличие указанной строки в начале/конце.
     bool begins_with ( const std::string& what ) const;
     bool ends_with   ( const std::string& what ) const;
 
-    //  Возвращает строку без начальных и конечных пробелов (детектирование пробелов
-    //  функцией isspace(), а также '\n' ).
+    //-----------------------------------------------------------------------------------
+    ///  Возвращает строку без начальных и конечных пробелов (детектирование пробелов
+    ///  функцией isspace(), а также '\n' ).
     VString trimmed() const;
 
-    //-----------------------------------------------------------------------------------
     Vector split( char splitter ) const;
     Vector split_without_empties( char splitter ) const;
 
-    // Разрезает текст, используя разделители всех мастей. Пустых не берем.
+    /// Разрезает текст, используя разделители всех мастей. Пустых не берем.
     Vector split_by_spaces() const;
 
+    /// Проверяет символ функцией std::isspace (22.1.3 Convenience interfaces),
+    /// NB! перенос строки \\n также считается пробелом!
+    static bool is_any_space( char ch );
     //-----------------------------------------------------------------------------------
-    // Выворачивает байты наизнанку, т.е. <LE> <-> <BE>.
+    /// Выворачивает байты наизнанку, т.е. <LE> <-> <BE>.
     template<typename T>
     static typename std::enable_if<std::is_arithmetic<T>::value, T>::type
     reverse_T( T src );
@@ -151,6 +157,20 @@ public:
     // NB! Пока используется ForwardView нельзя изменять исходную строку!
     //-----------------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------------
+    //  NB! Методы text_to_any() и any_to_text() не делают никаких внутренних проверок!
+    //  Это просто обертки для вызовов поточного вывода через std::sstream;
+    //  Сделаны, чтобы каждый раз не создавать это уродство с поточным вводом-выводом.
+    template<typename T>
+    T text_to_any() const;
+
+    template<typename T>
+    static T text_to_any( const std::string& val );
+
+    template<typename T>
+    static std::string any_to_text( const T& val );
+    //-----------------------------------------------------------------------------------
+
 private:
     template<typename T> typename std::enable_if<std::is_arithmetic<T>::value, T>::type
     _back_sys() const;
@@ -158,7 +178,7 @@ private:
     template<typename T> typename std::enable_if<std::is_arithmetic<T>::value, T>::type
     _front_sys() const;
 
-    void _check_enough_size(size_t sz ) const;
+    void _check_enough_size( size_t sz ) const;
 };
 //=======================================================================================
 //      VString
@@ -264,266 +284,10 @@ private:
 //=======================================================================================
 //      IMPLEMENTATION
 //=======================================================================================
-
-
+#include "_vstring_impl.h"
 //=======================================================================================
-//      VString
-//      Constructors
+//      IMPLEMENTATION
 //=======================================================================================
-template <class InputIterator>
-VString::VString( InputIterator first, InputIterator last )
-    : std::string( first, last )
-{}
-//=======================================================================================
-//      Constructors
-//      Public wrappers
-//=======================================================================================
-template<typename T>
-void VString::append_LE( T val )
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return _append_sys( reverse_T(val) );
-    #else
-    return append_Sys( val );
-    #endif
-}
-//=======================================================================================
-template<typename T>
-void VString::append_BE( T val )
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return _append_sys( val );
-    #else
-    return append_Sys( reverse_T(val) );
-    #endif
-}
-//=======================================================================================
-template<typename T>
-void VString::prepend_LE( T val )
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return _prepend_sys( reverse_T(val) );
-    #else
-    return prepend_Sys( val );
-    #endif
-}
-//=======================================================================================
-template<typename T>
-void VString::prepend_BE( T val )
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return _prepend_sys( val );
-    #else
-    return prepend_Sys( reverse_T(val) );
-    #endif
-}
-//=======================================================================================
-//=======================================================================================
-template<typename T>
-T VString::back_BE() const
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return _back_sys<T>();
-    #else
-    return reverse_T( _back_sys<T>() );
-    #endif
-}
-//=======================================================================================
-template<typename T>
-T VString::back_LE() const
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return reverse_T( _back_sys<T>() );
-    #else
-    return _back_sys<T>();
-    #endif
-}
-//=======================================================================================
-template<typename T>
-T VString::front_BE() const
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return _front_sys<T>();
-    #else
-    return reverse_T( _front_sys<T>() );
-    #endif
-}
-//=======================================================================================
-template<typename T>
-T VString::front_LE() const
-{
-    #if BYTE_ORDER == BIG_ENDIAN
-    return reverse_T( _front_sys<T>() );
-    #else
-    return _front_sys<T>();
-    #endif
-}
-//=======================================================================================
-//      Public wrappers
-//      append & prepend
-//=======================================================================================
-template<typename T>
-void VString::append_Sys( const T &val )
-{
-    auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
-    insert( size(), ch, sizeof(T) );
-}
-//=======================================================================================
-template<typename T>
-void VString::prepend_Sys( const T &val )
-{
-    auto * ch = static_cast<const char*>( static_cast<const void*>(&val) );
-    insert( 0, ch, sizeof(T) );
-}
-//=======================================================================================
-template<typename It>
-void VString::prepend( It b, It e )
-{
-    static_assert( sizeof(*b) == 1, "sizeof(It::value_type) != 1" );
-    insert( begin(), b, e );
-}
-//=======================================================================================
-template<typename It>
-void VString::append( It b, It e )
-{
-    static_assert( sizeof(*b) == 1, "sizeof(It::value_type) != 1" );
-    insert( end(), b, e );
-}
-//=======================================================================================
-//      append & prepend
-//      front, back & pop_front, pop_back
-//=======================================================================================
-template<typename T>
-T VString::take_front_LE()
-{
-    auto res = front_LE<T>();
-    chop_front( sizeof(T) );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::take_front_BE()
-{
-    auto res = front_BE<T>();
-    chop_front( sizeof(T) );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::take_back_LE()
-{
-    auto res = back_LE<T>();
-    chop_back( sizeof(T) );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::take_back_BE()
-{
-    auto res = back_BE<T>();
-    chop_back( sizeof(T) );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, T>::type
-VString::_front_sys() const
-{
-    _check_enough_size( sizeof(T) );
-
-    T res;
-    auto *ch = static_cast<char*>(static_cast<void*>(&res));
-
-    std::copy( begin(), begin() + sizeof(T), ch );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, T>::type
-VString::_back_sys() const
-{
-    _check_enough_size( sizeof(T) );
-
-    T res;
-    auto *ch = static_cast<char*>( static_cast<void*>(&res) );
-
-    std::copy( end() - sizeof(T), end(), ch );
-    return res;
-}
-//=======================================================================================
-template<typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, T>::type
-VString::reverse_T( T val )
-{
-    auto *ch = static_cast<char*>( static_cast<void*>(&val) );
-    std::reverse( ch, ch + sizeof(T) );
-    return val;
-}
-//=======================================================================================
-//      front, back & pop_front, pop_back
-//      VString
-//=======================================================================================
-
-
-//=======================================================================================
-//      FORWARD VIEW
-//=======================================================================================
-template<typename T>
-T VString::ForwardView::show_LE() const
-{
-    if ( _remained < sizeof(T) )
-        throw std::out_of_range( "VString::ForwardView::show_LE<T>(): not enouth data" );
-
-    auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
-
-    #if BYTE_ORDER == BIG_ENDIAN
-        res = VString::reverse_T( res );
-    #endif
-
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::ForwardView::show_BE() const
-{
-    if ( _remained < sizeof(T) )
-        throw std::out_of_range( "VString::ForwardView::take_BE<T>(): not enouth data" );
-
-    auto res = * static_cast<const T*>( static_cast<const void*>(_buffer) );
-
-    #if BYTE_ORDER == LITTLE_ENDIAN
-        res = VString::reverse_T( res );
-    #endif
-
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::ForwardView::take_LE()
-{
-    auto res = show_LE<T>();
-
-    _remained -= sizeof(T);
-    _buffer   += sizeof(T);
-
-    return res;
-}
-//=======================================================================================
-template<typename T>
-T VString::ForwardView::take_BE()
-{
-    auto res = show_BE<T>();
-
-    _remained -= sizeof(T);
-    _buffer   += sizeof(T);
-
-    return res;
-}
-//=======================================================================================
-//      FORWARD VIEW
-//=======================================================================================
-
-
 
 
 #endif // VSTRING_H

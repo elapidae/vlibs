@@ -120,7 +120,7 @@ static VString _to_hex( const std::string &src,
     if ( with_separator && !src.empty() )   // Delete last space.
         res.pop_back();                     //
 
-    return res;
+    return VString( res );
 }
 //=======================================================================================
 VString VString::tohex() const
@@ -143,6 +143,11 @@ VString VString::to_Hex( char separator ) const
     return _to_hex( *this, Hexs_Syms, true, separator );
 }
 //=======================================================================================
+bool VString::is_hex_symbol( char ch )
+{
+    return ch_from_hex(ch) >= 0;
+}
+//=======================================================================================
 //      HEX
 //=======================================================================================
 
@@ -151,24 +156,24 @@ VString VString::to_Hex( char separator ) const
 //=======================================================================================
 //      append, prepend, takes
 //=======================================================================================
-void VString::prepend( const std::string &s )
+VString& VString::prepend( const std::string &s )
 {
     return prepend( s.begin(), s.end() );
 }
 //=======================================================================================
-void VString::append( const std::string &s )
+VString& VString::append( const std::string &s )
 {
     return append( s.begin(), s.end() );
 }
 //=======================================================================================
-void VString::prepend( char ch )
+VString& VString::prepend( char ch )
 {
-    prepend_LE( ch );
+    return prepend_as_sys( ch );
 }
 //=======================================================================================
-void VString::append( char ch )
+VString& VString::append( char ch )
 {
-    append_LE( ch );
+    return append_as_sys( ch );
 }
 //=======================================================================================
 char VString::take_front_ch()
@@ -237,12 +242,6 @@ bool VString::ends_with( const std::string &what ) const
     return rfind(what) == size() - what.size();
 }
 //=======================================================================================
-static bool is_any_space(char ch)
-{
-    return std::isspace( ch ) ||
-           ch == '\n';
-}
-//=======================================================================================
 VString VString::trimmed() const
 {
     auto from = begin();
@@ -277,6 +276,12 @@ VString::Vector VString::split_by_spaces() const
     while(1);
 
     return res;
+}
+//=======================================================================================
+bool VString::is_any_space( char ch )
+{
+    return std::isspace( ch ) ||
+           ch == '\n';
 }
 //=======================================================================================
 //      patterns finding

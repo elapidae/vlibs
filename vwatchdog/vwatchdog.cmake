@@ -1,5 +1,5 @@
 #========================================================================================
-# vtimer.pri
+# vwatchdog.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,25 +14,25 @@
 
 
 #========================================================================================
-isEmpty(qi_vtimer) {
-    qi_vtimer = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vtimer appended ===")
 
-    isEmpty(VLIBS_DIR): error("vtimer: Need VLIBS_DIR correct path.")
+if ( NOT  VWATCHDOG_INCLUDED )
+    set ( VWATCHDOG_INCLUDED TRUE )
 
+    message( "Include vwatchdog..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    include( $$VLIBS_DIR/vposix/vposix.pri )
-    include( $$VLIBS_DIR/vcallback/vcallback.pri )
-    include( $$VLIBS_DIR/vapplication/vapplication.pri )
+    include( "${VLIBS_DIR}/vtimer/vtimer.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vtimer
+    include_directories( "${VLIBS_DIR}/vwatchdog/")
 
     
-    HEADERS     += $$VLIBS_DIR/vtimer/vtimer.h 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vwatchdog/vwatchdog.h") 
     
-    SOURCES     += $$VLIBS_DIR/vtimer/vtimer.cpp 
-}
-# vtimer.pri
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vwatchdog/vwatchdog.cpp") 
+
+    message( "vwatchdog included" )
+
+endif()
+# vwatchdog.cmake
 #========================================================================================

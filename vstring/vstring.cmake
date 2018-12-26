@@ -22,13 +22,15 @@ if ( NOT  VSTRING_INCLUDED )
 
     #<<< Start your code here -----------------------------------------------------------
     include( "${VLIBS_DIR}/c++11/c++11.cmake" )
+
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vstring/_vstring_impl.h")
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vstring/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vstring/vstring.h") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vstring/vstring.cpp") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vstring/vstring.h")
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vstring/vstring.cpp")
 
     message( "vstring included" )
 

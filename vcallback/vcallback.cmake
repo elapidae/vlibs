@@ -1,5 +1,5 @@
 #========================================================================================
-# vtimer.pri
+# vcallback.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -14,25 +14,23 @@
 
 
 #========================================================================================
-isEmpty(qi_vtimer) {
-    qi_vtimer = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vtimer appended ===")
 
-    isEmpty(VLIBS_DIR): error("vtimer: Need VLIBS_DIR correct path.")
+if ( NOT  VCALLBACK_INCLUDED )
+    set ( VCALLBACK_INCLUDED TRUE )
 
+    message( "Include vcallback..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    include( $$VLIBS_DIR/vposix/vposix.pri )
-    include( $$VLIBS_DIR/vcallback/vcallback.pri )
-    include( $$VLIBS_DIR/vapplication/vapplication.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vtimer
+    include_directories( "${VLIBS_DIR}/vcallback/")
 
     
-    HEADERS     += $$VLIBS_DIR/vtimer/vtimer.h 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vcallback/vcallback.h") 
     
-    SOURCES     += $$VLIBS_DIR/vtimer/vtimer.cpp 
-}
-# vtimer.pri
+
+    message( "vcallback included" )
+
+endif()
+# vcallback.cmake
 #========================================================================================
