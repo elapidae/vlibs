@@ -25,6 +25,7 @@ isEmpty(qi_vposix) {
     OTHER_FILES += $$VLIBS_DIR/vposix/README
 
     include( $$VLIBS_DIR/vmacroses/vmacroses.pri )
+    include( $$VLIBS_DIR/vlog/vlog.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vposix

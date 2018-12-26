@@ -2,6 +2,7 @@
 #define VPOSIX_SERIAL_H
 
 #include <string>
+#include <memory>
 
 //=======================================================================================
 //  http://www.opennet.ru/man.shtml?topic=tcgetattr&category=3&russian=0
@@ -28,8 +29,12 @@ namespace vposix
         static int try_open( const std::string& fname, std::string* err );
 
         static void _tio_init( termios *tio );
-        static void tio_get( int fd, termios *tio );    //  init it himself.
-        static void tio_set(int fd, const termios &tio );    //  set, then check.
+        static void tio_get( int fd, termios *tio );            //  init it himself.
+        static void tio_set( int fd, const termios &tio );      //  set, then check.
+        static void tio_soft_set( int fd, const termios &tio ); //  try to set.
+
+        using termios_ptr = std::shared_ptr<termios>;
+        static termios_ptr tio_save( int fd );
 
         //  Tune step by step.
         static void _tio_cfmakeraw( termios *tio );

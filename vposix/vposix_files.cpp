@@ -1,24 +1,25 @@
 #include "vposix_files.h"
 
 #include "vlog_pretty.h"
+#include "vposix_core.h"
 #include <assert.h>
 
-//  Here: ::open
+//  Here:   ::open
 #include <fcntl.h>
 
-//  Here: ::write
+//  Here:   ::write
+//          ::close
 #include <unistd.h>
 
-//  Here: std::remove
+//  Here:   std::remove
 #include <stdio.h>
-
-#include "vposix_core.h"
 
 //  Here: ioctl -- awfull function what do everything.
 #include <sys/ioctl.h>
 
-using namespace vposix;
 
+
+using namespace vposix;
 
 
 //=======================================================================================
@@ -79,6 +80,14 @@ void Files::close( int fd )
 {
     if ( do_trace() ) vtrace << "V::close(" << fd << ");";
 
+    auto flags = _fcntl_get_flags( fd );
+
+    if ( flags & O_NONBLOCK )
+    {
+        flags &= ~O_NONBLOCK;
+        _fcntl_set_flags( fd, flags );
+    }
+
     auto res = Core::linux_call( ::close, "::close", fd );
     assert( res == 0 );
 }
@@ -89,25 +98,58 @@ void Files::_ioctl(int fd, unsigned long ctl)
     assert( res == 0 );
 }
 //=======================================================================================
-void Files::_set_TIOCEXCL( int fd )
+int Files::_ioctl_or_err( int fd, unsigned long ctl )
+{
+    return Core::linux_call_or_err( ::ioctl, fd, ctl );
+}
+//=======================================================================================
+void Files::set_tio_EXCL(int fd)
 {
     #ifdef TIOCEXCL
         _ioctl( fd, TIOCEXCL );
     #endif
 }
 //=======================================================================================
+void Files::set_tio_soft_not_EXCL( int fd )
+{
+    #ifdef TIOCNXCL
+        _ioctl_or_err( fd, TIOCNXCL );
+    #endif
+}
+//=======================================================================================
 
+//=======================================================================================
+//      FCNTL
+//=======================================================================================
+//http://www.opennet.ru/man.shtml?topic=fcntl&category=2&russian=2
+//=======================================================================================
+long Files::_fcntl_get_flags( int fd )
+{
+    return Core::linux_call( ::fcntl, "::fcntl", fd, F_GETFL );
+}
+//=======================================================================================
+void Files::_fcntl_set_flags( int fd, long flags )
+{
+    auto res = Core::linux_call( ::fcntl, "::fcntl", fd, F_SETFL, flags );
+    assert( res == 0 );
+}
+//=======================================================================================
+//      FCNTL
+//=======================================================================================
 
 
 //=======================================================================================
-FD::FD( int fd )
+FD::FD( int fd, const FD::close_func &cf )
     : _fd( fd )
+    , _close( cf )
 {}
 //=======================================================================================
 FD::FD( FD && rhs )
-    : _fd( rhs._fd )
+    : _fd( std::move(rhs._fd) )
+    , _close( std::move(rhs._close) )
 {
     rhs._fd = -1;
+    rhs._close = nullptr;
 }
 //=======================================================================================
 FD& FD::operator = ( FD && rhs )
@@ -115,8 +157,8 @@ FD& FD::operator = ( FD && rhs )
     if ( this != &rhs )
     {
         close();
-        _fd = rhs._fd;
-        rhs._fd = -1;
+        std::swap( _fd, rhs._fd );
+        std::swap( _close, rhs._close );
     }
     return *this;
 }
@@ -134,9 +176,9 @@ bool FD::valid() const
 void FD::close()
 {
     if ( valid() )
-    {
-        Files::close( _fd );
-    }
+        _close( _fd );
+
+    _close = nullptr;
     _fd = -1;
 }
 //=======================================================================================
