@@ -19,4 +19,6 @@ vlibs/vgeometry/test_vgeometry/test_vgeometry
 echo ====================================================================================
 vlibs/vapplication/test_vapplication/test_vapplication
 echo ====================================================================================
+vlibs/hdlc_parser/test_hdlc_parser/test_hdlc_parser
+echo ====================================================================================
 

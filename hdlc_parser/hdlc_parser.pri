@@ -22,6 +22,9 @@ isEmpty(qi_hdlc_parser) {
 
 
     #<<< Start your code here -----------------------------------------------------------
+    include( $$VLIBS_DIR/vstring/vstring.pri )
+    include( $$VLIBS_DIR/vcallback/vcallback.pri )
+    include( $$VLIBS_DIR/vlog/vlog.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/hdlc_parser
