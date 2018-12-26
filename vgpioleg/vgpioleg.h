@@ -37,11 +37,9 @@
  *      VGpioLeg::Exception (наследник std::runtime_error).
  *
  *      NB!!!
- *      TODO: Метод unexport_leg() исключения не бросает (точнее глушит его).
- *      Это сделано, чтобы, если нога уже была экпортирована, код работал без внешнего
- *      перехвата исключений. Необходимо поставить проверку включенной ноги, если нога
- *      не экпортирована, ничего не делать.
- *      Для решения этой задачи необходимо написать класс VFileInfo.
+ *      Метод unexport_leg() исключения не бросает (точнее глушит его).
+ *
+ *      UPD 2018-12-20: Поудалял лишнего, вообщем, будьте проще...
  */
 //=======================================================================================
 
@@ -51,16 +49,12 @@ class VGpioLeg
 {
 public:
 
-    class Exception : public std::runtime_error
-    { public: Exception(const std::string &err); };
-
     enum class Direction    { In, Out };
     enum class Value        { Low, Hi };
 
-
     explicit VGpioLeg( int leg );
 
-    // unexport_leg() глушит исключение GpioException.
+    // unexport_leg() при ошибке глушит исключение.
     VGpioLeg& unexport_leg();
     VGpioLeg& export_leg();
 
@@ -69,8 +63,8 @@ public:
     VGpioLeg& direction_in();
 
     VGpioLeg& set_value( Value val );
-    VGpioLeg& hi();
-    VGpioLeg& low();
+    VGpioLeg& value_hi();
+    VGpioLeg& value_low();
 
     VGpioLeg& usleep( int us );
 
