@@ -115,6 +115,7 @@ public:
     explicit FD_Polled();
     explicit FD_Polled( int fd,
                         VPoll::EventReceiver *receiver,
+                        const vposix::FD::close_func& cf = vposix::Files::close,
                         VPoll::Direction d = VPoll::Direction::In,
                         VPoll::Triggered t = VPoll::Triggered::Level );
 

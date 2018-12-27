@@ -151,8 +151,8 @@ void EPoll::del( int fd )
 //=======================================================================================
 uint EPoll::wait( std::vector<epoll_event>* res, int wait_ms )
 {
-    assert( _count > 0 );
-    assert( !res->empty() );
+    assert( _count > 0    );    // Есть что слуать.
+    assert( !res->empty() );    // Есть куда слушать.
 
     return _wait( _epoll_fd, res->data(), int(res->size()), wait_ms );
 }

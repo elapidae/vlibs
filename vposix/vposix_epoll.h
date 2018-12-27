@@ -38,6 +38,14 @@ namespace vposix
         void mod( int fd, void* arg, bool dir_in, bool dir_out, bool trigg );
         void del( int fd );
 
+        //  http://ru.manpages.org/epoll_wait/2
+        //
+        //  Заметим, что интервал timeout будет округлён в соответствии с точностью
+        //  системных часов, а задержки ядерного планирования приведут к тому, что
+        //  интервал блокировки может быть немного больше. Если присвоить timeout
+        //  значение -1, то epoll_wait() блокируется навсегда; если значение timeout
+        //  равно 0, то epoll_wait() сразу завершает работу, даже если никаких
+        //  событий не произошло.
         uint wait( std::vector<epoll_event>* res, int wait_ms = -1 );
 
     private:

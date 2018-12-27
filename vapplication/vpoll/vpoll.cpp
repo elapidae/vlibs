@@ -9,11 +9,12 @@
 #include "vstd_atomic_map.h"
 #include "vlog_pretty.h"
 #include "verror.h"
+#include "vcompiler.h" // for V_COMPILER_KNOWS_THREAD_LOCAL
 
 
 //=======================================================================================
 //  UPD 22-11-2018 -- Ниже написанное устарело, требуется переосмысление.
-
+//
 //  Задача: привязать к каждому потоку свой VPoll_Impl, так, чтобы пользователю было
 //  прозрачно. Использование VPoll_Impl не должно быть ограничено, при необходимости
 //  нужно, чтобы его передача между потоками была безопасна.
@@ -23,24 +24,58 @@
 //=======================================================================================
 
 
-
 //=======================================================================================
-//  Пусть пока здесь лежит, чувствую, захочется еще контролов на поток поставить.
-class Real_Poll
+//  UPD 27-12-2018  by Elapidae
+//
+//  Касаемо класса Thread_2_Poll и статической функции th_2_poll() -- введены, во-первых,
+//  чтобы старый компилятор юзал атомарный словарь, а нормальные посоны пользовались
+//  thread_local. Удаление поллинга сделано ручным, т.к. приходится учитывать, что
+//  старый компилятор сам не сможет очистить ресурсы.
+//=======================================================================================
+#if (V_COMPILER_KNOWS_THREAD_LOCAL)
+class Thread_2_Poll final
 {
+     vposix::EPoll epoll;
+     int init_count = 0;
 public:
-    using Ptr = std::shared_ptr<Real_Poll>;
-
-    vposix::EPoll native_poll;
+     //-----------------------------------------------------------------------------------
+     void add()
+     {
+         ++init_count;
+         assert( init_count == 1 );
+     }
+     //-----------------------------------------------------------------------------------
+     vposix::EPoll& current()
+     {
+         assert( init_count == 1 );
+         return epoll;
+     }
+     //-----------------------------------------------------------------------------------
+     void del()
+     {
+         --init_count;
+         assert( init_count == 0 );
+     }
+     //-----------------------------------------------------------------------------------
+     ~Thread_2_Poll()
+     {
+        assert( init_count == 0 );
+     }
 };
 //=======================================================================================
-
-
+static Thread_2_Poll& th_2_poll()
+{
+    static thread_local Thread_2_Poll res;
+    return res;
+}
+//=======================================================================================
+#else // V_COMPILER_KNOWS_THREAD_LOCAL
 //=======================================================================================
 //  Проецирует по одному поллингу на поток.
-class Thread_2_Poll
+class Thread_2_Poll_OldSys
 {
-    vstd::atomic_map<std::thread::id, Real_Poll::Ptr> th_2_poll;
+    using epoll_ptr = std::shared_ptr<vposix::EPoll>;
+    vstd::atomic_map<std::thread::id, epoll_ptr> th_2_poll;
 
 public:
     //-----------------------------------------------------------------------------------
@@ -48,11 +83,11 @@ public:
     {
         auto id = std::this_thread::get_id();
         assert( !th_2_poll.contains(id) );
-        auto ptr = std::make_shared<Real_Poll>();
+        auto ptr = std::make_shared<vposix::EPoll>();
         th_2_poll.emplace( id, ptr );
     }
     //-----------------------------------------------------------------------------------
-    Real_Poll::Ptr& get()
+    vposix::EPoll& current()
     {
         auto id = std::this_thread::get_id();
 
@@ -61,7 +96,7 @@ public:
         //      - поток был создан не через VThread и в нем нету механизма поллинга.
         try
         {
-            return th_2_poll.at( id );
+            return *th_2_poll.at(id);
         }
         catch ( const std::out_of_range& )
         {
@@ -77,7 +112,7 @@ public:
         assert( ok );
     }
     //-----------------------------------------------------------------------------------
-    ~Thread_2_Poll()
+    ~Thread_2_Poll_OldSys()
     {
         if ( !th_2_poll.empty() )
             vfatal << "Thread to poll: polls is not empty, some threads closed "
@@ -86,13 +121,15 @@ public:
     //-----------------------------------------------------------------------------------
 };
 //=======================================================================================
-
-//=======================================================================================
-static Thread_2_Poll& th_2_poll()
+static Thread_2_Poll_OldSys& th_2_poll()
 {
-    static Thread_2_Poll res;
+    static Thread_2_Poll_OldSys res;
     return res;
 }
+#endif // V_COMPILER_KNOWS_THREAD_LOCAL
+//=======================================================================================
+
+
 //=======================================================================================
 void VPoll::add_fd( int fd, EventReceiver *receiver, Direction d, Triggered t )
 {
@@ -100,7 +137,7 @@ void VPoll::add_fd( int fd, EventReceiver *receiver, Direction d, Triggered t )
     bool dir_out = d == Direction::Out || d == Direction::InOut;
     bool trigg   = t == Triggered::Edge;
 
-    th_2_poll().get()->native_poll.add( fd, receiver, dir_in, dir_out, trigg );
+    th_2_poll().current().add( fd, receiver, dir_in, dir_out, trigg );
 }
 //=======================================================================================
 void VPoll::mod_fd(int fd, EventReceiver *receiver, Direction d, Triggered t )
@@ -109,33 +146,22 @@ void VPoll::mod_fd(int fd, EventReceiver *receiver, Direction d, Triggered t )
     bool dir_out = d == Direction::Out || d == Direction::InOut;
     bool trigg   = t == Triggered::Edge;
 
-    th_2_poll().get()->native_poll.mod( fd, receiver, dir_in, dir_out, trigg );
+    th_2_poll().current().mod( fd, receiver, dir_in, dir_out, trigg );
 }
 //=======================================================================================
 void VPoll::del_fd( int fd )
 {
-    th_2_poll().get()->native_poll.del( fd );
+    th_2_poll().current().del( fd );
 }
-//=======================================================================================
-//void VPoll::poll_once( int timeout_ms )
-//{
-//    auto& rpoll = th_2_poll().get();
-//    auto& poll = rpoll->native_poll;
-
-//    auto ev = poll.wait_1( timeout_ms );
-//    auto event = static_cast<EventReceiver*>( ev.data.ptr );
-//    event->event_received( ev.events );
-//}
 //=======================================================================================
 void VPoll::poll( bool *stop, int timeout_ms )
 {
-    auto& poll = th_2_poll().get()->native_poll;
+    std::vector<epoll_event> events( Wait_Max_Events );
 
-    std::vector<epoll_event> events(Wait_Max_Events);
-
+    *stop = false;
     while ( !*stop )
     {
-        auto cnt = poll.wait( &events, timeout_ms );
+        auto cnt = th_2_poll().current().wait( &events, timeout_ms );
         assert( cnt <= events.size() );
 
         // Здесь может быть ситуация, когда попросили выключить очередь (*stop == true),
@@ -219,9 +245,10 @@ FD_Polled::FD_Polled()
 //=======================================================================================
 FD_Polled::FD_Polled( int fd,
                       VPoll::EventReceiver *receiver,
+                      const vposix::FD::close_func &cf,
                       VPoll::Direction d,
                       VPoll::Triggered t )
-    : _fd( fd )
+    : _fd( fd, cf )
 {
     VPoll::add_fd( fd, receiver, d, t );
 }
@@ -230,7 +257,7 @@ FD_Polled::FD_Polled( FD_Polled && rhs )
     : _fd( std::move(rhs._fd) )
 {}
 //=======================================================================================
-FD_Polled &FD_Polled::operator =( FD_Polled && rhs )
+FD_Polled &FD_Polled::operator = ( FD_Polled && rhs )
 {
     if ( this != &rhs )
     {
