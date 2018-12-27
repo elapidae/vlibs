@@ -1,0 +1,18 @@
+
+
+plot.setInteractions( QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+                      QCP::iSelectLegend | QCP::iSelectPlottables );
+
+
+graph->setLineStyle( QCPGraph::lsNone );
+
+Sgraph->setScatterStyle( QCPScatterStyle::ssDisc );
+
+auto graph = plot.addGraph();
+graph->setLineStyle( QCPGraph::lsNone );
+graph->setScatterStyle( QCPScatterStyle::ssDisc );
+graph->setPen( QPen(Qt::blue) );
+
+
+plot.xAxis->setRange(0, 10);
+plot.yAxis->setRange(0, 10);
