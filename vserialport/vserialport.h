@@ -40,7 +40,6 @@ public:
     void set_options      ( const Options& opts     );
 
     void open( const std::string& fname );
-    //bool try_open( const std::string& fname, std::string *errmsg );
     void close();
 
     void flush();
