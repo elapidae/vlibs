@@ -1,5 +1,5 @@
 #========================================================================================
-# vgpioleg.cmake
+# vjpeg.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -15,25 +15,24 @@
 
 #========================================================================================
 
-if ( NOT  VGPIOLEG_INCLUDED )
-    set ( VGPIOLEG_INCLUDED TRUE )
+if ( NOT  VJPEG_INCLUDED )
+    set ( VJPEG_INCLUDED TRUE )
 
-    message( "Include vgpioleg..." )
+    message( "Include vjpeg..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    include( "${VLIBS_DIR}/vcat/vcat.cmake" )
-    include( "${VLIBS_DIR}/vfile/vfile.cmake" )
+    message( "!!! NB! vjpeg NOT READY FOR DEPLOY! Need to include -ljpeg !!!" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vgpioleg/")
+    include_directories( "${VLIBS_DIR}/vjpeg/")
 
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vjpeg/vjpeg.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vjpeg/vjpeg.cpp") 
 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgpioleg/vgpioleg.h")
-
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgpioleg/vgpioleg.cpp")
-
-    message( "vgpioleg included" )
+    message( "vjpeg included" )
 
 endif()
-# vgpioleg.cmake
+# vjpeg.cmake
 #========================================================================================
