@@ -16,6 +16,7 @@ isEmpty(qi_vgstreamer) {
     CONFIG *= link_pkgconfig
     PKGCONFIG += gstreamer-1.0
     PKGCONFIG += gstreamer-app-1.0
+    PKGCONFIG += gstreamer-video-1.0
     #INCLUDEPATH += /usr/local/include/gstreamer-1.0
 
     include( $$VLIBS_DIR/vlog/vlog.pri )

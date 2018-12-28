@@ -24,7 +24,7 @@ public:
 
     VSignal<VImage,VTimePoint> received;
 
-    virtual ~Abstract_VImage_Supplier() {}
+    virtual ~Abstract_VImage_Supplier() = default;
     virtual void stop() = 0;
 };
 
