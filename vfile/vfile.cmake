@@ -1,16 +1,37 @@
+#========================================================================================
+# vfile.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vfile..." )
+#========================================================================================
 
-include( "${VLIBS_PATH}/vbytearray/vbytearray.cmake" )
+if ( NOT  VFILE_INCLUDED )
+    set ( VFILE_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vfile/" )
+    message( "Include vfile..." )
 
-FILE( GLOB HEADERS_vfile "${VLIBS_PATH}/vfile/*.h"   )
-FILE( GLOB SOURCES_vfile "${VLIBS_PATH}/vfile/*.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vposix/vposix.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_vfile} )
-set ( SOURCES ${SOURCES} ${SOURCES_vfile} )
+    include_directories( "${VLIBS_DIR}/vfile/")
 
-message( "vfile has included..." )
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vfile/vfile.h") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vfile/vfile.cpp") 
 
+    message( "vfile included" )
+
+endif()
+# vfile.cmake
+#========================================================================================

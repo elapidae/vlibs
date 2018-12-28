@@ -1,14 +1,36 @@
+#========================================================================================
+# vsignal.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vsignal..." )
+#========================================================================================
 
-include_directories( "${VLIBS_PATH}/vsignal/" )
+if ( NOT  VSIGNAL_INCLUDED )
+    set ( VSIGNAL_INCLUDED TRUE )
 
-FILE( GLOB_RECURSE HEADERS_VSIGNAL "${VLIBS_PATH}/vsignal/*.h"   )
-FILE( GLOB_RECURSE SOURCES_VSIGNAL "${VLIBS_PATH}/vsignal/*.cpp" )
+    message( "Include vsignal..." )
 
-set ( HEADERS ${HEADERS} ${HEADERS_VSIGNAL} )
-set ( SOURCES ${SOURCES} ${SOURCES_VSIGNAL} )
+    #<<< Start your code here -----------------------------------------------------------
+    #>>> Stop your code here ------------------------------------------------------------
 
-message( "vsignal has included..." )
+    include_directories( "${VLIBS_DIR}/vsignal/")
 
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vsignal/vsignal.h") 
+    
+
+    message( "vsignal included" )
+
+endif()
+# vsignal.cmake
+#========================================================================================

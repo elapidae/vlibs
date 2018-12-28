@@ -45,8 +45,8 @@
  *          emitter.some_signal.connect( &some_func );
  *      - Можно "пробрасывать" сигналы:
  *          VSignal<int, std::string> other_signal;
- *          // при эмитировании emitter.some_signal(a,b) будет эмитирован и other_signal.
  *          emitter.some_signal.connect( &other_signal );
+ *          // при эмитировании emitter.some_signal(a,b) будет эмитирован и other_signal.
 */
 //=======================================================================================
 
@@ -69,18 +69,27 @@ public:
     template< typename Cls, typename Fn >
     void connect( Cls *cls, Fn fn );
 
-    void call( const Args& ... args ) const;
-    void operator()( const Args& ... args ) const;
+    void call( const Args& ... args );
+    void operator()( const Args& ... args );
+
+    //  Введен для возможности эмитить сигналы из константных методов.
+    //  Использование этого способа на плечах программиста, лучше использовать
+    //  неконстантный способ эмитирования сигнала.
+    void const_call( const Args& ... args ) const;
+
+    void disconnect_all();
+
+    int connections_count() const;
 
 private:
     // do not use this connector.
     void connect( VSignal<Args...> repeater );
 
+    using Func = std::function< void(const Args&...) >;
+    std::vector<Func> _funcs;
+
     VSignal( const VSignal& ) = delete;
     const VSignal& operator = ( const VSignal& ) = delete;
-
-    using Func = std::function< void(Args...) >;
-    std::vector<Func> _funcs;
 };
 //=======================================================================================
 //      VSignal
@@ -94,6 +103,7 @@ private:
 template< typename ... Args >
 VSignal<Args...>::VSignal()
 {}
+//=======================================================================================
 //=======================================================================================
 template< typename ... Args >
 void VSignal<Args...>::connect( VSignal<Args...> *repeater )
@@ -113,11 +123,12 @@ template< typename ... Args >
 template< typename Cls, typename Fn >
 void VSignal<Args...>::connect( Cls *cls, Fn fn )
 {
-    connect( [cls,fn](Args... args){(cls->*fn)(args...);} );
+    connect( [cls,fn](const Args& ... args){ (cls->*fn)(args...); } );
 }
 //=======================================================================================
+//=======================================================================================
 template< typename ... Args >
-void VSignal<Args...>::call( const Args& ... args ) const
+void VSignal<Args...>::call( const Args& ... args )
 {
     for( const auto& f: _funcs )
     {
@@ -126,14 +137,35 @@ void VSignal<Args...>::call( const Args& ... args ) const
 }
 //=======================================================================================
 template< typename ... Args >
-void VSignal<Args...>::operator()( const Args& ... args ) const
+void VSignal<Args...>::const_call( const Args& ... args ) const
+{
+    for( const auto& f: _funcs )
+    {
+        f( args... );
+    }
+}
+//=======================================================================================
+template< typename ... Args >
+void VSignal<Args...>::operator()( const Args& ... args )
 {
     call( args... );
 }
 //=======================================================================================
-//      IMPLEMENTATION
 //=======================================================================================
-
+template< typename ... Args >
+void VSignal<Args...>::disconnect_all()
+{
+    _funcs.clear();
+}
+//=======================================================================================
+template< typename ... Args >
+int VSignal<Args...>::connections_count() const
+{
+    return _funcs.size();
+}
+//=======================================================================================
+//     /IMPLEMENTATION
+//=======================================================================================
 
 
 #endif // VSIGNAL_H

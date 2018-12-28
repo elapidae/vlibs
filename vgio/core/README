@@ -1,0 +1,8 @@
+02-08-2018
+
+Подключение нужных библиотек:
+glib-2.0
+gio-2.0
+
+Стырены отсюда, будем разбираться.
+https://github.com/nemequ/gnome-cmake/tree/master/modules

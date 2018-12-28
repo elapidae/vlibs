@@ -4,7 +4,7 @@
 #include <memory>
 #include <atomic>
 
-#include "vthreadqueue/vthreadqueue.h"
+#include "vthreadqueue.h"
 
 
 
@@ -44,7 +44,6 @@ public:
     template<typename Cls, typename Fn, typename ... Args >
     void cinvoke( Cls *cls, Fn fn, const Args& ... args );
 
-
 protected:
     // Способ вырубить поток в зависимости от реализации, используется в _run.
     virtual void _thread_get() = 0;
@@ -52,6 +51,7 @@ protected:
     // Сделан возврат указателя и прием не класса, а чёрти чего из-за особенностей
     // запуска pthread. Но он, всё равно, не умеет нормально прокидывать исключения...
     static void * _run( void * self_ );
+
 
 private:
     VThreadQueue *_queue; // Для вызова из шаблонов.
@@ -86,8 +86,12 @@ void VThreadInterface::cinvoke( Cls *cls, Fn fn, const Args& ... args )
 class _VThread11 final : public VThreadInterface
 {
 public:
-    _VThread11();
+//    enum _Detached { Detached };
+//    _VThread11( _Detached, const std::string &label = std::string() );
+
+    _VThread11( const std::string &label = std::string() );
     ~_VThread11() override;
+
 
 private:
     virtual void _thread_get() override;
@@ -106,7 +110,7 @@ using VThread = _VThread11;
 class _VThreadP final : public VThreadInterface
 {
 public:
-    _VThreadP( const std::string &label );
+    _VThreadP( const std::string &label = std::string() );
     ~_VThreadP();
 
     void detach();
@@ -121,6 +125,28 @@ using VThread = _VThreadP;
 //      VTHREAD ON PTHREAD
 //=======================================================================================
 #endif // VTHREAD_USE_PTHREAD
+
+
+
+//=======================================================================================
+class TimeAccum
+{
+public:
+    TimeAccum();
+
+    void start();
+    void accumulate();
+
+    // nanosec.
+    int64_t elapsed() const;
+
+private:
+    std::atomic<int64_t> _elapsed;
+    using _time_t = decltype(std::chrono::high_resolution_clock::now());
+    _time_t _time;
+};
+//=======================================================================================
+
 
 
 

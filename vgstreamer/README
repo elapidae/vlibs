@@ -1,0 +1,4 @@
+
+apt-get install libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-good gst-libav gstreamer1.0-libav
+
+

@@ -1,0 +1,11 @@
+
+
+git clone http://192.168.0.203:17990/scm/elsd/zcm.git
+
+http://192.168.0.203:17990/projects/ELSD/repos/zcm/browse
+http://192.168.0.203:17990/projects/ELSD/repos/zcm/browse/INSTALL.md
+
+Требует исправления.
+zcm/util/threadsafe_queue.hpp
+
+"udpm://239.255.76.67:7667?ttl=10"

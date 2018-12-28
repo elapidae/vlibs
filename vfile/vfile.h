@@ -1,59 +1,50 @@
 #ifndef VFILE_H
 #define VFILE_H
 
-#include "vbytearray.h"
+//=======================================================================================
+//  TODO: утащить все сырые посиксовые неприятности в vposix_files.
+//
+//=======================================================================================
+
+
 #include <string>
 
+
 //=======================================================================================
-class VFile final
+namespace tr1
 {
-public:
-
-    enum OpenMode
+    //===================================================================================
+    class VFile
     {
-        ReadOnly,
-        WriteOnly,      // truncate file to 0 size.
-        ReadWrite
+    public:
+        using cstr = const std::string&;
+
+        enum class Mode_ReadWrite { ReadOnly, WriteOnly, ReadWrite };
+        //enum class Mode_Exclusive { Yes, No };
+
+        //VFile( cstr fname, Mode_ReadWrite rw, Mode_Exclusive exclusive );
+        VFile( cstr fname, Mode_ReadWrite rw = Mode_ReadWrite::ReadWrite );
+
+        void write( cstr buffer );
+
+    private:
+        int _fd = 0;
+
+        struct helpers
+        {
+            static int mode_readwrite( Mode_ReadWrite mode );
+            //static int mode_exclusive( Mode_Exclusive mode );
+        };
     };
+    //===================================================================================
+    //class VFileExclusive : public VFile
+    //{
+    //public:
+    //    VFileExclusive( cstr fname, Mode_ReadWrite rw = Mode_ReadWrite::ReadWrite );
+    //};
+    //===================================================================================
 
-    VFile( const std::string &fname = std::string(), OpenMode mode = ReadOnly );
-    virtual ~VFile();
-
-    int last_errno() const;
-
-    void set_filename( const std::string &fname );
-    void set_mode( OpenMode mode );
-
-    bool is_open() const;
-
-    bool open();
-    bool open_with( const std::string &fname, OpenMode mode );
-    bool open_with_filename( const std::string &fname );
-    bool open_with_mode( OpenMode mode );
-
-    void close();
-
-    //  < 0 on error.
-    ssize_t write( const VByteArray &data );
-    ssize_t write_str( const std::string &data );
-
-    template<typename Container>
-    ssize_t write_any( const Container &data )
-    { return write( VByteArray(data.cbegin(), data.cend()) ); }
-
-    ssize_t read(char *buf, int maxlen );
-    VByteArray read_all();
-
-private:
-    int _handle = 0;
-    std::string _filename;
-    OpenMode _mode = ReadOnly;
-
-    int _last_error = 0;
-
-    VFile(const VFile &) = delete;
-    const VFile &operator =(const VFile &) = delete;
-};
+} // namespace tr1
 //=======================================================================================
 
 

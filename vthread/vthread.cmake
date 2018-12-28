@@ -1,28 +1,40 @@
+#========================================================================================
+# vthread.cmake
+#
+#   Manual tuned.
+#========================================================================================
 
 
-message( "Include vthread..." )
+#========================================================================================
 
-include( "${VLIBS_PATH}/vsignal/vsignal.cmake" )
-#include( "${VLIBS_PATH}/vlogger/vlogger.cmake" )
+if ( NOT  VTHREAD_INCLUDED )
+    set ( VTHREAD_INCLUDED TRUE )
 
-add_definitions( -DVTHREAD_USE_PTHREAD )
+    message( "Include vthread..." )
 
-include_directories( "${VLIBS_PATH}/vthread/" )
+    #<<< Start your code here -----------------------------------------------------------
+    #add_definitions( -DVTHREAD_USE_PTHREAD )
+    link_libraries( pthread )
+    #>>> Stop your code here ------------------------------------------------------------
 
-FILE( GLOB HEADERS_VTHREAD "${VLIBS_PATH}/vthread/*.h"   )
-FILE( GLOB SOURCES_VTHREAD "${VLIBS_PATH}/vthread/*.cpp" )
+    include_directories( "${VLIBS_DIR}/vthread/")
 
-FILE( GLOB HEADERS_VTHREAD ${HEADERS_VTHREAD} "${VLIBS_PATH}/vthread/vsemaphore/*.h"   )
-FILE( GLOB SOURCES_VTHREAD ${SOURCES_VTHREAD} "${VLIBS_PATH}/vthread/vsemaphore/*.cpp" )
+    set( V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vsemaphore/vsemaphore.h")
+    set( V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vsemaphore/vsemaphore.cpp")
 
-FILE( GLOB HEADERS_VTHREAD ${HEADERS_VTHREAD} "${VLIBS_PATH}/vthread/vthreadqueue/*.h"  )
-FILE( GLOB SOURCES_VTHREAD ${SOURCES_VTHREAD} "${VLIBS_PATH}/vthread/vthreadqueue/*.cpp")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vthread.h") 
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vslot.h")
+    #set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vapplication.h")
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vsemaphorequeue.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vthread/vthreadqueue.h") 
+    
+    #set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vapplication.cpp")
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vthreadqueue.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vthread.cpp") 
+    #set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vthread/vslot.cpp")
 
-FILE( GLOB HEADERS_VTHREAD ${HEADERS_VTHREAD} "${VLIBS_PATH}/vthread/impl/*.h"   )
-FILE( GLOB SOURCES_VTHREAD ${SOURCES_VTHREAD} "${VLIBS_PATH}/vthread/impl/*.cpp" )
+    message( "vthread included" )
 
-set ( HEADERS ${HEADERS} ${HEADERS_VTHREAD} )
-set ( SOURCES ${SOURCES} ${SOURCES_VTHREAD} )
-
-message( "vthread has included..." )
-
+endif()
+# vthread.cmake
+#========================================================================================

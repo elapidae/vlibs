@@ -1,13 +1,38 @@
+#========================================================================================
+# vtimer.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
+
+#========================================================================================
 isEmpty(qi_vtimer) {
-	qi_vtimer = 1;
-	isEmpty(qi_not_print_pri_messages): message("=== vtimer appended ===")
+    qi_vtimer = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vtimer appended ===")
 
-	isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
+    isEmpty(VLIBS_DIR): error("vtimer: Need VLIBS_DIR correct path.")
 
-    INCLUDEPATH += $$VLibs_Dir/vtimer
 
-    HEADERS     += $$VLibs_Dir/vtimer/vtimer.h
-    SOURCES     += $$VLibs_Dir/vtimer/vtimer.cpp
+    #<<< Start your code here -----------------------------------------------------------
+    include( $$VLIBS_DIR/vposix/vposix.pri )
+    include( $$VLIBS_DIR/vcallback/vcallback.pri )
+    include( $$VLIBS_DIR/vapplication/vapplication.pri )
+    #>>> Stop your code here ------------------------------------------------------------
+
+    INCLUDEPATH += $$VLIBS_DIR/vtimer
+
+    
+    HEADERS     += $$VLIBS_DIR/vtimer/vtimer.h 
+    
+    SOURCES     += $$VLIBS_DIR/vtimer/vtimer.cpp 
 }
-
+# vtimer.pri
+#========================================================================================

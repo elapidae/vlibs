@@ -1,31 +1,52 @@
+#========================================================================================
+# vthread.pri
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
+#========================================================================================
 isEmpty(qi_vthread) {
-        qi_vthread = 1;
-        isEmpty(qi_not_print_pri_messages): message("=== vthread appended ===")
+    qi_vthread = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vthread appended ===")
 
-	isEmpty(VLibs_Dir): error("Need VLibs_Dir correct path.")
-
-	include( $$VLibs_Dir/vsignal/vsignal.pri )
+    isEmpty(VLIBS_DIR): error("vthread: Need VLIBS_DIR correct path.")
 
 
-        INCLUDEPATH += $$VLibs_Dir/vthread
+    #<<< Start your code here -----------------------------------------------------------
 
-        HEADERS     += $$VLibs_Dir/vthread/vsemaphore/vsemaphore.h
-        SOURCES     += $$VLibs_Dir/vthread/vsemaphore/vsemaphore.cpp
+    DEFINES += VTHREAD_USE_PTHREAD
 
-        HEADERS     += $$VLibs_Dir/vthread/vthreadqueue/vsemaphorequeue.h
-        HEADERS     += $$VLibs_Dir/vthread/vthreadqueue/vthreadqueue.h
-        SOURCES     += $$VLibs_Dir/vthread/vthreadqueue/vthreadqueue.cpp
+    !contains(CONFIG, qt) {
+        LIBS += -pthread
+        QMAKE_CXXFLAGS += -pthread
+    }
 
-        HEADERS     += $$VLibs_Dir/vthread/vslot.h
-        SOURCES     += $$VLibs_Dir/vthread/vslot.cpp
+    HEADERS     += $$VLIBS_DIR/vthread/vsemaphore/vsemaphore.h
+    SOURCES     += $$VLIBS_DIR/vthread/vsemaphore/vsemaphore.cpp
 
-        HEADERS     += $$VLibs_Dir/vthread/vthread.h
-        SOURCES     += $$VLibs_Dir/vthread/vthread.cpp
+    #>>> Stop your code here ------------------------------------------------------------
 
-        HEADERS     += $$VLibs_Dir/vthread/impl/vthreadqueueregistrator_impl.h
-        SOURCES     += $$VLibs_Dir/vthread/impl/vthreadqueueregistrator_impl.cpp
+    INCLUDEPATH += $$VLIBS_DIR/vthread
+
+    
+    HEADERS     += $$VLIBS_DIR/vthread/vthread.h 
+    #HEADERS     += $$VLIBS_DIR/vthread/vslot.h
+    HEADERS     += $$VLIBS_DIR/vthread/vsemaphorequeue.h 
+    HEADERS     += $$VLIBS_DIR/vthread/vthreadqueue.h 
+    
+
+    SOURCES     += $$VLIBS_DIR/vthread/vthread.cpp 
+    SOURCES     += $$VLIBS_DIR/vthread/vthreadqueue.cpp
+    #SOURCES     += $$VLIBS_DIR/vthread/vslot.cpp
 }
-
-
+# vthread.pri
+#========================================================================================
