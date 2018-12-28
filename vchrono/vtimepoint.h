@@ -248,7 +248,7 @@ class VSystemTimePoint final : public _vTimePoint< std::chrono::system_clock,
     using _base = _vTimePoint<std::chrono::system_clock, VSystemTimePoint>;
 public:
     explicit VSystemTimePoint()                         : _base()   {}
-    explicit VSystemTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSystemTimePoint(const timepoint_type &tp) : _base(tp) {}
     explicit VSystemTimePoint(time_t tt)                : _base(tt) {}
 
     template<typename Duration2>
@@ -267,7 +267,7 @@ class VSteadyTimePoint : public _vTimePoint< std::chrono::steady_clock,
     using _base = _vTimePoint<std::chrono::steady_clock, VSteadyTimePoint>;
 public:
     explicit VSteadyTimePoint()                         : _base()   {}
-    explicit VSteadyTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSteadyTimePoint(const timepoint_type &tp) : _base(tp) {}
     // нету, похоже...
     //explicit VSteadyTimePoint(time_t tt)                : _base(tt) {}
 
@@ -286,7 +286,7 @@ class VHighResolutionTimePoint : public _vTimePoint< std::chrono::high_resolutio
                               VHighResolutionTimePoint>;
 public:
     explicit VHighResolutionTimePoint()                         : _base()   {}
-    explicit VHighResolutionTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VHighResolutionTimePoint(const timepoint_type &tp) : _base(tp) {}
     explicit VHighResolutionTimePoint(time_t tt)                : _base(tt) {}
 
     template<typename Duration2>
