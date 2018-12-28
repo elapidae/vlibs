@@ -88,7 +88,6 @@ static T reverse_as_std(T val)
     return  val;
 }
 //=======================================================================================
-
 TEST_F( VChrono_Test, dev_meter_reverse )
 {
     VTimeMeter ptr_meter( VTimeMeter::Stopped );
@@ -149,5 +148,13 @@ TEST_F( VChrono_Test, dev_meter_reverse )
     vdeb <<   "PTR TIME:" << ptr_meter.elapsed()
          << ", STD TIME:" << std_meter.elapsed()
          << ", CUR STR TIME:" << str_meter.elapsed();
+}
+//=======================================================================================
+TEST_F( VChrono_Test, creations )
+{
+    (void)VTimePoint();
+    (void)VSystemTimePoint();
+    (void)VSteadyTimePoint();
+    (void)VHighResolutionTimePoint();
 }
 //=======================================================================================
