@@ -1,5 +1,5 @@
 #========================================================================================
-# vchrono.cmake
+# vjpeg.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -15,27 +15,24 @@
 
 #========================================================================================
 
-if ( NOT  VCHRONO_INCLUDED )
-    set ( VCHRONO_INCLUDED TRUE )
+if ( NOT  VJPEG_INCLUDED )
+    set ( VJPEG_INCLUDED TRUE )
 
-    message( "Include vchrono..." )
+    message( "Include vjpeg..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    include( "${VLIBS_DIR}/vcat/vcat.cmake" )
+    message( "!!! NB! vjpeg NOT READY FOR DEPLOY! Need to include -ljpeg !!!" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vchrono/")
+    include_directories( "${VLIBS_DIR}/vjpeg/")
 
     
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vchrono/vchrono_weeks.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vchrono/vtimemeter.h") 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vchrono/vtimepoint.h") 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vjpeg/vjpeg.h") 
     
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vchrono/vtimemeter.cpp") 
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vchrono/vtimepoint.cpp") 
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vjpeg/vjpeg.cpp") 
 
-    message( "vchrono included" )
+    message( "vjpeg included" )
 
 endif()
-# vchrono.cmake
+# vjpeg.cmake
 #========================================================================================

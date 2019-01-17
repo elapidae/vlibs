@@ -12,3 +12,9 @@ std::ostream &operator << ( std::ostream &os, const QByteArray &arr )
     os << arr.data();
     return os;
 }
+
+std::ostream &operator <<(std::ostream &os, const QSize &sz)
+{
+    os << "QSize(" << sz.width() << "," << sz.height() << ")";
+    return os;
+}

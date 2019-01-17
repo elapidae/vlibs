@@ -2,18 +2,18 @@
 
 #include <QPainter>
 
-
+//=======================================================================================
 VImageWidget::VImageWidget(QWidget *parent)
     : QGLWidget(parent)
 {}
-
+//=======================================================================================
 void VImageWidget::set_image(const QImage &img_)
 {
     _img = img_;
     _img.detach();
     repaint();
 }
-
+//=======================================================================================
 void VImageWidget::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
@@ -30,3 +30,4 @@ void VImageWidget::paintEvent(QPaintEvent *)
 
     p.drawImage( w/2, h/2, rescaled );
 }
+//=======================================================================================

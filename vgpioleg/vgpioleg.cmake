@@ -1,17 +1,39 @@
+#========================================================================================
+# vgpioleg.cmake
+#
+#
+# Этот файл сгенерирован автоматически.
+#
+# Вносить изменения можно между строк:
+#   #<<< Start your code here
+#   Сохраненный код.
+#   #>>> Stop your code here
+# Все остальные изменения будут перезаписаны.
+#
+#========================================================================================
 
 
-message( "Include vgpioleg..." )
+#========================================================================================
 
-include( "${VLIBS_PATH}/varg/varg.cmake" )
-include( "${VLIBS_PATH}/vfile/vfile.cmake" )
+if ( NOT  VGPIOLEG_INCLUDED )
+    set ( VGPIOLEG_INCLUDED TRUE )
 
-include_directories( "${VLIBS_PATH}/vgpioleg/" )
+    message( "Include vgpioleg..." )
 
-FILE( GLOB HEADERS_vgpioleg "${VLIBS_PATH}/vgpioleg/*.h"   )
-FILE( GLOB SOURCES_vgpioleg "${VLIBS_PATH}/vgpioleg/*.cpp" )
+    #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vcat/vcat.cmake" )
+    include( "${VLIBS_DIR}/vfile/vfile.cmake" )
+    #>>> Stop your code here ------------------------------------------------------------
 
-set ( HEADERS ${HEADERS} ${HEADERS_vgpioleg} )
-set ( SOURCES ${SOURCES} ${SOURCES_vgpioleg} )
+    include_directories( "${VLIBS_DIR}/vgpioleg/")
 
-message( "vgpioleg has included..." )
 
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgpioleg/vgpioleg.h")
+
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgpioleg/vgpioleg.cpp")
+
+    message( "vgpioleg included" )
+
+endif()
+# vgpioleg.cmake
+#========================================================================================

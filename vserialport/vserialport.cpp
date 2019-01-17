@@ -53,6 +53,7 @@ private:
 
     VSerialPort *owner = nullptr;
     FD_Polled fd;
+    vposix::Serial::termios_ptr last_termios;
 };
 #pragma GCC diagnostic pop
 //=======================================================================================
@@ -71,15 +72,32 @@ void VSerialPort::Pimpl::set_options( const Options& opts )
     vposix::Serial::set_complex_options( fd.raw(), p, sb, fc, opts.speed );
 }
 //=======================================================================================
+template<class T>class TD;
 void VSerialPort::Pimpl::open( const std::string& fname, const Options& opts )
 {
-    fd = FD_Polled( vposix::Serial::open(fname), this );
+    close();
+
+    int new_fd = vposix::Serial::open( fname );
+    vposix::Files::set_tio_EXCL( new_fd );
+    auto last_opts = vposix::Serial::tio_save( new_fd );
+
+    auto fclose = [last_opts]( int fd )
+    {
+        vposix::Serial::tio_soft_set( fd, *last_opts );
+        vposix::Files::set_tio_soft_not_EXCL( fd );
+        vposix::Files::close( fd );
+    };
+
+    fd = FD_Polled( new_fd, this, fclose );
     set_options( opts );
 }
 //=======================================================================================
 void VSerialPort::Pimpl::close()
 {
+    if ( !is_opened() ) return;
+
     fd.close();
+    owner->closed();
 }
 //=======================================================================================
 bool VSerialPort::Pimpl::is_opened() const
@@ -108,15 +126,13 @@ void VSerialPort::Pimpl::process_error( VPoll::EventFlags *flags )
     {
         throw verror.hex()( "Unexpected serial error: ", flags->raw() );
     }
-    fd.close();
-
-    owner->closed();
+    close();
 }
 //=======================================================================================
 void VSerialPort::Pimpl::write( const std::string &buf )
 {
     if ( !is_opened() )
-        throw verror("Write to closed serial port.");
+        throw verror( "Write to closed serial port." );
 
     auto res = vposix::Files::write( fd.raw(), buf );
     assert( res == ssize_t(buf.size()) );

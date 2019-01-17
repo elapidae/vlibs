@@ -23,9 +23,7 @@ int Serial::open( const std::string &fname )
 
     flags |= O_RDWR;    // Every time we can read and write.
 
-    auto res = Files::open( fname, flags );
-    Files::_set_TIOCEXCL( res );
-    return res;
+    return Files::open( fname, flags );
 }
 //=======================================================================================
 void Serial::flush_io(int fd)
@@ -119,6 +117,18 @@ void Serial::tio_set( int fd, const termios& tio )
     termios new_tio;
     tio_get( fd, &new_tio );
     assert( tio_equals(tio, new_tio) );
+}
+//=======================================================================================
+void Serial::tio_soft_set( int fd, const termios &tio )
+{
+    Core::linux_call_or_err( ::tcsetattr, fd, TCSANOW, &tio );
+}
+//=======================================================================================
+std::shared_ptr<termios> Serial::tio_save( int fd )
+{
+    auto res = std::make_shared<termios>();
+    tio_get( fd, res.get() );
+    return res;
 }
 //=======================================================================================
 void Serial::_tio_cfmakeraw( termios *tio )
@@ -241,7 +251,7 @@ void Serial::set_complex_options( int fd,
     tio_set_parity      ( p,    &tio );
     tio_set_stopbits    ( sb,   &tio );
     tio_set_flowcontrol ( fc,   &tio );
-    _tio_cfsetspeed      ( spd,  &tio );
+    _tio_cfsetspeed     ( spd,  &tio );
 
     tio_set( fd, tio );
 }

@@ -2,6 +2,14 @@
 #define VPOSIX_FILES_H
 
 #include <string>
+#include <functional>
+
+
+//=======================================================================================
+//  UPD 26-12-2018
+//  Добавлен класс FD для автозакрывания дескрипторов файлов.
+//  В VPoll идет продолжение идеи, где дескриптор автоматически ставиться в поллинг.
+//=======================================================================================
 
 
 
@@ -27,10 +35,20 @@ namespace vposix
         static int _remove( const char *pathname );
         static void remove( cstr pathname );
 
+        //  Сбрасывает флаг O_NONBLOCK.
         static void close( int fd );
 
+        //-------------------------------------------------------------------------------
         static void _ioctl( int fd, unsigned long ctl );
-        static void _set_TIOCEXCL( int fd ); // For serial port. If defined, call ioctl.
+        static int  _ioctl_or_err( int fd, unsigned long ctl );
+
+        // For serial port. If defined, call ioctl.
+        static void set_tio_EXCL( int fd );             //  ioctl ( TIOCEXCL )
+        static void set_tio_soft_not_EXCL( int fd );    //  ioctl ( TIOCNXCL )
+        //-------------------------------------------------------------------------------
+
+        static long _fcntl_get_flags( int fd );
+        static void _fcntl_set_flags( int fd, long flags );
 
     private:
     };
@@ -40,7 +58,9 @@ namespace vposix
     class FD final
     {
     public:
-        explicit FD( int fd = -1 );
+        using close_func = std::function<void(int)>;
+
+        explicit FD( int fd = -1, const close_func& cf = &Files::close );
         explicit FD( FD&& rhs );
         FD& operator = ( FD&& rhs );
 
@@ -53,6 +73,7 @@ namespace vposix
 
     private:
         int _fd = -1;
+        close_func _close;
 
         FD( const FD& rhs ) = delete;
         FD& operator = ( const FD& ) = delete;

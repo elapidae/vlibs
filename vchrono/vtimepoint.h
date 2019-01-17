@@ -97,7 +97,7 @@ class _vTimePoint : public _vtimepoint_helper
 {
 public:
 
-    using timepoint_t = typename Clk::time_point;
+    using timepoint_type = typename Clk::time_point;
 
     static bool is_steady();
 
@@ -107,14 +107,14 @@ public:
     static Derived from_datetime( const std::string &dt ); // From "yyyy-MM-dd hh:mm:ss".
 
     explicit _vTimePoint();
-    explicit _vTimePoint( const timepoint_t &tp );
+    explicit _vTimePoint( const timepoint_type &tp );
     explicit _vTimePoint( time_t tt );
 
     template<typename Duration2>
     explicit _vTimePoint( const Duration2 &d2 ); // Построение из любого duration.
 
-    timepoint_t time_point() const;
-    time_t      to_time_t()  const;
+    timepoint_type time_point() const;
+    time_t         to_time_t()  const;
 
     int year()          const;  //
     int month()         const;  //  NB! 0..11
@@ -169,7 +169,7 @@ public:
     std::string str_datetime_zzz_for_filenames() const;
 
 private:
-    timepoint_t _tp;
+    timepoint_type _tp;
 };
 //=======================================================================================
 //      GENERAL TEMPLATE
@@ -248,7 +248,7 @@ class VSystemTimePoint final : public _vTimePoint< std::chrono::system_clock,
     using _base = _vTimePoint<std::chrono::system_clock, VSystemTimePoint>;
 public:
     explicit VSystemTimePoint()                         : _base()   {}
-    explicit VSystemTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSystemTimePoint(const timepoint_type &tp) : _base(tp) {}
     explicit VSystemTimePoint(time_t tt)                : _base(tt) {}
 
     template<typename Duration2>
@@ -267,7 +267,7 @@ class VSteadyTimePoint : public _vTimePoint< std::chrono::steady_clock,
     using _base = _vTimePoint<std::chrono::steady_clock, VSteadyTimePoint>;
 public:
     explicit VSteadyTimePoint()                         : _base()   {}
-    explicit VSteadyTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSteadyTimePoint(const timepoint_type &tp) : _base(tp) {}
     // нету, похоже...
     //explicit VSteadyTimePoint(time_t tt)                : _base(tt) {}
 
@@ -286,7 +286,7 @@ class VHighResolutionTimePoint : public _vTimePoint< std::chrono::high_resolutio
                               VHighResolutionTimePoint>;
 public:
     explicit VHighResolutionTimePoint()                         : _base()   {}
-    explicit VHighResolutionTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VHighResolutionTimePoint(const timepoint_type &tp) : _base(tp) {}
     explicit VHighResolutionTimePoint(time_t tt)                : _base(tt) {}
 
     template<typename Duration2>
@@ -363,7 +363,7 @@ _vTimePoint<Clk,Derived>::_vTimePoint()
 {}
 //=======================================================================================
 template<typename Clk, typename Derived>
-_vTimePoint<Clk,Derived>::_vTimePoint( const _vTimePoint::timepoint_t &tp )
+_vTimePoint<Clk,Derived>::_vTimePoint( const _vTimePoint::timepoint_type &tp )
     : _tp(tp)
 {}
 //=======================================================================================
@@ -373,7 +373,7 @@ _vTimePoint<Clk,Derived>::_vTimePoint( time_t tt )
 {}
 //=======================================================================================
 template<typename Clk, typename Derived>
-typename _vTimePoint<Clk,Derived>::timepoint_t
+typename _vTimePoint<Clk,Derived>::timepoint_type
 _vTimePoint<Clk,Derived>::time_point() const
 {
     return _tp;
@@ -388,7 +388,7 @@ time_t _vTimePoint<Clk,Derived>::to_time_t() const
 template<typename Clk, typename Derived>
 template<typename Duration2>
 _vTimePoint<Clk,Derived>::_vTimePoint( const Duration2 &d2 )
-    : _vTimePoint( timepoint_t(d2) )
+    : _vTimePoint( timepoint_type(d2) )
 {}
 //=======================================================================================
 template<typename Clk, typename Derived>

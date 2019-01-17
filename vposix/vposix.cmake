@@ -21,6 +21,8 @@ if ( NOT  VPOSIX_INCLUDED )
     message( "Include vposix..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vmacroses/vmacroses.cmake" )
+    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vposix/")

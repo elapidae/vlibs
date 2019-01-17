@@ -13,14 +13,14 @@
 using namespace std;
 
 
+//=======================================================================================
 class VApplication_Test: public testing::Test
 {};
-
 //=======================================================================================
-TEST_F( VApplication_Test, set_random )
-{
-    srandom( VTimePoint::now().microseconds().count() );
-}
+//TEST_F( VApplication_Test, set_random )
+//{
+//    srandom( VTimePoint::now().microseconds().count() );
+//}
 //=======================================================================================
 TEST_F( VApplication_Test, dev_polling )
 {
@@ -37,7 +37,6 @@ TEST_F( VApplication_Test, dev_polling )
     app.poll();
     //EXPECT_EQ();
 }
-
 //=======================================================================================
 
 //=======================================================================================

@@ -91,6 +91,8 @@
 #  include <QtPrintSupport/QtPrintSupport>
 #endif
 
+#include "vpoints.h"
+
 class QCPPainter;
 class QCustomPlot;
 class QCPLayerable;
@@ -5198,6 +5200,9 @@ public:
   // non-property methods:
   void addData(const QVector<double> &keys, const QVector<double> &values, bool alreadySorted=false);
   void addData(double key, double value);
+
+  template<typename Point>
+  void add_point( const Point& p ) { addData(p.x(), p.y()); }
   
   // reimplemented virtual methods:
   virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details=0) const Q_DECL_OVERRIDE;

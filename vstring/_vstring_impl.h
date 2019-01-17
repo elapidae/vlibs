@@ -197,7 +197,19 @@ typename std::enable_if<std::is_arithmetic<T>::value, T>::type
 VString::reverse_T( T val )
 {
     auto *ch = static_cast<char*>( static_cast<void*>(&val) );
-    std::reverse( ch, ch + sizeof(T) );
+    constexpr auto tsize = sizeof(T);
+
+    //std::reverse( ch, ch + tsize );
+
+    //  UPD 28-12-2018: так оказалось быстрее, проверка была сделана в тестах VTimeMeter.
+    switch( tsize )
+    {
+    case 8: std::swap( ch[3], ch[tsize-4] );
+            std::swap( ch[2], ch[tsize-3] );
+    case 4: std::swap( ch[1], ch[tsize-2] );
+    case 2: std::swap( ch[0], ch[tsize-1] );
+    }
+
     return val;
 }
 //=======================================================================================
