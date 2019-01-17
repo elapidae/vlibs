@@ -24,13 +24,27 @@ isEmpty(qi_vopencv) {
     #<<< Start your code here -----------------------------------------------------------
     CONFIG    *= link_pkgconfig
     PKGCONFIG *= opencv
-    #CONFIG    *= c++11 -- deprecated, стандарт должен втягиваться естесственным путем.
+
+    OPENCV_USE_CUDA = 1
+    isEmpty(OPENCV_USE_CUDA) {
+        DEFINES += V_OPENCV_USE_CUDA
+    }
+
+    include( $$VLIBS_DIR/vlog/vlog.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vopencv
 
     
+    HEADERS     += $$VLIBS_DIR/vopencv/vcv_image.h 
     
+    SOURCES     += $$VLIBS_DIR/vopencv/vcv_image.cpp 
 }
 # vopencv.pri
 #========================================================================================
+
+HEADERS += \
+    $$PWD/vcv_includes.h
+
+SOURCES += \
+    $$PWD/vcv_includes.cpp
