@@ -1,3 +1,22 @@
+/****************************************************************************************
+**  
+**  VLIBS codebase, NIIAS
+**  
+**  Authors:
+**  Alexandre Gromtsev aka elapidae     elapidae@yandex.ru
+**  Nadezhda Churikova aka claorisel    claorisel@gmail.com
+**  Ekaterina Boltenkova aka kataretta  kitkat52@yandex.ru
+**  Ivan Deylid aka sid1057             ivanov.dale@gmail.com>
+**  
+**  GNU Lesser General Public License Usage
+**  This file may be used under the terms of the GNU Lesser General Public License
+**  version 3 as published by the Free Software Foundation and appearing in the file
+**  LICENSE.LGPL3 included in the packaging of this file. Please review the following
+**  information to ensure the GNU Lesser General Public License version 3 requirements
+**  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************************/
+
+
 #include "vcv_image.h"
 
 
@@ -15,6 +34,10 @@ public:
 
 
 //=======================================================================================
+Image::Image( Image::Pimpl *pp )
+    : p( pp )
+{}
+//=======================================================================================
 Image::Image()
     : p( new Pimpl )
 {}
@@ -25,6 +48,7 @@ Image::~Image()
 }
 //=======================================================================================
 Image::Image( Image && rhs )
+    : p( nullptr )
 {
     std::swap( p, rhs.p );
 }
@@ -51,6 +75,47 @@ Image &Image::operator =( const Image & rhs )
 
 
 //=======================================================================================
+//      Quadrangle
+//=======================================================================================
+Quadrangle Quadrangle::rectangle( float width, float height )
+{
+    return { { 0,     height },
+             { width, height },
+             { 0,     0      },
+             { width, 0      } };
+}
+//=======================================================================================
+Quadrangle::Quadrangle( const Point2f &tl,
+                        const Point2f &tr,
+                        const Point2f &bl,
+                        const Point2f &br )
+    : _quadrangle{ tl, tr, bl, br }
+{}
+//=======================================================================================
+const std::vector<Point2f> &Quadrangle::operator()() const
+{
+    return _quadrangle;
+}
+//=======================================================================================
+//      Quadrangle
+//=======================================================================================
+
+
+//=======================================================================================
+//      PerspectiveTransform
+//=======================================================================================
+PerspectiveTransform::PerspectiveTransform( const Quadrangle &src,
+                                            const Quadrangle &dst )
+    : _transform( cv::getPerspectiveTransform(src(), dst()) )
+{}
+//=======================================================================================
+//      PerspectiveTransform
+//=======================================================================================
+
+
+//=======================================================================================
+//      Image::Projection::ObjectPoints
+//=======================================================================================
 Image::Projection::ObjectPoints::ObjectPoints( float left, float right,
                                                float near, float far )
 {
@@ -60,8 +125,7 @@ Image::Projection::ObjectPoints::ObjectPoints( float left, float right,
     _points.push_back( cv::Point3f(right, 0, far)  );
 }
 //=======================================================================================
-Image::Projection::ObjectPoints::~ObjectPoints()
-{}
+//      Image::Projection::Rotation
 //=======================================================================================
 vcv::Image::Projection::Rotation Image::Projection::Rotation::default_rtn_1()
 {
@@ -72,6 +136,8 @@ Image::Projection::Rotation::Rotation( float x, float y, float z )
     : _rotation{ x, y, z }
 {}
 //=======================================================================================
+//      Image::Projection::Translation
+//=======================================================================================
 vcv::Image::Projection::Translation Image::Projection::Translation::default_trn_1()
 {
     return { -0.01607784f, 4.92202892f, -1.91157204f };
@@ -81,11 +147,7 @@ Image::Projection::Translation::Translation( float x, float y, float z )
     : _translation{ x, y, z }
 {}
 //=======================================================================================
-class Image::Projection::CameraMatrix::Pimpl
-{
-public:
-    cv::Mat mat;
-};
+//      Image::Projection::CameraMatrix
 //=======================================================================================
 vcv::Image::Projection::CameraMatrix Image::Projection::CameraMatrix::default_mtx_1()
 {
@@ -100,23 +162,22 @@ vcv::Image::Projection::CameraMatrix Image::Projection::CameraMatrix::default_mt
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 Image::Projection::CameraMatrix::CameraMatrix( float Fx, float Cx, float Fy, float Cy )
-    : p( std::make_shared<Pimpl>() )
 {
-    p->mat = ( cv::Mat_<float>(3, 3) << Fx, 0,  Cx,
-                                        0,  Fy, Cy,
-                                        0,  0,  1  );
+    _mat = ( cv::Mat_<float>(3, 3) << Fx,   0,  Cx,
+                                       0,  Fy,  Cy,
+                                       0,   0,   1 );
 
-    assert( p->mat.at<float>(0,0) == Fx );
-    assert( p->mat.at<float>(0,1) == 0 );
-    assert( p->mat.at<float>(0,2) == Cx );
+    assert( _mat.at<float>(0,0) == Fx );
+    assert( _mat.at<float>(0,1) == 0 );
+    assert( _mat.at<float>(0,2) == Cx );
 
-    assert( p->mat.at<float>(1,0) == 0 );
-    assert( p->mat.at<float>(1,1) == Fy );
-    assert( p->mat.at<float>(1,2) == Cy );
+    assert( _mat.at<float>(1,0) == 0 );
+    assert( _mat.at<float>(1,1) == Fy );
+    assert( _mat.at<float>(1,2) == Cy );
 
-    assert( p->mat.at<float>(2,0) == 0 );
-    assert( p->mat.at<float>(2,1) == 0 );
-    assert( p->mat.at<float>(2,2) == 1 );
+    assert( _mat.at<float>(2,0) == 0 );
+    assert( _mat.at<float>(2,1) == 0 );
+    assert( _mat.at<float>(2,2) == 1 );
 }
 #pragma GCC diagnostic pop
 //=======================================================================================
@@ -135,13 +196,10 @@ Image::Projection::Projection( const ObjectPoints&  ops,
     cv::projectPoints( ops._points,
                        rtn._rotation,
                        trn._translation,
-                       cmt.p->mat,
+                       cmt._mat,
                        dsn._distortion,
                        _image_points );
 }
-//=======================================================================================
-Image::Projection::~Projection()
-{}
 //=======================================================================================
 vcv::Image::Projection Image::Projection::default_project_1( float left,
                                                              float right,
@@ -156,12 +214,12 @@ vcv::Image::Projection Image::Projection::default_project_1( float left,
                        );
 }
 //=======================================================================================
-void Image::Projection::v_deb() const
+const std::vector<cv::Point2f> &Image::Projection::image_points() const
 {
-    vdeb << _image_points;
+    return _image_points;
 }
 //=======================================================================================
-//  Projection
+//      Image::Projection
 //=======================================================================================
 
 

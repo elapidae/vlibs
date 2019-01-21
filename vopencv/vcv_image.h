@@ -1,3 +1,22 @@
+/****************************************************************************************
+**  
+**  VLIBS codebase, NIIAS
+**  
+**  Authors:
+**  Alexandre Gromtsev aka elapidae     elapidae@yandex.ru
+**  Nadezhda Churikova aka claorisel    claorisel@gmail.com
+**  Ekaterina Boltenkova aka kataretta  kitkat52@yandex.ru
+**  Ivan Deylid aka sid1057             ivanov.dale@gmail.com>
+**  
+**  GNU Lesser General Public License Usage
+**  This file may be used under the terms of the GNU Lesser General Public License
+**  version 3 as published by the Free Software Foundation and appearing in the file
+**  LICENSE.LGPL3 included in the packaging of this file. Please review the following
+**  information to ensure the GNU Lesser General Public License version 3 requirements
+**  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************************/
+
+
 #ifndef VCV_IMAGE_H
 #define VCV_IMAGE_H
 
@@ -6,21 +25,54 @@
 
 #include "vcv_includes.h"
 
+#include <QObject>
 
-//=======================================================================================
-namespace cv
-{
-    template<typename _Tp> class Point3_;
-    typedef Point3_<float> Point3f;
-
-    template<typename _Tp> class Point_;
-    typedef Point_<float> Point2f;
-}
-//=======================================================================================
 
 //=======================================================================================
 namespace vcv
 {
+    //===================================================================================
+    using Point2f = cv::Point2f;
+    //===================================================================================
+    //      Quadrangle  -- четырехугольник на плоскости (для perspective transform)
+    //===================================================================================
+    class Quadrangle
+    {
+    public:
+        // Генерирует прямоугольник в первой четверти, такой: {(0,h)(w,h)(0,0)(w,0)}
+        static Quadrangle rectangle( float width, float height );
+
+        Quadrangle( const Point2f& tl,
+                    const Point2f& tr,
+                    const Point2f& bl,
+                    const Point2f& br );
+
+        const std::vector<Point2f>& operator()() const;
+
+    private:
+        std::vector<Point2f> _quadrangle;
+    };
+    //===================================================================================
+    //      Quadrangle
+    //===================================================================================
+
+
+    //===================================================================================
+    //      PerspectiveTransform
+    //===================================================================================
+    class PerspectiveTransform
+    {
+    public:
+        PerspectiveTransform( const Quadrangle& src, const Quadrangle& dst );
+
+    private:
+        cv::Mat _transform;
+    };
+    //===================================================================================
+    //      PerspectiveTransform
+    //===================================================================================
+
+
     //===================================================================================
     //      Image
     //===================================================================================
@@ -28,6 +80,8 @@ namespace vcv
     class Image
     {
     public:
+
+
         Image();
         virtual ~Image();
         Image( Image&& rhs );
@@ -38,8 +92,9 @@ namespace vcv
         class Projection;
 
     protected:
-        // Ручное управление, чтобы соблюдать семантику cv::Mat.
+        // Ручное управление, чтобы перегружать (или нет) содержимое с GpuMat.
         class Pimpl; Pimpl *p = nullptr;
+        Image( Pimpl *pp );
     };
     //===================================================================================
     //      Image
@@ -74,14 +129,13 @@ namespace vcv
                     const Translation&  trn,
                     const CameraMatrix& cmt,
                     const Distortion&   dsn );
-        ~Projection();
 
         static Projection default_project_1( float left,
                                              float right,
                                              float near,
                                              float far );
 
-        void v_deb() const;
+        const std::vector<cv::Point2f>& image_points() const;
 
     private:
         std::vector<cv::Point2f> _image_points;
@@ -92,7 +146,6 @@ namespace vcv
     {
     public:
         ObjectPoints( float left, float right, float near, float far );
-        ~ObjectPoints();
 
     private:
         friend class Projection;
@@ -130,7 +183,7 @@ namespace vcv
 
     private:
         friend class Projection;
-        class Pimpl; std::shared_ptr<Pimpl> p;
+        cv::Mat _mat;
     };
     //===================================================================================
     // Input vector of distortion coefficients
