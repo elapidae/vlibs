@@ -65,9 +65,7 @@ std::string VLogEntry::_extract_filename( const string &fpath )
 {
     auto slash_it = std::find( fpath.rbegin(), fpath.rend(), '/' );
 
-    std::string res;
-    std::reverse_copy( fpath.rbegin(), slash_it, std::back_inserter(res) );
-    return res;
+    return { slash_it.base(), fpath.end() };
 }
 //=======================================================================================
 const char *VLogEntry::filepath() const

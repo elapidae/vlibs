@@ -22,20 +22,15 @@
 
 #include "vlog.h"
 
+
 //=======================================================================================
-#define vtrace   VTRACE
-#define vdebug   VDEBUG
-#define vdeb     VDEBUG
-#define vrunlog  VRUNLOG
-#define vwarning VWARNING
-#define vfatal   VFATAL
+//  UPD 2019-01-24 -- vlog_pretty deprecated. Let all will be here.
 //=======================================================================================
-#define vtrace_proxy   VTRACE_PROXY
-#define vdebug_proxy   VDEBUG_PROXY
-#define vdeb_proxy     VDEBUG_PROXY
-#define vrunlog_proxy  VRUNLOG_PROXY
-#define vwarning_proxy VWARNING_PROXY
-#define vfatal_proxy   VFATAL_PROXY
+static bool vlog_prety_deprecated = []()
+{
+    vdeb << "'vlog_pretty.h' is deprecated, use 'vlog.h' instead...";
+    return true;
+}();
 //=======================================================================================
 
 

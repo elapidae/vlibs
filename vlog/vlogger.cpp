@@ -23,7 +23,7 @@
 #include <vector>
 #include <mutex>
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 using namespace std;
 

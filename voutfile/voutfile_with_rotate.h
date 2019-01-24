@@ -62,6 +62,9 @@ private:
     void _rotate_and_reinit_file();
 
     std::shared_ptr<VOutFile> _cur_file;
+
+    VOutFile_With_Rotate( const VOutFile_With_Rotate& ) = delete;
+    VOutFile_With_Rotate& operator = ( const VOutFile_With_Rotate& ) = delete;
 };
 //=======================================================================================
 

@@ -50,7 +50,7 @@ isEmpty(qi_vlog) {
     INCLUDEPATH += $$VLIBS_DIR/vlog
     
     HEADERS     += $$VLIBS_DIR/vlog/vlog.h 
-    HEADERS     += $$VLIBS_DIR/vlog/vlog_pretty.h
+    #HEADERS     += $$VLIBS_DIR/vlog/vlog_pretty.h
 
     HEADERS     += $$VLIBS_DIR/vlog/verror.h
     SOURCES     += $$VLIBS_DIR/vlog/verror.cpp

@@ -23,16 +23,15 @@
 #include "vlogentry.h"
 #include "voutfile_with_rotate.h"
 
-#include "vgio_keyfile.h"
 #include "vdir.h"
 
 //=======================================================================================
-/**     07-08-2018      by Elapidae
+/*      07-08-2018      by Elapidae
  *
  *      Файловое логгирование
  *
  *
-**/
+*/
 //=======================================================================================
 
 
@@ -64,6 +63,8 @@ public:
 class VFileLog_Leveled : VAbstractFileLog
 {
 public:
+    using Ptr = std::shared_ptr<VFileLog_Leveled>;
+
     VFileLog_Leveled( const std::string &path,
                       ulong one_file_size,
                       uint rotate_files_count );
@@ -73,17 +74,6 @@ public:
     void execute( const VLogEntry &entry );
 
     void register_self();
-
-  //-------------------------------------------------------------------------------------
-    using Ptr = std::shared_ptr<VFileLog_Leveled>;
-    static Ptr  load_from_keyfile( const vgio::KeyFile &kf, const std::string &group );
-
-    static void save_to_keyfile  (vgio::KeyFile *kf, const std::string &group,
-                                   bool need_log,
-                                   const std::string &path,
-                                   int file_size,
-                                   int rotates_count );
-  //-------------------------------------------------------------------------------------
 
 private:
     VDir::MkDirError _dir_created;
@@ -100,6 +90,8 @@ private:
 class VFileLog_Shared : VAbstractFileLog
 {
 public:
+    using Ptr = std::shared_ptr<VFileLog_Shared>;
+
     VFileLog_Shared( const std::string &fname,
                      ulong one_file_size,
                      uint  rotate_files_count );
@@ -116,9 +108,5 @@ private:
 //=======================================================================================
 //      Shared filelog
 //=======================================================================================
-
-
-
-
 
 #endif // VFILELOG_H
