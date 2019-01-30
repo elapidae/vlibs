@@ -17,7 +17,7 @@ vlibs/vgeometry/test_vgeometry/test_vgeometry           || exit 1
 echo ====================================================================================
 vlibs/vapplication/test_vapplication/test_vapplication  || exit 1
 echo ====================================================================================
-vlibs/hdlc_parser/test_hdlc_parser/test_hdlc_parser     || exit 1
+vlibs/vhdlc/test_vhdlc/test_vhdlc                       || exit 1
 echo ====================================================================================
 vlibs/vchrono/test_vchrono/test_vchrono                 || exit 1
 echo ====================================================================================

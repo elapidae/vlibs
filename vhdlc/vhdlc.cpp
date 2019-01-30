@@ -17,31 +17,29 @@
 ****************************************************************************************/
 
 
-#include "hdlc_parser.h"
-
-#include <assert.h>
-#include "verror.h"
+#include "vhdlc.h"
+#include "vcat.h"
 
 static constexpr char ch_5D = 0x5D;
 static constexpr char ch_5E = 0x5E;
 static constexpr char ch_7D = 0x7D;
 static constexpr char ch_7E = 0x7E;
 
-
 //=======================================================================================
-HDLC_Parser::Error::Error(const std::string &msg)
+VHDLC::Decoder::Error::Error(const std::string &msg)
     : std::runtime_error( msg )
 {}
 //=======================================================================================
 
 
-
 //=======================================================================================
-HDLC_Parser::HDLC_Parser( size_t max_packet_size )
-    : _max_packet_size( max_packet_size )
+VHDLC::Decoder::Decoder( size_t max_packet_size )
+    : _packet_began    ( false           )
+    , _escaped         ( false           )
+    , _max_packet_size ( max_packet_size )
 {}
 //=======================================================================================
-void HDLC_Parser::append( const std::string& app_data )
+void VHDLC::Decoder::append( const std::string& app_data )
 {
     for ( char ch: app_data )
     {
@@ -74,28 +72,29 @@ void HDLC_Parser::append( const std::string& app_data )
     } // for ( char ch: app_data )
 }
 //=======================================================================================
-void HDLC_Parser::_buf_append( char ch )
+void VHDLC::Decoder::_buf_append( char ch )
 {
-    if ( _max_packet_size == 0 ) return;        //  Размер не проверяем'c.
-
-    if ( _buffer.size() >= _max_packet_size )
-        _throw_error( "Buffer overflow" );
-
     _buffer.push_back( ch );
+    
+    if ( _max_packet_size == 0 ) return;
+    
+    if ( _buffer.size() > _max_packet_size )
+        _throw_error( "Buffer overflow" );
 }
 //=======================================================================================
-void HDLC_Parser::_buf_send()
+void VHDLC::Decoder::_buf_send()
 {
-    if ( !_buffer.empty() )
-        received( _buffer );
-
+    if ( _buffer.empty() ) return;
+    
+    received( _buffer );
     _buffer.clear();
 }
 //=======================================================================================
-[[noreturn]] void HDLC_Parser::_throw_error( const std::string &msg )
+[[noreturn]] void VHDLC::Decoder::_throw_error( const std::string& msg )
 {
+    //  Возвращаемся в начальное состояние, все равно поток уже неконсистентный.
     _buffer.clear();
-    _packet_began = false; // Обозначает что нашли в последовательности первый 7E.
+    _packet_began = false; 
     _escaped      = false;
 
     throw Error( msg );
@@ -104,9 +103,9 @@ void HDLC_Parser::_buf_send()
 
 
 //=======================================================================================
-std::string HDLC_Parser::encode( const std::string& packet )
+std::string VHDLC::encode( const std::string& packet )
 {
-    std::string res;
+    std::string res( 1, ch_7E );
     for ( char ch: packet )
     {
         switch ( ch )
@@ -123,6 +122,7 @@ std::string HDLC_Parser::encode( const std::string& packet )
             res.push_back( ch );
         }
     }
+    res.push_back( ch_7E );
     return res;
 }
 //=======================================================================================
@@ -144,3 +144,4 @@ static void hdlc_send( char ch )
 */
 
 //=======================================================================================
+
