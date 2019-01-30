@@ -18,7 +18,7 @@
 
 
 #========================================================================================
-# hdlc_parser.cmake
+# vhdlc.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -34,26 +34,26 @@
 
 #========================================================================================
 
-if ( NOT  HDLC_PARSER_INCLUDED )
-    set ( HDLC_PARSER_INCLUDED TRUE )
+if ( NOT  VHDLC_INCLUDED )
+    set ( VHDLC_INCLUDED TRUE )
 
-    message( "Include hdlc_parser..." )
+    message( "Include vhdlc..." )
 
     #<<< Start your code here -----------------------------------------------------------
     include( "${VLIBS_DIR}/vstring/vstring.cmake" )
     include( "${VLIBS_DIR}/vcallback/vcallback.cmake" )
-    include( "${VLIBS_DIR}/vlog/vlog.cmake" )
+    include( "${VLIBS_DIR}/vcat/vcat.cmake" )    
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/hdlc_parser/")
+    include_directories( "${VLIBS_DIR}/vhdlc/")
 
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vhdlc/vhdlc.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vhdlc/vhdlc.cpp") 
 
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/hdlc_parser/hdlc_parser.h")
-
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/hdlc_parser/hdlc_parser.cpp")
-
-    message( "hdlc_parser included" )
+    message( "vhdlc included" )
 
 endif()
-# hdlc_parser.cmake
+# vhdlc.cmake
 #========================================================================================

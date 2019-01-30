@@ -18,7 +18,7 @@
 
 
 #========================================================================================
-# hdlc_parser.pri
+# vhdlc.pri
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -33,25 +33,25 @@
 
 
 #========================================================================================
-isEmpty(qi_hdlc_parser) {
-    qi_hdlc_parser = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== hdlc_parser appended ===")
+isEmpty(qi_vhdlc) {
+    qi_vhdlc = 1;
+    isEmpty(qi_not_print_pri_messages): message("=== vhdlc appended ===")
 
-    isEmpty(VLIBS_DIR): error("hdlc_parser: Need VLIBS_DIR correct path.")
+    isEmpty(VLIBS_DIR): error("vhdlc: Need VLIBS_DIR correct path.")
 
 
     #<<< Start your code here -----------------------------------------------------------
     include( $$VLIBS_DIR/vstring/vstring.pri )
     include( $$VLIBS_DIR/vcallback/vcallback.pri )
-    include( $$VLIBS_DIR/vlog/vlog.pri )
+    include( $$VLIBS_DIR/vcat/vcat.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/hdlc_parser
+    INCLUDEPATH += $$VLIBS_DIR/vhdlc
 
     
-    HEADERS     += $$VLIBS_DIR/hdlc_parser/hdlc_parser.h 
+    HEADERS     += $$VLIBS_DIR/vhdlc/vhdlc.h 
     
-    SOURCES     += $$VLIBS_DIR/hdlc_parser/hdlc_parser.cpp 
+    SOURCES     += $$VLIBS_DIR/vhdlc/vhdlc.cpp 
 }
-# hdlc_parser.pri
+# vhdlc.pri
 #========================================================================================
