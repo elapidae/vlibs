@@ -26,6 +26,8 @@
 #include "vlog_qt.h"
 #include "verror.h"
 #include "vgit.h"
+#include "tables_form.h"
+#include <iostream>
 
 //=======================================================================================
 static const QByteArray start_plus_line =
@@ -44,20 +46,18 @@ static QByteArray plus_licence;    // Текст для вставки в плю
 static QByteArray build_licence;   // Для вставки в pri & cmake файлы
 static void prepare_licences();
 //=======================================================================================
-static QTableWidget *process_table = nullptr;
-static void append_log_info( const QString& path,
-                             const QString& info,
-                             const QColor& color,
-                             const QColor& bkg_color = QColor() );
+static Tables_Form *tables_form = nullptr;
 //=======================================================================================
 static void append_log_removed( const QString& path )
 {
-    append_log_info( path, "REMOVED", Qt::black, Qt::red );
+    Q_ASSERT( tables_form );
+    tables_form->append_all_and_diff( path, "REMOVED", Qt::black, Qt::red );
 }
 //=======================================================================================
 static void append_log_excluded( const QString& path )
 {
-    append_log_info( path, "EXCLUDED", Qt::yellow, Qt::blue );
+    Q_ASSERT( tables_form );
+    tables_form->append_all_only( path, "EXCLUDED", Qt::yellow, Qt::blue );
 }
 //=======================================================================================
 
@@ -104,9 +104,11 @@ void process_entry( const QFileInfo& info )
     }
     //-----------------------------------------------------------------------------------
     // dirty builds property
-    if ( suffix == "o" ||
-         info.fileName() == "Makefile" ||
-         info.fileName().contains(".user") )
+    if ( suffix == "o"                                              ||
+         rel_name == "Makefile"                                     ||
+         rel_name.contains(".user")                                 ||
+         (info.isExecutable() && rel_name.startsWith("test_"))          // test builds
+       )
     {
         //vtrace << "about to remove";
         QFile::remove( abs_name );
@@ -126,8 +128,8 @@ void process_entry( const QFileInfo& info )
         return;
     }
     //-----------------------------------------------------------------------------------
-    append_log_info( abs_name, "NOT APPROVED", Qt::black, Qt::red );
-    vdeb;
+    //append_log_info( abs_name, "NOT APPROVED", Qt::black, Qt::red );
+    vdeb << "NOT APPROVED";
     exit(42);
     //-----------------------------------------------------------------------------------
 }
@@ -138,7 +140,7 @@ void process_path( const QString& path )
     QDir dir( path );
     const auto rel_name = QFileInfo(path).fileName();
 
-    append_log_info( path, "DIR", QColor(Qt::darkBlue) );
+    tables_form->append_all_only( path, "DIR", QColor(Qt::darkBlue) );
 
     //  Exclude
     if ( rel_name == "build_tool"           ||
@@ -181,6 +183,8 @@ void process_path( const QString& path )
 
 
 //=======================================================================================
+//      MAIN
+//=======================================================================================
 int main( int argc, char *argv[] )
 {
     VGit::print_and_exit_if_need( argc, argv );
@@ -188,11 +192,10 @@ int main( int argc, char *argv[] )
     prepare_licences();
 
     QApplication a(argc, argv);
-    QTableWidget w;
-    w.show();
-    w.setColumnCount(2);
-    w.horizontalHeader()->setStretchLastSection( true );
-    process_table = &w;
+    Tables_Form w;
+    w.showMaximized();
+
+    tables_form = &w;
 
     if ( argc != 2 )
     {
@@ -200,33 +203,19 @@ int main( int argc, char *argv[] )
         return 1;
     }
 
+    if ( std::string(argv[1]) == "--print-xmake-heap" )
+    {
+        std::cout << build_licence.toStdString();
+        return 0;
+    }
+
     process_path( argv[1] );
 
-    w.resizeColumnsToContents();
-
+    w.resize_cells();
     return a.exec();
 }
 //=======================================================================================
-static void append_log_info( const QString& path,
-                             const QString& info,
-                             const QColor& color,
-                             const QColor& bkg_color )
-{
-    Q_ASSERT( process_table );
-
-    int row = process_table->rowCount();
-    process_table->setRowCount( row + 1 );
-
-    auto item0 = new QTableWidgetItem( path );
-    item0->setTextColor( color );
-    if ( bkg_color.isValid() ) item0->setBackgroundColor( bkg_color );
-    process_table->setItem( row, 0, item0 );
-
-    auto item1 = new QTableWidgetItem( info );
-    item1->setTextColor( color );
-    if ( bkg_color.isValid() ) item1->setBackgroundColor( bkg_color );
-    process_table->setItem( row, 1, item1 );
-}
+//      MAIN
 //=======================================================================================
 static void prepare_licences()
 {
@@ -254,28 +243,29 @@ static void _process_licence_file( const QString& fname,
                                    const QByteArray& start_line,
                                    const QByteArray& licence )
 {
+    Q_ASSERT( tables_form );
     QFile f( fname );
     if ( !f.open(QIODevice::ReadWrite) )
     {
-        append_log_info( fname, "OPEN ERROR", Qt::red, Qt::darkGreen );
+        tables_form->append_all_and_diff( fname, "OPEN ERROR", Qt::red, Qt::darkGreen );
         return;
     }
     auto ftext = f.readAll();
 
     if ( ftext.startsWith(start_line) )
     {
-        append_log_info( fname, "ALREADY WITH", Qt::darkGreen );
+        tables_form->append_all_only( fname, "ALREADY WITH", Qt::darkGreen );
         return;
     }
 
     if ( !f.reset() )
     {
-        append_log_info( fname, "RESET ERROR", Qt::red, Qt::darkGreen );
+        tables_form->append_all_and_diff( fname, "RESET ERROR", Qt::red, Qt::darkGreen );
         return;
     }
     //vtrace << "about to append licence";
     f.write( licence );
     f.write( ftext );
-    append_log_info( fname, "APPENDED", Qt::green, Qt::black );
+    tables_form->append_all_and_diff( fname, "APPENDED", Qt::green, Qt::black );
 }
 //=======================================================================================

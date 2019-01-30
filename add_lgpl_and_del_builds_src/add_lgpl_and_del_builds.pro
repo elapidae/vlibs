@@ -25,7 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    tables_form.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -39,3 +40,9 @@ include( $$VLIBS_DIR/vgit/vgit.pri )
 
 RESOURCES += \
     resources.qrc
+
+FORMS += \
+    tables_form.ui
+
+HEADERS += \
+    tables_form.h

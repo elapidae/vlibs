@@ -20,7 +20,7 @@
 #ifndef VLOG_QT_H
 #define VLOG_QT_H
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include <ostream>
 
 #include <QString>
