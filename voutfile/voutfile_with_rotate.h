@@ -1,3 +1,22 @@
+/****************************************************************************************
+**
+**  VLIBS codebase, NIIAS
+**
+**  Authors:
+**  Alexandre Gromtsev aka elapidae     elapidae@yandex.ru
+**  Nadezhda Churikova aka claorisel    claorisel@gmail.com
+**  Ekaterina Boltenkova aka kataretta  kitkat52@yandex.ru
+**  Ivan Deylid aka sid1057             ivanov.dale@gmail.com>
+**
+**  GNU Lesser General Public License Usage
+**  This file may be used under the terms of the GNU Lesser General Public License
+**  version 3 as published by the Free Software Foundation and appearing in the file
+**  LICENSE.LGPL3 included in the packaging of this file. Please review the following
+**  information to ensure the GNU Lesser General Public License version 3 requirements
+**  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************************/
+
+
 #ifndef VOUTFILE_WITH_ROTATE_H
 #define VOUTFILE_WITH_ROTATE_H
 
@@ -43,6 +62,9 @@ private:
     void _rotate_and_reinit_file();
 
     std::shared_ptr<VOutFile> _cur_file;
+
+    VOutFile_With_Rotate( const VOutFile_With_Rotate& ) = delete;
+    VOutFile_With_Rotate& operator = ( const VOutFile_With_Rotate& ) = delete;
 };
 //=======================================================================================
 

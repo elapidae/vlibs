@@ -1,3 +1,22 @@
+/****************************************************************************************
+**
+**  VLIBS codebase, NIIAS
+**
+**  Authors:
+**  Alexandre Gromtsev aka elapidae     elapidae@yandex.ru
+**  Nadezhda Churikova aka claorisel    claorisel@gmail.com
+**  Ekaterina Boltenkova aka kataretta  kitkat52@yandex.ru
+**  Ivan Deylid aka sid1057             ivanov.dale@gmail.com>
+**
+**  GNU Lesser General Public License Usage
+**  This file may be used under the terms of the GNU Lesser General Public License
+**  version 3 as published by the Free Software Foundation and appearing in the file
+**  LICENSE.LGPL3 included in the packaging of this file. Please review the following
+**  information to ensure the GNU Lesser General Public License version 3 requirements
+**  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************************/
+
+
 #ifndef VTIMEPOINT_H
 #define VTIMEPOINT_H
 
@@ -248,7 +267,7 @@ class VSystemTimePoint final : public _vTimePoint< std::chrono::system_clock,
     using _base = _vTimePoint<std::chrono::system_clock, VSystemTimePoint>;
 public:
     explicit VSystemTimePoint()                         : _base()   {}
-    explicit VSystemTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSystemTimePoint(const timepoint_type &tp) : _base(tp) {}
     explicit VSystemTimePoint(time_t tt)                : _base(tt) {}
 
     template<typename Duration2>
@@ -267,7 +286,7 @@ class VSteadyTimePoint : public _vTimePoint< std::chrono::steady_clock,
     using _base = _vTimePoint<std::chrono::steady_clock, VSteadyTimePoint>;
 public:
     explicit VSteadyTimePoint()                         : _base()   {}
-    explicit VSteadyTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VSteadyTimePoint(const timepoint_type &tp) : _base(tp) {}
     // нету, похоже...
     //explicit VSteadyTimePoint(time_t tt)                : _base(tt) {}
 
@@ -286,7 +305,7 @@ class VHighResolutionTimePoint : public _vTimePoint< std::chrono::high_resolutio
                               VHighResolutionTimePoint>;
 public:
     explicit VHighResolutionTimePoint()                         : _base()   {}
-    explicit VHighResolutionTimePoint(const timepoint_t &tp)    : _base(tp) {}
+    explicit VHighResolutionTimePoint(const timepoint_type &tp) : _base(tp) {}
     explicit VHighResolutionTimePoint(time_t tt)                : _base(tt) {}
 
     template<typename Duration2>

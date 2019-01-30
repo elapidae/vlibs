@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>including_lgpl_part_00.txt</file>
+    </qresource>
+</RCC>

@@ -1,3 +1,22 @@
+/****************************************************************************************
+**
+**  VLIBS codebase, NIIAS
+**
+**  Authors:
+**  Alexandre Gromtsev aka elapidae     elapidae@yandex.ru
+**  Nadezhda Churikova aka claorisel    claorisel@gmail.com
+**  Ekaterina Boltenkova aka kataretta  kitkat52@yandex.ru
+**  Ivan Deylid aka sid1057             ivanov.dale@gmail.com>
+**
+**  GNU Lesser General Public License Usage
+**  This file may be used under the terms of the GNU Lesser General Public License
+**  version 3 as published by the Free Software Foundation and appearing in the file
+**  LICENSE.LGPL3 included in the packaging of this file. Please review the following
+**  information to ensure the GNU Lesser General Public License version 3 requirements
+**  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************************/
+
+
 #ifndef VLOGGER_H
 #define VLOGGER_H
 
@@ -23,11 +42,10 @@
  *
  *  По умолчанию включен вывод в консоль, через cout.
  *
- *
- * [1] есть еще заголовок vlog_pretty.h, который дублирует макросы в нижнем регистре,
- *      а также предоставляет класс VException, для бросания исключений вот так:
- *      throw vexception << "uups..." << 42;
-**/
+ * [1]
+ *  UPD 2019-01-24 -- vlog_pretty.h признан deprecated.
+ *  Макросы vtrace, vdeb, vrunlog, vwarning, vfatal перенесены в vlog.h.
+*/
 //=======================================================================================
 
 

@@ -1,10 +1,29 @@
+/****************************************************************************************
+**
+**  VLIBS codebase, NIIAS
+**
+**  Authors:
+**  Alexandre Gromtsev aka elapidae     elapidae@yandex.ru
+**  Nadezhda Churikova aka claorisel    claorisel@gmail.com
+**  Ekaterina Boltenkova aka kataretta  kitkat52@yandex.ru
+**  Ivan Deylid aka sid1057             ivanov.dale@gmail.com>
+**
+**  GNU Lesser General Public License Usage
+**  This file may be used under the terms of the GNU Lesser General Public License
+**  version 3 as published by the Free Software Foundation and appearing in the file
+**  LICENSE.LGPL3 included in the packaging of this file. Please review the following
+**  information to ensure the GNU Lesser General Public License version 3 requirements
+**  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+****************************************************************************************/
+
+
 #include "vfilelog.h"
 
 #include "vtimepoint.h"
 #include "vlogger.h"
 #include "vdir.h"
 #include "verror.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 
 //=======================================================================================
@@ -76,41 +95,8 @@ void VFileLog_Leveled::execute( const VLogEntry &entry )
 //=======================================================================================
 void VFileLog_Leveled::register_self()
 {
-    VLogger::add_executer( [this](const VLogEntry &e) { execute(e); });
+    VLogger::add_executer( [this](const VLogEntry& e) { execute(e); } );
 }
-//=======================================================================================
-#ifdef VGIO_KEYFILE_INCLUDED_BYEL
-VFileLog_Leveled::Ptr VFileLog_Leveled::load_from_keyfile( const vgio::KeyFile &kf,
-                                                           const std::string &group )
-{
-    if ( !kf.safe_bool(group, "need_leveled_log",false) ) return {};
-
-    auto path   = kf.get_string( group, "leveled_log_path"          );
-    auto fsize  = kf.get_int(    group, "leveled_log_one_file_size" );
-    auto scount = kf.get_int(    group, "leveled_log_files_count"   );
-
-    if ( path.empty() || scount < 0 || fsize <= 0 ) {
-        vwarning << "Leveled-keyfile-values: "
-                    "( path.empty() || scount < 0 || fsize <= 0 )";
-        return {};
-    }
-
-    return std::make_shared<VFileLog_Leveled>( path, fsize, scount );
-}
-//---------------------------------------------------------------------------------------
-void VFileLog_Leveled::save_to_keyfile( vgio::KeyFile *kf,
-                                        const std::string &group,
-                                        bool need_log,
-                                        const std::string &path,
-                                        int file_size,
-                                        int rotates_count )
-{
-    kf->set_bool    ( group, "need_leveled_log",            need_log        );
-    kf->set_string  ( group, "leveled_log_path",            path            );
-    kf->set_int     ( group, "leveled_log_one_file_size",   file_size       );
-    kf->set_int     ( group, "leveled_log_files_count",     rotates_count   );
-}
-#endif
 //=======================================================================================
 
 
@@ -134,7 +120,6 @@ void VFileLog_Shared::execute( const VLogEntry &entry )
 //=======================================================================================
 void VFileLog_Shared::register_self()
 {
-    auto e = std::bind( &VFileLog_Shared::execute, this, std::placeholders::_1 );
-    VLogger::add_executer( e );
+    VLogger::add_executer( [this](const VLogEntry& e) { execute(e); } );
 }
 //=======================================================================================
