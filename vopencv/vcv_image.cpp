@@ -211,7 +211,7 @@ vcv::Image::Projection Image::Projection::default_project_1( float left,
                        Translation::default_trn_1(),
                        CameraMatrix::default_mtx_1(),
                        {}
-                       );
+                     );
 }
 //=======================================================================================
 const std::vector<cv::Point2f> &Image::Projection::image_points() const
