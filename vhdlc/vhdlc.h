@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include "vstring.h"
 #include "vcallback.h"
+#include "vcompiler.h"
 
 //=======================================================================================
 //  Decoder and encoder for HDLC protocol.
@@ -98,7 +99,9 @@ namespace VHDLC
 
         void _buf_append( char ch );
         void _buf_send();
-        [[noreturn]] void _throw_error( const std::string& msg );
+
+        V_NORETURN
+        void _throw_error( const std::string& msg );
     };
     //-----------------------------------------------------------------------------------
 } // VHDLC namespace

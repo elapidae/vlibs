@@ -46,10 +46,15 @@
 
 
 //=======================================================================================
-// V_NORETURN_ENABLED -- выставляется когда компилятор в состоянии
-//  опознать [[noreturn]].
+// V_NORETURN_ENABLED -- выставляется когда компилятор в состоянии опознать [[noreturn]].
 //  NB! С версией не уверен.
+//  Use V_NORETURN macro instead of real [[noreturn]] :((
 #define V_NORETURN_ENABLED (V_GNUC_COMPILER_VERSION > 0x040703)
+#if V_NORETURN_ENABLED
+    #define V_NORETURN [[noreturn]]
+#else
+    #define V_NORETURN
+#endif
 //=======================================================================================
 
 

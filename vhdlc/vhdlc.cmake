@@ -43,6 +43,7 @@ if ( NOT  VHDLC_INCLUDED )
     include( "${VLIBS_DIR}/vstring/vstring.cmake" )
     include( "${VLIBS_DIR}/vcallback/vcallback.cmake" )
     include( "${VLIBS_DIR}/vcat/vcat.cmake" )    
+    include( "${VLIBS_DIR}/vmacroses/vmacroses.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vhdlc/")
