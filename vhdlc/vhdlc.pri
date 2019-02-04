@@ -44,6 +44,7 @@ isEmpty(qi_vhdlc) {
     include( $$VLIBS_DIR/vstring/vstring.pri )
     include( $$VLIBS_DIR/vcallback/vcallback.pri )
     include( $$VLIBS_DIR/vcat/vcat.pri )
+    include( $$VLIBS_DIR/vmacroses/vmacroses.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vhdlc
