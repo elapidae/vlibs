@@ -21,7 +21,7 @@
 
 #include <sys/socket.h>
 #include "verror.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 #include <string.h>     // only for memset()
 #include <netinet/in.h> // sockeaddr_in
@@ -577,8 +577,11 @@ std::string NetDebug::option_str( int opt )
 {
     switch (opt)
     {
-    case SO_OOBINLINE: return "SO_OOBINLINE";
-    case SO_REUSEADDR: return "SO_REUSEADDR";
+    case SO_OOBINLINE:  return "SO_OOBINLINE";
+    case SO_REUSEADDR:  return "SO_REUSEADDR";
+    case SO_BROADCAST:  return "SO_BROADCAST";
+    case IP_PKTINFO:    return "IP_PKTINFO";
+    case IP_RECVTTL:    return "IP_RECVTTL";
     }
     throw verror( "Unknown Net::option type: ", opt );
 }

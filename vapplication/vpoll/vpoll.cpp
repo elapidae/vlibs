@@ -26,7 +26,7 @@
 #include <memory>
 #include <assert.h>
 #include "vstd_atomic_map.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include "verror.h"
 #include "vcompiler.h" // for V_COMPILER_KNOWS_THREAD_LOCAL
 

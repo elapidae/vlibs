@@ -22,7 +22,7 @@
 #include <assert.h>
 
 #include "verror.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include "vposix_network.h"
 #include "vposix_files.h"
 #include "vposix_alloca.h"

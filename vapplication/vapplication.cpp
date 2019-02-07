@@ -27,7 +27,7 @@
 
 #include "verror.h"
 #include "vcat_containers.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include <assert.h>
 
 #include <algorithm>

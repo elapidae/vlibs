@@ -26,7 +26,7 @@
 
 #include <assert.h>
 #include "verror.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 
 using namespace vposix;
