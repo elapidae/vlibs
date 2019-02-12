@@ -24,18 +24,17 @@
 #include <assert.h>
 
 //=======================================================================================
+//  Здесь древняя темная магия, решение было честно найдено на просторах инета.
+//  Частично здесь: https://habr.com/en/post/246971/
+//  Частично подбором. Второй макрос нужен, даже если кажется что нет.
 #define VGIT_QUOTES_FOR_EXTRACT_DEFINES(name) #name
 #define VGIT_STRING_FOR_EXTRACT_DEFINES(macro) VGIT_QUOTES_FOR_EXTRACT_DEFINES(macro)
-//=======================================================================================
-
 //=======================================================================================
 #define VGIT_CURRECT_HASH_BYEL      VGIT_STRING_FOR_EXTRACT_DEFINES(VGIT_HASH_ELPD)
 #define VGIT_CURRECT_REVCOUNT_BYEL  VGIT_STRING_FOR_EXTRACT_DEFINES(VGIT_REVCOUNT_ELPD)
 #define VGIT_CURRECT_BRANCH_BYEL    VGIT_STRING_FOR_EXTRACT_DEFINES(VGIT_BRANCH_ELPD)
 #define VGIT_CURRECT_DATE_BYEL      VGIT_STRING_FOR_EXTRACT_DEFINES(VGIT_DATE_ELPD)
 #define VGIT_CURRECT_AUTHOR_BYEL    VGIT_STRING_FOR_EXTRACT_DEFINES(VGIT_AUTHOR_ELPD)
-//#define VGIT_CURRECT_COMMENT_BYEL   VGIT_STRING_FOR_EXTRACT_DEFINES(VGIT_COMMENT_ELPD)
-//#define VGIT_CURRECT_OLOLOLOLO    VGIT_STRING_FOR_EXTRACT_DEFINES(OLOLOLOLO)
 //=======================================================================================
 
 
@@ -81,7 +80,7 @@ std::string VGit::compile_datetime()
 }
 #pragma GCC diagnostic pop
 //=======================================================================================
-std::string VGit::as_message(const std::string &query)
+std::string VGit::as_message( const std::string& query )
 {
     if ( query == "--vgit-hash"     )   return hash();
     if ( query == "--vgit-branch"   )   return branch();
@@ -105,15 +104,14 @@ void VGit::print_and_exit_if_need( int argc, const char * const * const argv,
 {
     assert( argc >= 0 && argv );
 
-    std::string vgit( "--vgit" );
+    std::string vgit( "--vgit" );       //  Ищем что-нибудь, начинающееся с этой строки.
     for ( int i = 1; i < argc; ++i )
     {
         std::string str = argv[i];
-        auto sub = str.substr(0, vgit.size());
+        auto sub = str.substr( 0, vgit.size() );
         if ( sub != vgit ) continue;
         std::cout << as_message(str) << std::endl;
         exit( retcode );
     }
 }
 //=======================================================================================
-

@@ -18,7 +18,7 @@
 
 
 #========================================================================================
-# vgit.pri
+# vgit.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -33,24 +33,25 @@
 
 
 #========================================================================================
-isEmpty(qi_vgit) {
-    qi_vgit = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vgit appended ===")
 
-    isEmpty(VLIBS_DIR): error("vgit: Need VLIBS_DIR correct path.")
+if ( NOT  VGIT_INCLUDED )
+    set ( VGIT_INCLUDED TRUE )
 
+    message( "Include vgit..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    # Вся машинерия там, т.к. между этими палочками не очень-то развернешься.
-    include( $$VLIBS_DIR/vgit/vgit_impl.pri )
+    include( "${VLIBS_DIR}/vgit/vgit_impl.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vgit
+    include_directories( "${VLIBS_DIR}/vgit/" )
 
+    
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgit/vgit.h") 
+    
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgit/vgit.cpp") 
 
-    HEADERS     += $$VLIBS_DIR/vgit/vgit.h
+    message( "vgit included" )
 
-    SOURCES     += $$VLIBS_DIR/vgit/vgit.cpp
-}
-# vgit.pri
+endif()
+# vgit.cmake
 #========================================================================================
