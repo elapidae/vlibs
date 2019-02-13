@@ -18,7 +18,6 @@
 
 
 #========================================================================================
-# vgit.pri
 #
 #   http://blog.mgsxx.com/?p=2140
 #
@@ -40,17 +39,13 @@
 #
 #========================================================================================
 
-
 isEmpty(qi_vgit_impl) {
+    # -----------------------------------------------------------------------------------
     qi_vgit_impl = 1;
     isEmpty(qi_not_print_pri_messages): message("=== vgit (impl) appended ===")
 
-    # Это должно заходить из основного файла vgit.pri
-    #INCLUDEPATH += $$VLIBS_DIR/vgit
-    #HEADERS     += $$VLIBS_DIR/vgit/vgit.h
-    #SOURCES     += $$VLIBS_DIR/vgit/vgit.cpp
-
-    # Старое имя Main_Dir много где используется, пусть чуток покиснет...
+    # MAIN_DIR symbol control -----------------------------------------------------------
+    #   Старое имя Main_Dir много где используется, пусть чуток покиснет...
     !isEmpty(Main_Dir): warning("vgit: variable \$\$Main_Dir has deprecated, use \
                                  MAIN_DIR=\$\$PWD instead.")
     isEmpty(MAIN_DIR) {
@@ -59,37 +54,42 @@ isEmpty(qi_vgit_impl) {
         MAIN_DIR = $$Main_Dir
     }
 
-    # Основная машинерия с преферансом, бубном и танцами. Страшновато представить как
-    # все вот это надо будет еще и под виндой поддерживать...
-    VGIT_REVCOUNT = "$$system(cd \"$$system_path($$MAIN_DIR)\"      &&  \
-                    git rev-list HEAD --count)"
+    # -----------------------------------------------------------------------------------
+    #   Основная машинерия с преферансом, бубном и танцами. Страшновато представить как
+    #   все вот это надо будет еще и под виндой поддерживать...
+    VGIT_HASH     = "$$system(cd \"$$system_path($$MAIN_DIR)\"  &&  \
+                     git log -n 1 --pretty=format:\"%H\")"
 
-    VGIT_HASH     = "$$system(cd \"$$system_path($$MAIN_DIR)\"      &&  \
-                    git log -n 1 --pretty=format:\"%H\")"
+    VGIT_REVCOUNT = "$$system(cd \"$$system_path($$MAIN_DIR)\"  &&  \
+                     git rev-list HEAD --count)"
 
-    VGIT_DATE     = "$$system(cd \"$$system_path($$MAIN_DIR)\"      &&  \
-                    git log -n 1 --pretty=format:\"%aI\")"
+    VGIT_BRANCH   = "$$system(cd \"$$system_path($$MAIN_DIR)\"  &&  \
+                     git symbolic-ref --short HEAD)"
 
-    VGIT_AUTHOR   = "$$system(cd \"$$system_path($$MAIN_DIR)\"      &&  \
-                    git log -n 1 --pretty=format:\"%an\")"
+    VGIT_AUTHOR   = "$$system(cd \"$$system_path($$MAIN_DIR)\"  &&  \
+                     git log -n 1 --pretty=format:\"%an\")"
 
-    VGIT_BRANCH   = "$$system(cd \"$$system_path($$MAIN_DIR)\"      &&  \
-                    git branch | awk \'{print \$2}\'                    \
-                    | sed \'s/\(//g\')"
+    VGIT_DATE     = "$$system(cd \"$$system_path($$MAIN_DIR)\"  &&  \
+                     git log -n 1 --pretty=format:\"%aI\")"
 
+    # -----------------------------------------------------------------------------------
 
-    DEFINES += VGIT_REVCOUNT_ELPD=\"$${VGIT_REVCOUNT}\"
     DEFINES +=     VGIT_HASH_ELPD=\"$${VGIT_HASH}\"
-    DEFINES +=     VGIT_DATE_ELPD=\"$${VGIT_DATE}\"
-    DEFINES +=   VGIT_AUTHOR_ELPD=\"$${VGIT_AUTHOR}\"
+    DEFINES += VGIT_REVCOUNT_ELPD=\"$${VGIT_REVCOUNT}\"
     DEFINES +=   VGIT_BRANCH_ELPD=\"$${VGIT_BRANCH}\"
+    DEFINES +=   VGIT_AUTHOR_ELPD=\"$${VGIT_AUTHOR}\"
+    DEFINES +=     VGIT_DATE_ELPD=\"$${VGIT_DATE}\"
+
+    # -----------------------------------------------------------------------------------
 
     message(">>> Current git hash: $${VGIT_HASH}, \
-                           branch: $${VGIT_BRANCH}, \
                          revcount: $${VGIT_REVCOUNT}, \
+                           branch: $${VGIT_BRANCH}, \
                            author: $${VGIT_AUTHOR}, \
                              date: $${VGIT_DATE}\
                              ")
+
+    # -----------------------------------------------------------------------------------
 
     # Удаление объектных файлов и Makefile необходимо, чтобы инкрементальная сборка
     # обязательно пересобрала всех участников этой пирушки.
@@ -101,6 +101,7 @@ isEmpty(qi_vgit_impl) {
                         $(DEL_FILE) $${VGIT_O}  && \
                         $(DEL_FILE) $${VMakeFileForRemove}
 
+    # -----------------------------------------------------------------------------------
 } # ifndef qi_vgit_impl
-# vgit.pri
+# vgit_impl.pri
 #========================================================================================

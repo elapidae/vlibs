@@ -59,7 +59,7 @@ std::string VGit::branch()
 {
     std::string res = VGIT_CURRECT_BRANCH_BYEL;
 
-    if ( res == "HEAD" )
+    if ( res.empty() )
         return  "DETACHED HEAD";
 
     return res;

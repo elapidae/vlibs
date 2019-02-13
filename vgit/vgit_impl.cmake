@@ -25,68 +25,77 @@
 #========================================================================================
 if ( NOT  VGIT_IMPL_INCLUDED )
     set ( VGIT_IMPL_INCLUDED TRUE )
-    message( "Include vgit impl..." )
+    message( "== including vgit impl... ===" )
 
-    #====================================================================================
-    # message for copy-pasting to a project. --------------------------------------------
+    # MAIN_DIR testing and defining. ----------------------------------------------------    
     if ( NOT MAIN_DIR )
-        message( "===================================================" )
-        message( "Write it into general project:" )
-        message( "set \( MAIN_DIR \"\${CMAKE_CURRENT_SOURCE_DIR}\" \)" )
-        message( "===================================================" )
-        message( FATAL_ERROR "<see above>" )
+        set ( MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}" )
+        message( WARNING ">>>>>>>> Variable MAIN_DIR has not set, "
+                         "so now MAIN_DIR=${MAIN_DIR} <<<<<<<<" )
     endif()
-    #====================================================================================
+
     # hash ------------------------------------------------------------------------------
+    #   Проверку а ошибки делать имеет смысл только в первом вызове, далее по накатанной.
     execute_process( COMMAND git log -n 1 --pretty=format:"%H"
                      WORKING_DIRECTORY ${MAIN_DIR}
                      OUTPUT_VARIABLE VGIT_HASH
                      ERROR_VARIABLE  VGIT_ERROR )
 
-    if ( ERROR_VARIABLE )
-        message( FATAL_ERROR "Git error: ${VGIT_ERROR}" )
-    else()
-        message( "Current git hash: ${VGIT_HASH}" )
+    if ( NOT VGIT_HASH )
+        message( FATAL_ERROR ">>>>>>>> GIT ERROR: '${VGIT_ERROR}' "
+                 "(скорее всего, в папке еще нету репа, сделайте "
+                 "git init && git add . && git commit) <<<<<<<<" )
     endif()
 
+    string(REGEX REPLACE "[\"\r\n]+" "" VGIT_HASH ${VGIT_HASH})
     add_definitions( -DVGIT_HASH_ELPD=${VGIT_HASH} )
+
     # revcount --------------------------------------------------------------------------
     #   Надо найти способ вырезать лишние переносы строки
-    #execute_process( COMMAND git rev-list HEAD --count
-    #                 WORKING_DIRECTORY ${MAIN_DIR}
-    #                 OUTPUT_VARIABLE VGIT_REVCOUNT )
-    #message( "Current git rev-count: ${VGIT_REVCOUNT}" )
-    #add_definitions( -DVGIT_REVCOUNT_ELPD=${VGIT_REVCOUNT} ) пока не можем извлечь :((
-    # date ------------------------------------------------------------------------------
-    execute_process( COMMAND git log -n 1 --pretty=format:"%aI"
+    execute_process( COMMAND git rev-list HEAD --count
                      WORKING_DIRECTORY ${MAIN_DIR}
-                     OUTPUT_VARIABLE VGIT_DATE )
+                     OUTPUT_VARIABLE VGIT_REVCOUNT )
 
-    message( "Current git date: ${VGIT_DATE}" )
-    add_definitions( -DVGIT_DATE_ELPD=${VGIT_DATE} )
+    string(REGEX REPLACE "[\"\r\n]+" "" VGIT_REVCOUNT ${VGIT_REVCOUNT})
+    add_definitions( -DVGIT_REVCOUNT_ELPD=${VGIT_REVCOUNT} )
+
+    # branch ----------------------------------------------------------------------------
+    execute_process( COMMAND git symbolic-ref --short HEAD
+                     WORKING_DIRECTORY ${MAIN_DIR}
+                     OUTPUT_VARIABLE VGIT_BRANCH )
+
+    if ( NOT VGIT_BRANCH )      #   На случай оторванной головы.
+        set( VGIT_BRANCH " " )  #   Когда отоврана, команда дает ошибку и переменная не
+    endif()                     #   инициализируется. REGEX дает ошибку...
+    string(REGEX REPLACE "[\"\r\n]+" "" VGIT_BRANCH ${VGIT_BRANCH})
+    add_definitions( -DVGIT_BRANCH_ELPD=${VGIT_BRANCH} )
+
     # author ----------------------------------------------------------------------------
     execute_process( COMMAND git log -n 1 --pretty=format:"%an"
                      WORKING_DIRECTORY ${MAIN_DIR}
                      OUTPUT_VARIABLE VGIT_AUTHOR )
 
-    message( "Current git author: ${VGIT_AUTHOR}" )
+    string(REGEX REPLACE "[\"\r\n]+" "" VGIT_AUTHOR ${VGIT_AUTHOR})
     add_definitions( -DVGIT_AUTHOR_ELPD=${VGIT_AUTHOR} )
-    # branch ----------------------------------------------------------------------------
-    #   Надо найти способ сделать парсинг и убить возможные последствия отрезанной головы
-    #execute_process( COMMAND ${VLIBS_DIR}/vgit/extract_branch.sh .
-    #                 WORKING_DIRECTORY ${MAIN_DIR}
-    #                 OUTPUT_VARIABLE VGIT_BRANCH )
-    #message( "Current git author: ${VGIT_BRANCH}" )
-    #add_definitions( -DVGIT_BRANCH_ELPD=${VGIT_BRANCH} ) пока не можем извлечь :((
-    #====================================================================================
 
-    include_directories( "${VLIBS_DIR}/vgit/")
-    
-    set( V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgit/vgit.h"   )
-    set( V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgit/vgit.cpp" )
+    # date ------------------------------------------------------------------------------
+    execute_process( COMMAND git log -n 1 --pretty=format:"%aI"
+                     WORKING_DIRECTORY ${MAIN_DIR}
+                     OUTPUT_VARIABLE VGIT_DATE )
 
-    message( "vgit impl included" )
-    #====================================================================================
+    string(REGEX REPLACE "[\"\r\n]+" "" VGIT_DATE ${VGIT_DATE})
+    add_definitions( -DVGIT_DATE_ELPD=${VGIT_DATE} )
+
+    # -----------------------------------------------------------------------------------
+    message( "Catched git hash: ${VGIT_HASH}"
+                  ", rev-count: ${VGIT_REVCOUNT}"
+                     ", branch: ${VGIT_BRANCH}"
+                     ", author: ${VGIT_AUTHOR}"
+                       ", date: ${VGIT_DATE}" )
+
+    message( "=== vgit impl included ===" )
+
+    # -----------------------------------------------------------------------------------
 endif()
 # vgit_impl.cmake
 #========================================================================================

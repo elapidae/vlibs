@@ -45,10 +45,10 @@ if ( NOT  VGIT_INCLUDED )
 
     include_directories( "${VLIBS_DIR}/vgit/" )
 
-    
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgit/vgit.h") 
-    
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgit/vgit.cpp") 
+
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgit/vgit.h")
+
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgit/vgit.cpp")
 
     message( "vgit included" )
 
