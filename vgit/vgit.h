@@ -33,11 +33,8 @@ public:
     static std::string author();
     static std::string branch();
 
-    // Слон, к сожалению, из коробки не взлетел. Причина пока непонятна.
-    //static std::string comment();
-
     // Метка времени компиляции.
-    // К git отношения не имеет, но где-то надо хранить...
+    // К git отношения не имеет, но здесь вполне уместно...
     static std::string compile_datetime();
 
     // принимает --vgit-branch, --vgit-hash, --vgit-revcount, --vgit-date, vgit-author,

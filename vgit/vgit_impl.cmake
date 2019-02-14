@@ -27,11 +27,11 @@ if ( NOT  VGIT_IMPL_INCLUDED )
     set ( VGIT_IMPL_INCLUDED TRUE )
     message( "== including vgit impl... ===" )
 
-    # MAIN_DIR testing and defining. ----------------------------------------------------    
+    # MAIN_DIR testing and defining. ----------------------------------------------------
     if ( NOT MAIN_DIR )
-        set ( MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}" )
-        message( WARNING ">>>>>>>> Variable MAIN_DIR has not set, "
-                         "so now MAIN_DIR=${MAIN_DIR} <<<<<<<<" )
+        set ( MAIN_DIR "${CMAKE_SOURCE_DIR}" )
+        message( ">>>>>>>> Variable MAIN_DIR has not set, "
+                 "so now MAIN_DIR=${MAIN_DIR} <<<<<<<<" )
     endif()
 
     # hash ------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ if ( NOT  VGIT_IMPL_INCLUDED )
                      ERROR_VARIABLE  VGIT_ERROR )
 
     if ( NOT VGIT_HASH )
-        message( FATAL_ERROR ">>>>>>>> GIT ERROR: '${VGIT_ERROR}' "
+        message( FATAL_ERROR ">>>>>>>> GIT ERROR: \"${VGIT_ERROR}\" "
                  "(скорее всего, в папке еще нету репа, сделайте "
                  "git init && git add . && git commit) <<<<<<<<" )
     endif()
