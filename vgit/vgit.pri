@@ -43,6 +43,9 @@ isEmpty(qi_vgit) {
     #<<< Start your code here -----------------------------------------------------------
     # Вся машинерия там, т.к. между этими палочками не очень-то развернешься.
     include( $$VLIBS_DIR/vgit/vgit_impl.pri )
+    OTHER_FILES += $$VLIBS_DIR/vgit/README
+    OTHER_FILES += $$VLIBS_DIR/vgit/vgit_impl.cmake
+    OTHER_FILES += $$VLIBS_DIR/vgit/vgit_post.cmake
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vgit
