@@ -21,8 +21,8 @@
 #define VGSTSTRUCTURE_H
 
 
-//=======================================================================================
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/1.12/gstreamer/html/GstStructure.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/1.12/gstreamer/
+html/GstStructure.html */
 
 //GBoxed
 //╰── GstStructure

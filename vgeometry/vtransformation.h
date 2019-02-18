@@ -51,7 +51,8 @@ class TransformationUtils
 {
 public:
 
-    TransformationUtils(float sh_x, float sh_y, float sh_z, float route_angle_y, float route_angle_z);
+    TransformationUtils( float sh_x, float sh_y, float sh_z,
+                         float route_angle_y, float route_angle_z );
 
     void route_angle_z(float *new_x, float *new_y);
     void route_angle_y(float *new_x, float *new_z);

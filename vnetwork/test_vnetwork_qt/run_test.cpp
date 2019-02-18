@@ -34,7 +34,6 @@ int main(int argc, char **argv)
 
 int main_1()
 {
-    //LOG4CPLUS_DEBUG_FMT(IsdModule::ModuleLogger::logger(), "Socket closed: %d", fd_socket);
     VApplication app;
 
     VTcpSocket sock;

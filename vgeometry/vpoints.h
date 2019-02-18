@@ -439,36 +439,4 @@ typename VPoint<T>::Vector VPolarPoint<T>::Vector::to_cartesian() const
 //=======================================================================================
 
 
-
-//=======================================================================================
-//#include <tuple>
-//namespace ishumi
-//{
-////===================================================================================
-//    template<typename T>
-//    struct Serialize;
-//    //===================================================================================
-//    //template<typename T>
-//    constexpr auto _reduce_VPointF = []( const VPointF& val )
-//    {
-//        return std::make_tuple( val.x(), val.y() );
-//    };
-//    //===================================================================================
-//    template<>
-//    struct Serialize< VPointF >
-//    {
-//        static constexpr const char* id()
-//        { return "VPoint version 1.0 2018-10-04 by Elapidae"; }
-
-//        result_of_arg1<decltype(_reduce_VPointF), VPointF>
-//        reduce( const VPointF& val )
-//        { return _reduce_VPointF(val); }
-//    };
-//    //===================================================================================
-//} // namespace ishumi
-//=======================================================================================
-
-
-
-
 #endif // VPOINTS_H

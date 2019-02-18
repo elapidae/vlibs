@@ -22,7 +22,7 @@
 
 
 //=======================================================================================
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/1.14/gstreamer/html/GstSample.html
+//https://gstreamer.freedesktop.org/data/doc/gstreamer/1.14/gstreamer/html/GstSample.html
 
 //GBoxed
 //╰── GstSample

@@ -21,7 +21,9 @@
 #define VGSTELEMENT_H
 
 
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/1.14/gstreamer/html/GstElement.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/1.14/gstreamer/
+html/GstElement.html */
+
 //GObject
 //  ╰── GInitiallyUnowned
 //      ╰── GstObject

@@ -22,7 +22,8 @@
 
 
 //=======================================================================================
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#GstBufferFlags
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/
+GstBuffer.html#GstBufferFlags */
 
 //GBoxed
 //╰── GstBuffer

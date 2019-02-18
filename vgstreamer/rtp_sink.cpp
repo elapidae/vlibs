@@ -19,7 +19,7 @@
 
 #include "rtp_sink.h"
 
-#include "../vlog/vlog_pretty.h"
+//#include "../vlog/vlog_pretty.h"
 
 
 RTP_Sink::RTP_Sink( uint16_t port )

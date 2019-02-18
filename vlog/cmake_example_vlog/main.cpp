@@ -98,7 +98,10 @@ int main( int, char **argv )
 
 
     // По умолчанию будет выводить в консоль.
-    VRUNLOG << "Hello World!" << sizeof(VLogEntry) << sizeof(VTimePoint) << sizeof(string);
+    VRUNLOG << "Hello World!"
+            << "sizeof(VLogEntry):"  << sizeof(VLogEntry)
+            << "sizeof(VTimePoint):" << sizeof(VTimePoint)
+            << "sizeof(string):"     << sizeof(string);
 
     //  Вводные примеры, определим пару простых переменных и плюнем ими в консоль.
     double dd = 3.1415;

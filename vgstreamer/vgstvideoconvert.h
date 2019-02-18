@@ -20,7 +20,8 @@
 #ifndef VGSTVIDEOCONVERT_H
 #define VGSTVIDEOCONVERT_H
 
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-plugins/html/gst-plugins-base-plugins-videoconvert.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-plugins/
+html/gst-plugins-base-plugins-videoconvert.html */
 
 //GObject
 //╰── GInitiallyUnowned
