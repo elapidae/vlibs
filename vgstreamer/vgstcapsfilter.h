@@ -20,7 +20,8 @@
 #ifndef VGSTCAPSFILTER_H
 #define VGSTCAPSFILTER_H
 
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/1.13/gstreamer-plugins/html/gstreamer-plugins-capsfilter.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/1.13/gstreamer-plugins/html/
+gstreamer-plugins-capsfilter.html */
 
 //GObject
 //   ╰── GInitiallyUnowned

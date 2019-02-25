@@ -21,7 +21,8 @@
 #define VGSTRTPH264DEPAY_H
 
 
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-rtph264depay.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/
+gst-plugins-good-plugins-rtph264depay.html */
 
 
 //GObject

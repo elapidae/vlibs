@@ -18,13 +18,10 @@
 
 
 #include <iostream>
+#include "gtest/gtest.h"
 
 #include "vlog.h"
-#include "vlog_pretty.h"
-
-//#include "vfilelog.h"
-#include <thread>
-#include "verror.h"
+#include "vfilelog.h"
 
 using namespace std;
 
@@ -37,16 +34,16 @@ void my_log_executer( const VLogEntry &entry )
 
     entry.timestamp();  // Метка времени создания вхождения.
 
-    entry.level_char();  // Однобуквенный код типа сообщения { T, D, R, W, F }.
-    entry.level_str();   // Трехбуквенный код типа сообщения { TRC, DBG, RUN, WRN, FLT }.
-    entry.level();       // Тип enum class vlog::VLogEntry::Type.
+    entry.level_char(); // Однобуквенный код типа сообщения { T, D, R, W, F }.
+    entry.level_str();  // Трехбуквенный код типа сообщения { TRC, DBG, RUN, WRN, FLT }.
+    entry.level();      // Тип enum class vlog::VLogEntry::Type.
 
     entry.filename();   // Имя файла без пути до него.
     entry.filepath();   // Полное имя файла (то, что дает __FILE__).
     entry.line();       // Номер строки в исходнике __LINE__
-    entry.function();   // Что дает __FUNCTION__ (ИМХО __PRETTY_FUNCTION__ -- не pretty).
+    entry.function();   // Что дает __FUNCTION__ (ИМХО __PRETTY_FUNCTION__ - не pretty).
 
-    entry.message();    // Составленное сообщение.
+    entry.message();    //  Составленное сообщение.
 
     entry.is_trace();   //  Для быстрой проверки к-л уровня.
     entry.is_debug();   //
@@ -58,47 +55,17 @@ void my_log_executer( const VLogEntry &entry )
 }
 //=======================================================================================
 
-//=======================================================================================
-//      Тестовая секция.
-template<typename T>
-class TD;
-
-template<typename T>
-void test(T)
-{
-    //TD<T> ttt;
-}
-
-template<typename T>
-void f( T&& t )
-{
-    test( std::forward<T>(t) );
-    TD< decltype(std::forward<T>(t)) > ddd;
-}
-
-//static void fooo(const VTimePoint & tp)
-//{
-//    throw verror << tp;
-//}
-//      Тестовая секция.
-//=======================================================================================
-
+class VLog_Test: public testing::Test
+{};
 
 //=======================================================================================
-int main( int, char **argv )
+TEST_F( VLog_Test, _1 )
 {
-    // Тест на синтаксис штатного завершения программы по неисследованному исключению.
-    //try { fooo(VTimePoint::now()); }
-    //catch (const VError&) { return 0; }
-    //
-    // Так не работает:
-    //vdeb << VSteadyTimePoint::now()
-    // А так можно посмотреть аптайм.
-    //vdeb << VTimePoint(VSteadyTimePoint::now().microseconds());
-
-
     // По умолчанию будет выводить в консоль.
-    VRUNLOG << "Hello World!" << sizeof(VLogEntry) << sizeof(VTimePoint) << sizeof(string);
+    vrunlog << "Hello World!"
+            << "sizeof(VLogEntry):"  << sizeof(VLogEntry)
+            << "sizeof(VTimePoint):" << sizeof(VTimePoint)
+            << "sizeof(string):"     << sizeof(string);
 
     //  Вводные примеры, определим пару простых переменных и плюнем ими в консоль.
     double dd = 3.1415;
@@ -106,63 +73,60 @@ int main( int, char **argv )
     int    ii = 42;
     std::chrono::milliseconds ms(12345); // и такое выводим`c...
 
-    VDEBUG; // пустая строка
-    VDEBUG << "------- same syntax example.";
-    VDEBUG << dd << ff << ii << ms;   // Одно
-    VDEBUG(dd, ff, ii, ms);           // и то
-    VDEBUG(dd)(ff)(ii)(ms);           // же.
+    vdeb; // пустая строка
+    vdeb << "------- same syntax example.";
+    vdeb << dd << ff << ii << ms;   // Одно
+    vdeb(dd, ff, ii, ms);           // и то
+    vdeb(dd)(ff)(ii)(ms);           // же.
 
     // Примеры с манипуляторами вывода потока.
     double long_term_val = 1.0 / 3.0; // Значение с большим кол-вом знаков после запятой.
-    VDEBUG << "------ precision example.";
-    VDEBUG << long_term_val;                    // выведет мало знаков.
-    VDEBUG.max_precision() << long_term_val;    // выведет максимальное кол-во знаков.
+    vdeb << "------ precision example.";
+    vdeb << long_term_val;                    // выведет мало знаков.
+    vdeb.max_precision() << long_term_val;    // выведет максимальное кол-во знаков.
 
-    VDEBUG << "------ fill & width example.";
-    VDEBUG.fill_char('0').field_width(5) << 42; // 00042
-    VDEBUG.num(42, 5, '0');                     // то же самое, 00042
-                                                // специально заточено под эту задачу.
-    VDEBUG << "------------------------------";
+    vdeb << "------ fill & width example.";
+    vdeb.fill_char('0').field_width(5) << 42; // 00042
+    vdeb.num(42, 5, '0');                     // то же самое, 00042
+                                              // специально заточено под эту задачу.
+    vdeb << "------------------------------";
 
     // Вывод без пробелов между аргументами:
-    string prog_name = VLogEntry::_extract_filename( argv[0] );
-    VTRACE.nospace()( "My program name is '", prog_name, "'." );
+    string prog_name = VLogEntry::_extract_filename( "some-dir/some-file.exe" );
+    vtrace.nospace()( "filename is '", prog_name, "'." );
 
     // Теперь будем логгировать в cerr, удалим всех исполнителей и добавим исполнитель,
     // который будет писать в cerr (vlog::VLogger::_log_to_cerr).
     VLogger::clear_executers();
     VLogger::add_executer( VLogger::to_cerr );
-    VRUNLOG << "Hello World in cerr!";
+    vrunlog << "Hello World in cerr!";
 
     // регистрируем своего исполнителя.
     VLogger::add_executer( my_log_executer );
-    VWARNING("After register own executer.");
+    vwarning("After register own executer.");
 
 
     // Удалим текущие логгеры и будем писать только в файлы.
     VLogger::clear_executers();
 
     // Будем вести историю максимум в двух файлах, размеры одного -- 2.5 кб.
-//    VCommonFileLog one_flog( vcat(argv[0], ".log"), 2500, 2 );
-//    one_flog.register_self(); // Он сам знает где и как регистрироваться.
+    VFileLog_Shared shared_flog( vcat("shared-log.log"), 2500, 2 );
+    shared_flog.register_self(); // Он сам знает где и как регистрироваться.
 
-//    system("mkdir -p ./logs"); // если папки не будет -- это не проблема логгера.
-//    // Будем вести историю максимум в двух файлах, размеры одного -- 1 кб.
-//    VGroupFileLog group_flog( "./logs", 1000, 2 );
-//    group_flog.register_self();
+    // Будем вести историю максимум в двух файлах, размеры одного -- 1 кб.
+    VFileLog_Leveled leveled_flog( "./logs", 1000, 2 );
+    leveled_flog.register_self();
 
     for (int i = 0; i < 10; ++i)
     {
         string msg = vcat("Testing records in file: ", i)
                          (", timestamp ms = ", VTimePoint::now().milliseconds());
-        VTRACE   (msg);
-        VDEBUG   (msg);
-        VRUNLOG  (msg);
-        VWARNING (msg);
-        VFATAL   (msg);
+        vtrace   (msg);
+        vdeb   (msg);
+        vrunlog  (msg);
+        vwarning (msg);
+        vfatal   (msg);
     }
     // См. логи около бинарника программы.
-
-    return 0;
 }
 //=======================================================================================

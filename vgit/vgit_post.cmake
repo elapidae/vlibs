@@ -17,15 +17,18 @@
 #########################################################################################
 
 
+#========================================================================================
+if ( NOT VGIT_INCLUDED )
+    message( FATAL_ERROR "Следует включить vgit.cmake перед add_executable()..." )
+endif()
+#========================================================================================
+if ( NOT VGIT_POST_INCLUDED )
+    set( VGIT_POST_INCLUDED TRUE )
 
+    add_custom_target( vgit_regenerate ALL
+                        COMMAND           cmake "${CMAKE_SOURCE_DIR}"
+                        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+                        BYPRODUCTS        "${CMAKE_SOURCE_DIR}/.git/HEAD" )
 
-isEmpty(qi_vfilelog_keyfile) {
-    qi_vfilelog_keyfile = 1;
-    isEmpty(qi_not_print_pri_messages): message("=== vfilelog_keyfile appended ===")
-
-    isEmpty(VLIBS_DIR): error("vfilelog_keyfile: Need VLIBS_DIR correct path.")
-    include($$VLIBS_DIR/vlog/vfilelog.pri)
-
-    HEADERS     += $$VLIBS_DIR/vlog/vfilelog_keyfile.h
-    SOURCES     += $$VLIBS_DIR/vlog/vfilelog_keyfile.cpp
-}
+endif()
+#========================================================================================

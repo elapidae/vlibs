@@ -94,8 +94,8 @@ namespace vposix
     class Socket
     {
         //===============================================================================
-        //static constexpr bool do_trace() { return false; }
-        static constexpr bool do_trace() { return true; }
+        static constexpr bool do_trace() { return false; }
+        //static constexpr bool do_trace() { return true; }
         //===============================================================================
 
     public:

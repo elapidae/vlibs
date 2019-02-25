@@ -19,7 +19,7 @@
 
 #include "vtcpserver.h"
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 #include "verror.h"
 #include "vposix_network.h"

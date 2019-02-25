@@ -24,7 +24,7 @@
 #include "vposix_core.h"
 #include "vposix_files.h"
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 using namespace vposix;
 

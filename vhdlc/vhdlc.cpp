@@ -90,7 +90,8 @@ void VHDLC::Decoder::_buf_send()
     _buffer.clear();
 }
 //=======================================================================================
-[[noreturn]] void VHDLC::Decoder::_throw_error( const std::string& msg )
+V_NORETURN
+void VHDLC::Decoder::_throw_error( const std::string& msg )
 {
     //  Возвращаемся в начальное состояние, все равно поток уже неконсистентный.
     _buffer.clear();

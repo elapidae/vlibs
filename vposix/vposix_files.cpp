@@ -19,7 +19,7 @@
 
 #include "vposix_files.h"
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include "vposix_core.h"
 #include <assert.h>
 

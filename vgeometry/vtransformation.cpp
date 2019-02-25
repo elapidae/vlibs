@@ -23,7 +23,8 @@
 using namespace std;
 
 
-TransformationUtils::TransformationUtils(float sh_x, float sh_y, float sh_z, float route_angle_y, float route_angle_z)
+TransformationUtils::TransformationUtils( float sh_x, float sh_y, float sh_z,
+                                          float route_angle_y, float route_angle_z )
     : _sh_x(sh_x)
     , _sh_y(sh_y)
     , _sh_z(sh_z)

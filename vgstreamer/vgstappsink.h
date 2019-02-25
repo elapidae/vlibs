@@ -20,7 +20,8 @@
 #ifndef VGSTAPPSINK_H
 #define VGSTAPPSINK_H
 
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/1.13/gst-plugins-base-libs/html/gst-plugins-base-libs-appsink.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/1.13/gst-plugins-base-libs/html/
+gst-plugins-base-libs-appsink.html */
 
 //  В документации по адресу выше нету иерархии наследования, но он точно элемент.
 

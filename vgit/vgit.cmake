@@ -18,7 +18,7 @@
 
 
 #========================================================================================
-# vhdlc.cmake
+# vgit.cmake
 #
 #
 # Этот файл сгенерирован автоматически.
@@ -34,27 +34,24 @@
 
 #========================================================================================
 
-if ( NOT  VHDLC_INCLUDED )
-    set ( VHDLC_INCLUDED TRUE )
+if ( NOT  VGIT_INCLUDED )
+    set ( VGIT_INCLUDED TRUE )
 
-    message( "Include vhdlc..." )
+    message( "Include vgit..." )
 
     #<<< Start your code here -----------------------------------------------------------
-    include( "${VLIBS_DIR}/vstring/vstring.cmake" )
-    include( "${VLIBS_DIR}/vcallback/vcallback.cmake" )
-    include( "${VLIBS_DIR}/vcat/vcat.cmake" )    
-    include( "${VLIBS_DIR}/vmacroses/vmacroses.cmake" )
+    include( "${VLIBS_DIR}/vgit/vgit_impl.cmake" )
     #>>> Stop your code here ------------------------------------------------------------
 
-    include_directories( "${VLIBS_DIR}/vhdlc/")
+    include_directories( "${VLIBS_DIR}/vgit/" )
 
-    
-    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vhdlc/vhdlc.h") 
-    
-    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vhdlc/vhdlc.cpp") 
 
-    message( "vhdlc included" )
+    set(V_HEADERS ${V_HEADERS} "${VLIBS_DIR}/vgit/vgit.h")
+
+    set(V_SOURCES ${V_SOURCES} "${VLIBS_DIR}/vgit/vgit.cpp")
+
+    message( "vgit included" )
 
 endif()
-# vhdlc.cmake
+# vgit.cmake
 #========================================================================================

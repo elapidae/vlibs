@@ -26,7 +26,7 @@
 #include <memory>
 #include <assert.h>
 #include "vstd_atomic_map.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include "verror.h"
 #include "vcompiler.h" // for V_COMPILER_KNOWS_THREAD_LOCAL
 
@@ -54,32 +54,32 @@
 #if (V_COMPILER_KNOWS_THREAD_LOCAL)
 class Thread_2_Poll final
 {
-     vposix::EPoll epoll;
-     int init_count = 0;
+    vposix::EPoll epoll;
+    int init_count = 0;
 public:
-     //-----------------------------------------------------------------------------------
-     void add()
-     {
-         ++init_count;
-         assert( init_count == 1 );
-     }
-     //-----------------------------------------------------------------------------------
-     vposix::EPoll& current()
-     {
-         assert( init_count == 1 );
-         return epoll;
-     }
-     //-----------------------------------------------------------------------------------
-     void del()
-     {
-         --init_count;
-         assert( init_count == 0 );
-     }
-     //-----------------------------------------------------------------------------------
-     ~Thread_2_Poll()
-     {
+    //-----------------------------------------------------------------------------------
+    void add()
+    {
+        ++init_count;
+        assert( init_count == 1 );
+    }
+    //-----------------------------------------------------------------------------------
+    vposix::EPoll& current()
+    {
+        assert( init_count == 1 );
+        return epoll;
+    }
+    //-----------------------------------------------------------------------------------
+    void del()
+    {
+        --init_count;
         assert( init_count == 0 );
-     }
+    }
+    //-----------------------------------------------------------------------------------
+    ~Thread_2_Poll()
+    {
+       assert( init_count == 0 );
+    }
 };
 //=======================================================================================
 static Thread_2_Poll& th_2_poll()

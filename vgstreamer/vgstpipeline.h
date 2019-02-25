@@ -21,7 +21,8 @@
 #define VGSTPIPELINE_H
 
 
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/1.9/gstreamer/html/GstPipeline.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/1.9/
+gstreamer/html/GstPipeline.html */
 
 
 //GObject

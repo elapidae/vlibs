@@ -17,44 +17,30 @@
 ****************************************************************************************/
 
 
+#ifndef VSTD_SET_H
+#define VSTD_SET_H
 
-#include "main.cpp"
+#include <set>
 
-
-int main(int argc, char **argv)
+namespace vstd
 {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
-
-#include <new>
-
-
-#include "vtcpsocket.h"
-
-int main_1()
-{
-    VApplication app;
-
-    VTcpSocket sock;
-    sock.socket_connected.connect( [&]()
+    template<typename Key, typename Compare = std::less<Key>,
+     typename Alloc = std::allocator<Key> >
+    class set : public std::set< Key, Compare, Alloc >
     {
-        vdeb << "connected signal";
-        sock.send( "Hello world!" );
-    });
-    sock.ready_read.connect( [&]()
-    {
-        auto msg = sock.receive_all();
-        vdeb << "Received:" << msg;
-        auto num = msg.text_to_any<int>();
-        sock.send( VString::any_to_text(++num) );
-    });
-    //sock.connect_to_host( "127.0.0.1", 2345 );
-    //VIpAddress
-    sock.connect_to_host( "192.168.0.65", 2345 );
+    public:
+        using std::set<Key,Compare,Alloc>::set;
 
-    vdeb << "before polling";
-    app.poll();
-    vdeb <<"after epol";
-    return 0;
-}
+        bool contains( const Key& k ) const;
+    };
+
+    template< typename Key, typename Compare, typename Alloc >
+    bool set<Key,Compare,Alloc>::contains( const Key& k ) const
+    {
+        return find(k) != end();
+    }
+
+} // namespace vstd
+
+
+#endif // VSTD_SET_H

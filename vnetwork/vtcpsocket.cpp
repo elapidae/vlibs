@@ -26,7 +26,7 @@
 #include "vposix_files.h"
 #include "vposix_alloca.h"
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include "verror.h"
 
 #include "vpoll/vpoll.h"

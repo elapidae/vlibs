@@ -89,9 +89,7 @@ namespace vposix
         std::string str() const;
 
         // Вызввает исключение, если ошибка есть.
-        #if (V_NORETURN_ENABLED)
-            [[noreturn]]
-        #endif
+        V_NORETURN
         void throw_verror( const std::string& event ) const;
 
 

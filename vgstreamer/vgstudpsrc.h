@@ -21,8 +21,8 @@
 #define VGSTUDPSRC_H
 
 
-//=======================================================================================
-// https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/gst-plugins-good-plugins-udpsrc.html
+/* https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-good/html/
+gst-plugins-good-plugins-udpsrc.html */
 
 //GObject
 //   ╰── GInitiallyUnowned

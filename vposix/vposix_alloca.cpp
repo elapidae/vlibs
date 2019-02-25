@@ -19,7 +19,7 @@
 
 #include "vposix_alloca.h"
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include <malloc.h>
 #include "vposix_core.h"
 #include <stdexcept>
