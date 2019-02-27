@@ -58,6 +58,8 @@ public:
 
     Pimpl() {}
 
+    Pimpl( const cv::Mat& src ) : mat(src) {}
+
     Pimpl( const VImage& src, _need_clone clone )
         : mat( src.height(),    // rows
                src.width(),     // cols
@@ -76,6 +78,10 @@ Image::Image( Image::Pimpl *pp )
 //=======================================================================================
 Image::Image( const VImage& src , _need_clone cl )
     : p( new Pimpl(src, cl) )
+{}
+//=======================================================================================
+Image::Image( const cv::Mat& mat )
+    : p( new Pimpl(mat) )
 {}
 //=======================================================================================
 Image::Image()
@@ -147,12 +153,28 @@ public:
 
     Pimpl() {}
 
+    Pimpl( const VImage& src )
+    {
+        cv::Mat m( src.height(), // rows
+                   src.width(),  // cols
+                   vformat_to_cvformat(src.format()),
+                   nonconst_voidstar(src.data()),
+                   size_t(src.bytes_per_line()) );
+
+        mat.upload( m );
+    }
 };
 //---------------------------------------------------------------------------------------
-static void cuda_resize( const cv::Mat &src, cv::Mat *dst,
+static void cuda_resize( const cv::cuda::GpuMat &src, cv::cuda::GpuMat *dst,
                          Size sz, double fx, double fy, Interpolation i )
 {
     cv::cuda::resize( src, *dst, sz, fx, fy, i );
+}
+static Image cuda_download( const cv::cuda::GpuMat &mat )
+{
+    cv::Mat res;
+    mat.download( res );
+    return res;
 }
 #else //=================================================================================
 class GpuImage::Pimpl
@@ -175,6 +197,8 @@ static void cuda_resize( const cv::Mat &src, cv::Mat *dst,
 {
     cv::resize( src, *dst, sz, fx, fy, i );
 }
+//---------------------------------------------------------------------------------------
+static const Image& cuda_download( const GpuImage )
 //=======================================================================================
 #endif // ifdef V_OPENCV_USE_CUDA
 //=======================================================================================
@@ -193,7 +217,7 @@ GpuImage::GpuImage( GpuImage && rhs )
     std::swap( p, rhs.p );
 }
 //=======================================================================================
-GpuImage::GpuImage(const GpuImage & rhs)
+GpuImage::GpuImage( const GpuImage & rhs )
     : p( new Pimpl(*rhs.p) )
 {}
 //=======================================================================================
@@ -210,6 +234,11 @@ GpuImage & GpuImage::operator = ( const GpuImage & rhs )
         p->mat = rhs.p->mat;
     }
     return *this;
+}
+//=======================================================================================
+Image GpuImage::download() const
+{
+    return cuda_download( p->mat );
 }
 //=======================================================================================
 GpuImage GpuImage::resize( double fx, double fy, Interpolation i ) const

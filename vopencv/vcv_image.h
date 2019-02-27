@@ -85,6 +85,8 @@ namespace vcv
         enum _need_clone { need_clone, non_clone };
         Image( const VImage& src, _need_clone = need_clone );
 
+        Image( const cv::Mat& mat );
+
         Image();
         virtual ~Image();
         Image( Image&& rhs );
@@ -124,6 +126,8 @@ namespace vcv
 
         GpuImage resize( double fx, double fy, Interpolation i = cv::INTER_LINEAR) const;
         GpuImage resize( Size dsize, Interpolation i = cv::INTER_LINEAR) const;
+
+        Image download() const;
 
     protected:
         GpuImage _resize( Size dsize, double fx, double fy,
