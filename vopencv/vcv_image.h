@@ -34,6 +34,7 @@ namespace vcv
     //===================================================================================
     using Point2f = cv::Point2f;
     using Size    = cv::Size;
+    using Interpolation = cv::InterpolationFlags;
     //===================================================================================
     //      Quadrangle  -- четырехугольник на плоскости (для perspective transform)
     //===================================================================================
@@ -81,7 +82,7 @@ namespace vcv
     class Image
     {
     public:
-        using Interpolation = cv::InterpolationFlags;
+        Image( const VImage& src );
 
         Image();
         virtual ~Image();
@@ -110,11 +111,32 @@ namespace vcv
     //===================================================================================
     //      GpuImage
     //===================================================================================
-    class GpuImage : public Image
+    class GpuImage
+    #ifndef V_OPENCV_USE_CUDA
+            : public Image
+    {
+        // Part of std image inheritance.
+    #else
+        // cuda realization part.
     {
     public:
-        #ifdef V_OPENCV_USE_CUDA
-        #endif
+        GpuImage();
+        virtual ~GpuImage();
+        GpuImage( GpuImage&& rhs );
+        GpuImage( const GpuImage& rhs );
+        GpuImage& operator = ( GpuImage &&rhs );
+        GpuImage& operator = ( const GpuImage& rhs );
+
+        GpuImage resize( double fx, double fy, Interpolation i = cv::INTER_LINEAR) const;
+        GpuImage resize( Size dsize, Interpolation i = cv::INTER_LINEAR) const;
+
+    protected:
+        GpuImage _resize( Size dsize, double fx, double fy,
+                          Interpolation interpolation ) const;
+
+    private:
+        class Pimpl; Pimpl *p;
+    #endif
     };
     //===================================================================================
     //      GpuImage

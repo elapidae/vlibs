@@ -20,19 +20,32 @@
 #ifndef VCV_INCLUDES_H
 #define VCV_INCLUDES_H
 
-
+#include "vimage.h"
 
 #include "opencv2/opencv.hpp"
 #include <opencv2/core.hpp>
 #include <opencv2/core/mat.hpp>
 
 
-
 #ifdef V_OPENCV_USE_CUDA
-#include <opencv2/cudaarithm.hpp>
-#include <opencv2/cudafilters.hpp>
-#include <opencv2/cudaimgproc.hpp>
-#include <opencv2/cudawarping.hpp>
+    #include <opencv2/cudaarithm.hpp>
+    #include <opencv2/cudafilters.hpp>
+    #include <opencv2/cudaimgproc.hpp>
+    #include <opencv2/cudawarping.hpp>
+    #include <opencv2/core/cuda.hpp>
+    //#include <opencv2/core.hpp>
+    //#include <opencv2/features2d.hpp>
+    //#include <opencv2/highgui.hpp>
+    //#include <opencv2/imgproc.hpp>
+    //#include <opencv2/calib3d/calib3d.hpp>
+    //#include <opencv2/core/utility.hpp>
+    //#include <opencv2/ml.hpp>
+    //#include <opencv2/video/tracking.hpp>
+    //#include <opencv2/cudaarithm.hpp>
+    //#include <opencv2/cudafilters.hpp>
+    //#include <opencv2/cudaimgproc.hpp>
+    //#include <opencv2/cudawarping.hpp>
+
 #endif
 
 

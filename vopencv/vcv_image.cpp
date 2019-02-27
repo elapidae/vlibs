@@ -18,9 +18,9 @@
 
 
 #include "vcv_image.h"
-
-
 #include "vlog_pretty.h"
+
+
 
 using namespace vcv;
 
@@ -72,19 +72,19 @@ Image &Image::operator =( const Image & rhs )
     return *this;
 }
 //=======================================================================================
-Image Image::_resize( Size dsize, double fx, double fy, Image::Interpolation i ) const
+Image Image::_resize( Size dsize, double fx, double fy, Interpolation i ) const
 {
     Image dst;
     cv::resize( p->mat, dst.p->mat, dsize, fx, fy, i );
     return dst;
 }
 //=======================================================================================
-Image Image::resize( double fx, double fy, Image::Interpolation i ) const
+Image Image::resize( double fx, double fy, Interpolation i ) const
 {
     return _resize( Size(), fx, fy, i );
 }
 //=======================================================================================
-Image Image::resize( Size dsize, Image::Interpolation i ) const
+Image Image::resize( Size dsize, Interpolation i ) const
 {
     return _resize( dsize, 0, 0, i );
 }
@@ -245,8 +245,53 @@ const std::vector<cv::Point2f> &Image::Projection::image_points() const
 
 //=======================================================================================
 #ifdef V_OPENCV_USE_CUDA
-#endif
 //=======================================================================================
-
-
-
+class GpuImage::Pimpl
+{
+public:
+    cv::cuda::GpuMat mat;
+};
+//=======================================================================================
+GpuImage::GpuImage()
+    : p( new Pimpl )
+{}
+//=======================================================================================
+GpuImage::~GpuImage()
+{
+    delete p;
+}
+//=======================================================================================
+GpuImage::GpuImage( GpuImage &&rhs )
+    : p( rhs.p )
+{
+    rhs.p = nullptr;
+}
+//=======================================================================================
+GpuImage::GpuImage(const GpuImage &rhs)
+    : p( new Pimpl(*rhs.p) )
+{}
+//=======================================================================================
+GpuImage& GpuImage::operator = ( GpuImage &&rhs )
+{
+    std::swap( p, rhs.p );
+    return *this;
+}
+//=======================================================================================
+GpuImage & GpuImage::operator = ( const GpuImage &rhs )
+{
+    if ( &rhs != this )
+    {
+        p->mat = rhs.p->mat;
+    }
+    return *this;
+}
+//=======================================================================================
+GpuImage GpuImage::_resize( Size dsize, double fx, double fy, Interpolation i ) const
+{
+    GpuImage dst;
+    cv::cuda::resize( p->mat, dst.p->mat, dsize, fx, fy, i );
+    return dst;
+}
+//=======================================================================================
+#endif // ifdef V_OPENCV_USE_CUDA
+//=======================================================================================
