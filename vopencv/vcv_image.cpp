@@ -72,6 +72,23 @@ Image &Image::operator =( const Image & rhs )
     return *this;
 }
 //=======================================================================================
+Image Image::_resize( Size dsize, double fx, double fy, Image::Interpolation i ) const
+{
+    Image dst;
+    cv::resize( p->mat, dst.p->mat, dsize, fx, fy, i );
+    return dst;
+}
+//=======================================================================================
+Image Image::resize( double fx, double fy, Image::Interpolation i ) const
+{
+    return _resize( Size(), fx, fy, i );
+}
+//=======================================================================================
+Image Image::resize( Size dsize, Image::Interpolation i ) const
+{
+    return _resize( dsize, 0, 0, i );
+}
+//=======================================================================================
 
 
 //=======================================================================================
@@ -158,7 +175,8 @@ vcv::Image::Projection::CameraMatrix Image::Projection::CameraMatrix::default_mt
            };
 }
 //=======================================================================================
-// http://devdoc.net/linux/OpenCV-3.2.0/d9/d0c/group__calib3d.html#ga1019495a2c8d1743ed5cc23fa0daff8c
+// http://devdoc.net/linux/OpenCV-3.2.0/d9/d0c/group__calib3d.html#
+//  ga1019495a2c8d1743ed5cc23fa0daff8c
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 Image::Projection::CameraMatrix::CameraMatrix( float Fx, float Cx, float Fy, float Cy )

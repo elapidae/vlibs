@@ -32,5 +32,6 @@ int main(int argc, char *argv[])
     auto def_proj = vcv::Image::Projection::default_project_1(-10, 10, 3, 103);
     vdeb << def_proj.image_points();
 
+    return 0;
     return a.exec();
 }

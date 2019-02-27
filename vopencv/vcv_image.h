@@ -33,6 +33,7 @@ namespace vcv
 {
     //===================================================================================
     using Point2f = cv::Point2f;
+    using Size    = cv::Size;
     //===================================================================================
     //      Quadrangle  -- четырехугольник на плоскости (для perspective transform)
     //===================================================================================
@@ -80,7 +81,7 @@ namespace vcv
     class Image
     {
     public:
-
+        using Interpolation = cv::InterpolationFlags;
 
         Image();
         virtual ~Image();
@@ -91,7 +92,15 @@ namespace vcv
 
         class Projection;
 
+        // https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html
+        //  find resize there
+        Image resize( double fx, double fy, Interpolation i = cv::INTER_LINEAR ) const;
+        Image resize( Size dsize, Interpolation i = cv::INTER_LINEAR ) const;
+
     protected:
+        Image _resize( Size dsize, double fx, double fy,
+                       Interpolation interpolation ) const;
+
         // Ручное управление, чтобы перегружать (или нет) содержимое с GpuMat.
         class Pimpl; Pimpl *p = nullptr;
         Image( Pimpl *pp );
@@ -174,7 +183,8 @@ namespace vcv
         std::vector<float> _translation;
     };
     //===================================================================================
-    // http://devdoc.net/linux/OpenCV-3.2.0/d9/d0c/group__calib3d.html#ga1019495a2c8d1743ed5cc23fa0daff8c
+    // http://devdoc.net/linux/OpenCV-3.2.0/d9/d0c/group__calib3d.html#
+    //  ga1019495a2c8d1743ed5cc23fa0daff8c
     class Image::Projection::CameraMatrix
     {
     public:
@@ -206,7 +216,6 @@ namespace vcv
 
 } // namespace vcv
 //=======================================================================================
-
 
 
 #endif // VCV_IMAGE_H
