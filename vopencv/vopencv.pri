@@ -23,17 +23,18 @@ isEmpty(qi_vopencv) {
 
     #<<< Start your code here -----------------------------------------------------------
     # NB! use 'DEFINES += V_OPENCV_USE_CUDA' before including for activate cuda section.
+
     CONFIG    *= link_pkgconfig
     PKGCONFIG *= opencv
     CONFIG *= c++11
 
+    # Check and control this var, please...
+    isEmpty(OPENCV_DIR): OPENCV_DIR = /home/nvidia/opencv/build
+    message( "OPENCV_DIR sets to $$OPENCV_DIR" )
+    INCLUDEPATH += $$OPENCV_DIR/include/
 
     contains(DEFINES, V_OPENCV_USE_CUDA) {
 
-        # Check this var, please...
-        OPENCV_DIR = /home/nvidia/opencv/build
-
-        INCLUDEPATH += $$OPENCV_DIR/include/
 
         LIBS += -L$$OPENCV_DIR/lib \
                     -lopencv_core -lopencv_imgcodecs -lopencv_highgui           \
@@ -53,10 +54,10 @@ isEmpty(qi_vopencv) {
 
 
     HEADERS     += $$VLIBS_DIR/vopencv/vcv_includes.h
-    HEADERS     += $$VLIBS_DIR/vopencv/vcv_image.h 
-    
-    SOURCES     += $$VLIBS_DIR/vopencv/vcv_image.cpp 
-    SOURCES     += $$VLIBS_DIR/vopencv/vcv_includes.cpp 
+    HEADERS     += $$VLIBS_DIR/vopencv/vcv_image.h
+
+    SOURCES     += $$VLIBS_DIR/vopencv/vcv_image.cpp
+    SOURCES     += $$VLIBS_DIR/vopencv/vcv_includes.cpp
 }
 # vopencv.pri
 #========================================================================================

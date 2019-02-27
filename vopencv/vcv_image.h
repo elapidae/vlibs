@@ -82,7 +82,8 @@ namespace vcv
     class Image
     {
     public:
-        Image( const VImage& src );
+        enum _need_clone { need_clone, non_clone };
+        Image( const VImage& src, _need_clone = need_clone );
 
         Image();
         virtual ~Image();
@@ -112,12 +113,6 @@ namespace vcv
     //      GpuImage
     //===================================================================================
     class GpuImage
-    #ifndef V_OPENCV_USE_CUDA
-            : public Image
-    {
-        // Part of std image inheritance.
-    #else
-        // cuda realization part.
     {
     public:
         GpuImage();
@@ -136,7 +131,6 @@ namespace vcv
 
     private:
         class Pimpl; Pimpl *p;
-    #endif
     };
     //===================================================================================
     //      GpuImage

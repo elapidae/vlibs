@@ -16,26 +16,66 @@
 **  will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
 ****************************************************************************************/
 
-
 #include "vcv_image.h"
-#include "vlog_pretty.h"
+
+#include "vlog.h"
+#include "verror.h"
 
 
 
 using namespace vcv;
 
 //=======================================================================================
+static int vformat_to_cvformat( VImage::Format f )
+{
+    switch (f)
+    {
+    case VImage::Format::Gray_8:  return CV_8UC1;
+
+    case VImage::Format::RGB_888: return CV_8UC3;   // same,
+    case VImage::Format::BGR_888: return CV_8UC3;   // be carefull.
+    default: break;
+    }
+    throw verror( "Cannot detect VImage format: ", int(f) );
+}
+//=======================================================================================
+template<typename T>
+static void* nonconst_voidstar(const T* ptr)
+{
+    return const_cast<void*>( static_cast<const void*>(ptr) );
+}
+//=======================================================================================
+
+
+//=======================================================================================
+//      Image
+//=======================================================================================
+// init ctor: Mat(int rows, int cols, int type, void* data, size_t step=AUTO_STEP);
 class Image::Pimpl
 {
 public:
     cv::Mat mat;
+
+    Pimpl() {}
+
+    Pimpl( const VImage& src, _need_clone clone )
+        : mat( src.height(),    // rows
+               src.width(),     // cols
+               vformat_to_cvformat(src.format()),
+               nonconst_voidstar(src.data()),
+               size_t(src.bytes_per_line()) )
+    {
+        if ( clone == need_clone )
+            mat = mat.clone();
+    }
 };
-//=======================================================================================
-
-
 //=======================================================================================
 Image::Image( Image::Pimpl *pp )
     : p( pp )
+{}
+//=======================================================================================
+Image::Image( const VImage& src , _need_clone cl )
+    : p( new Pimpl(src, cl) )
 {}
 //=======================================================================================
 Image::Image()
@@ -89,6 +129,110 @@ Image Image::resize( Size dsize, Interpolation i ) const
     return _resize( dsize, 0, 0, i );
 }
 //=======================================================================================
+//      Image
+//=======================================================================================
+
+
+
+
+//=======================================================================================
+//      GpuImage
+//=======================================================================================
+#ifdef V_OPENCV_USE_CUDA
+//=======================================================================================
+class GpuImage::Pimpl
+{
+public:
+    cv::cuda::GpuMat mat;
+
+    Pimpl() {}
+
+};
+//---------------------------------------------------------------------------------------
+static void cuda_resize( const cv::Mat &src, cv::Mat *dst,
+                         Size sz, double fx, double fy, Interpolation i )
+{
+    cv::cuda::resize( src, *dst, sz, fx, fy, i );
+}
+#else //=================================================================================
+class GpuImage::Pimpl
+{
+public:
+    cv::Mat mat;
+
+    Pimpl() {}
+    Pimpl( const VImage& src )
+        : mat( src.height(), // rows
+               src.width(),  // cols
+               vformat_to_cvformat(src.format()),
+               nonconst_voidstar(src.data()),
+               size_t(src.bytes_per_line()) )
+    {}
+};
+//---------------------------------------------------------------------------------------
+static void cuda_resize( const cv::Mat &src, cv::Mat *dst,
+                         Size sz, double fx, double fy, Interpolation i )
+{
+    cv::resize( src, *dst, sz, fx, fy, i );
+}
+//=======================================================================================
+#endif // ifdef V_OPENCV_USE_CUDA
+//=======================================================================================
+GpuImage::GpuImage()
+    : p( new Pimpl )
+{}
+//=======================================================================================
+GpuImage::~GpuImage()
+{
+    delete p;
+}
+//=======================================================================================
+GpuImage::GpuImage( GpuImage && rhs )
+    : p( nullptr )
+{
+    std::swap( p, rhs.p );
+}
+//=======================================================================================
+GpuImage::GpuImage(const GpuImage & rhs)
+    : p( new Pimpl(*rhs.p) )
+{}
+//=======================================================================================
+GpuImage& GpuImage::operator = ( GpuImage && rhs )
+{
+    std::swap( p, rhs.p );
+    return *this;
+}
+//=======================================================================================
+GpuImage & GpuImage::operator = ( const GpuImage & rhs )
+{
+    if ( &rhs != this )
+    {
+        p->mat = rhs.p->mat;
+    }
+    return *this;
+}
+//=======================================================================================
+GpuImage GpuImage::resize( double fx, double fy, Interpolation i ) const
+{
+    return _resize( Size(), fx, fy, i );
+}
+//=======================================================================================
+GpuImage GpuImage::resize( Size dsize, Interpolation i ) const
+{
+    return _resize( dsize, 0, 0, i );
+}
+//=======================================================================================
+GpuImage GpuImage::_resize( Size dsize, double fx, double fy, Interpolation i ) const
+{
+    GpuImage dst;
+    cuda_resize( p->mat, &dst.p->mat, dsize, fx, fy, i );
+    return dst;
+}
+//=======================================================================================
+//      GpuImage
+//=======================================================================================
+
+
 
 
 //=======================================================================================
@@ -238,60 +382,4 @@ const std::vector<cv::Point2f> &Image::Projection::image_points() const
 }
 //=======================================================================================
 //      Image::Projection
-//=======================================================================================
-
-
-
-
-//=======================================================================================
-#ifdef V_OPENCV_USE_CUDA
-//=======================================================================================
-class GpuImage::Pimpl
-{
-public:
-    cv::cuda::GpuMat mat;
-};
-//=======================================================================================
-GpuImage::GpuImage()
-    : p( new Pimpl )
-{}
-//=======================================================================================
-GpuImage::~GpuImage()
-{
-    delete p;
-}
-//=======================================================================================
-GpuImage::GpuImage( GpuImage &&rhs )
-    : p( rhs.p )
-{
-    rhs.p = nullptr;
-}
-//=======================================================================================
-GpuImage::GpuImage(const GpuImage &rhs)
-    : p( new Pimpl(*rhs.p) )
-{}
-//=======================================================================================
-GpuImage& GpuImage::operator = ( GpuImage &&rhs )
-{
-    std::swap( p, rhs.p );
-    return *this;
-}
-//=======================================================================================
-GpuImage & GpuImage::operator = ( const GpuImage &rhs )
-{
-    if ( &rhs != this )
-    {
-        p->mat = rhs.p->mat;
-    }
-    return *this;
-}
-//=======================================================================================
-GpuImage GpuImage::_resize( Size dsize, double fx, double fy, Interpolation i ) const
-{
-    GpuImage dst;
-    cv::cuda::resize( p->mat, dst.p->mat, dsize, fx, fy, i );
-    return dst;
-}
-//=======================================================================================
-#endif // ifdef V_OPENCV_USE_CUDA
 //=======================================================================================
