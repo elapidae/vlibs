@@ -47,6 +47,7 @@ isEmpty(qi_vopencv) {
 
     include( $$VLIBS_DIR/vlog/vlog.pri )
     include( $$VLIBS_DIR/vimage/vimage.pri )
+    #include( $$VLIBS_DIR/vimage/vimage_opencv.pri )
     OTHER_FILES += $$PWD/vopencv.cmake
     #>>> Stop your code here ------------------------------------------------------------
 

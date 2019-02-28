@@ -94,6 +94,10 @@ namespace vcv
         Image& operator = ( Image&& rhs );
         Image& operator = ( const Image& rhs );
 
+        const cv::Mat& mat() const;
+
+
+
         class Projection;
 
         // https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html
@@ -117,6 +121,8 @@ namespace vcv
     class GpuImage
     {
     public:
+        GpuImage( const VImage& src );
+
         GpuImage();
         virtual ~GpuImage();
         GpuImage( GpuImage&& rhs );
