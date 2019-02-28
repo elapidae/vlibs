@@ -218,6 +218,11 @@ static void cuda_upload( const VImage& src, cv::Mat *dst )
     *dst = tmp.clone();
 }
 //=======================================================================================
+static int cuda_channels( const cv::Mat& m )
+{
+    return m.channels();
+}
+//=======================================================================================
 #endif // ifdef V_OPENCV_USE_CUDA
 //=======================================================================================
 
@@ -266,6 +271,11 @@ GpuImage & GpuImage::operator = ( const GpuImage & rhs )
 Image GpuImage::download() const
 {
     return cuda_download( p->mat );
+}
+//=======================================================================================
+int GpuImage::channels() const
+{
+    return cuda_channels( p->mat );
 }
 //=======================================================================================
 GpuImage GpuImage::resize( double fx, double fy, Interpolation i ) const

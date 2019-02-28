@@ -102,7 +102,7 @@ const VImage::data_t *VImage_Qt::line(int row) const
 //=======================================================================================
 int VImage_Qt::data_size() const
 {
-    return static_cast<int>( _img->byteCount() );
+    return static_cast<int>( _img->sizeInBytes() );
 }
 //=======================================================================================
 
