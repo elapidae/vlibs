@@ -181,11 +181,6 @@ static Image cuda_download( const cv::cuda::GpuMat &mat )
     mat.download( res );
     return res;
 }
-//---------------------------------------------------------------------------------------
-static int cuda_channels( const cv::cuda::GpuMat& m )
-{
-    return m.channels();
-}
 #else // if not use CUDA ================================================================
 class GpuImage::Pimpl
 {
@@ -211,11 +206,6 @@ static void cuda_resize( const cv::Mat &src, cv::Mat *dst,
 static Image cuda_download( const cv::Mat& mat )
 {
     return mat;
-}
-//=======================================================================================
-static int cuda_channels( const cv::Mat& m )
-{
-    return m.channels();
 }
 //=======================================================================================
 #endif // ifdef V_OPENCV_USE_CUDA
