@@ -208,26 +208,14 @@ static Image cuda_download( const cv::Mat& mat )
     return mat;
 }
 //=======================================================================================
-static void cuda_upload( const VImage& src, cv::Mat *dst )
-{
-    auto tmp = cv::Mat( src.height(),    // rows
-                        src.width(),     // cols
-                        vformat_to_cvformat(src.format()),
-                        nonconst_voidstar(src.data()),
-                        size_t(src.bytes_per_line()) );
-    *dst = tmp.clone();
-}
-//=======================================================================================
 #endif // ifdef V_OPENCV_USE_CUDA
 //=======================================================================================
 
 
 //=======================================================================================
 GpuImage::GpuImage( const VImage &src )
-    : p( new Pimpl )
-{
-    cuda_upload( src, &p->mat );
-}
+    : p( new Pimpl(src) )
+{}
 //=======================================================================================
 GpuImage::GpuImage()
     : p( new Pimpl )
@@ -266,6 +254,11 @@ GpuImage & GpuImage::operator = ( const GpuImage & rhs )
 Image GpuImage::download() const
 {
     return cuda_download( p->mat );
+}
+//=======================================================================================
+int GpuImage::channels() const
+{
+    return p->mat.channels();
 }
 //=======================================================================================
 GpuImage GpuImage::resize( double fx, double fy, Interpolation i ) const
