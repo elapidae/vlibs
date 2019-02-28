@@ -181,7 +181,12 @@ static Image cuda_download( const cv::cuda::GpuMat &mat )
     mat.download( res );
     return res;
 }
-#else //=================================================================================
+//---------------------------------------------------------------------------------------
+static int cuda_channels( const cv::cuda::GpuMat& m )
+{
+    return m.channels();
+}
+#else // if not use CUDA ================================================================
 class GpuImage::Pimpl
 {
 public:
@@ -208,15 +213,15 @@ static Image cuda_download( const cv::Mat& mat )
     return mat;
 }
 //=======================================================================================
-static void cuda_upload( const VImage& src, cv::Mat *dst )
-{
-    auto tmp = cv::Mat( src.height(),    // rows
-                        src.width(),     // cols
-                        vformat_to_cvformat(src.format()),
-                        nonconst_voidstar(src.data()),
-                        size_t(src.bytes_per_line()) );
-    *dst = tmp.clone();
-}
+//static void cuda_upload( const VImage& src, cv::Mat *dst )
+//{
+//    auto tmp = cv::Mat( src.height(),    // rows
+//                        src.width(),     // cols
+//                        vformat_to_cvformat(src.format()),
+//                        nonconst_voidstar(src.data()),
+//                        size_t(src.bytes_per_line()) );
+//    *dst = tmp.clone();
+//}
 //=======================================================================================
 static int cuda_channels( const cv::Mat& m )
 {
@@ -229,10 +234,8 @@ static int cuda_channels( const cv::Mat& m )
 
 //=======================================================================================
 GpuImage::GpuImage( const VImage &src )
-    : p( new Pimpl )
-{
-    cuda_upload( src, &p->mat );
-}
+    : p( new Pimpl(src) )
+{}
 //=======================================================================================
 GpuImage::GpuImage()
     : p( new Pimpl )
