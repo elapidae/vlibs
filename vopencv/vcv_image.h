@@ -25,8 +25,6 @@
 
 #include "vcv_includes.h"
 
-#include <QObject>
-
 
 //=======================================================================================
 namespace vcv
@@ -134,6 +132,8 @@ namespace vcv
         GpuImage resize( Size dsize, Interpolation i = cv::INTER_LINEAR) const;
 
         Image download() const;
+
+        int channels() const;
 
     protected:
         GpuImage _resize( Size dsize, double fx, double fy,

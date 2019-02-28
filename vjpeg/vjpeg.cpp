@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <string.h>
 #include "voutfile.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 #include "verror.h"
 
 #include <setjmp.h>

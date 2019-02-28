@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <glib.h>
 #include "impl/vgio_converting_helper.h"
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 #define GNUC_VERSION_ELPD ((__GNUC__ * 100) + __GNUC_MINOR__)
 
