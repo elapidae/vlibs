@@ -37,3 +37,4 @@ FORMS += \
 
 VLIBS_DIR = $$PWD/../..
 include( $$VLIBS_DIR/vopencv/vopencv.pri )
+include( $$VLIBS_DIR/vnetwork/vnetwork.pri )

@@ -61,7 +61,7 @@ time_t _vtimepoint_helper::_tm_to_time_t( tm *tm )
 std::tm _vtimepoint_helper::_time_t_to_tm( time_t tt )
 {
     auto ptr = gmtime( &tt );
-    return ptr ? *ptr : tm{0,0,0,0,0,0,0,0,0,0,0};
+    return ptr ? *ptr : tm{};
 }
 //=======================================================================================
 

@@ -454,7 +454,7 @@ int Socket::_getsockname( int fd, sockaddr* addr, my_socklen_t* len )
 //=======================================================================================
 void Socket::get_sock_addr( int fd, my_ip_addr* addr, uint16_t *port )
 {
-    sockaddr_in6 sa6;
+    sockaddr_in6 sa6{};
     auto v_ptr = static_cast<void*>(&sa6);
     auto *sa_ptr = static_cast<sockaddr*>( v_ptr );
     my_socklen_t len = sizeof( sa6 );
