@@ -70,7 +70,7 @@
 // V_CAN_VARIADIC_TEMPLATES_IN_LAMBDAS -- может работать с variadic templates с лямбдами.
 //  См. vapplication/vinvoke_iface
 //  NB! С версией не уверен.
-#define V_CAN_VARIADIC_TEMPLATES_IN_LAMBDAS (V_GNUC_COMPILER_VERSION > 0x040703)
+#define V_CAN_VARIADIC_TEMPLATES_IN_LAMBDAS (V_GNUC_COMPILER_VERSION > 0x040804)
 //=======================================================================================
 
 
