@@ -24,7 +24,7 @@
 #include "vposix_serial.h"
 #include <assert.h>
 
-#include "vlog_pretty.h"
+#include "vlog.h"
 
 //=======================================================================================
 static auto constexpr Read_Buffer_Size = 1024;
@@ -159,7 +159,7 @@ void VSerialPort::Pimpl::write( const std::string &buf )
 //=======================================================================================
 void VSerialPort::Pimpl::flush()
 {
-    if ( !fd.valid() ) return;
+    if ( !is_opened() ) return;
     vposix::Serial::flush_io( fd.raw() );
 }
 //=======================================================================================
@@ -177,6 +177,11 @@ VString VSerialPort::Pimpl::read_all()
         if ( has_read < Read_Buffer_Size )
             break;
     }
+
+    //  Проверка на случай, если что-то не так по логике.
+    //  Какие-то данные должны быть обязательно!
+    assert(res.size());
+
     return res;
 }
 //=======================================================================================
