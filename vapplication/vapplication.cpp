@@ -281,7 +281,7 @@ std::string VApplication::Args::take_std_value( cstr name )
     auto res = std_value( name );
 
     auto name_pos = std::find( _args.begin(), _args.end(), name );
-    _args.erase( name_pos, name_pos + 2 );
+    _args.erase( name_pos, name_pos + 2 ); // UUPS it may be dangerous!!!
 
     return res;
 }

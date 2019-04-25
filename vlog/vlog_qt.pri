@@ -36,8 +36,9 @@ isEmpty(qi_vlog_qt) {
 
     include( $$VLIBS_DIR/vlog/vlog.pri )
 
-    HEADERS     += $$VLIBS_DIR/vlog/vlog_qt.h
-    SOURCES     += $$VLIBS_DIR/vlog/vlog_qt.cpp
+    # Сделано автоподключение по флагу contains( CONFIG, qt ).
+    #HEADERS     += $$VLIBS_DIR/vlog/vlog_qt.h
+    #SOURCES     += $$VLIBS_DIR/vlog/vlog_qt.cpp
 
     #>>> Stop your code here ------------------------------------------------------------
 

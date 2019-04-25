@@ -42,6 +42,7 @@ isEmpty(qi_vchrono) {
 
     #<<< Start your code here -----------------------------------------------------------
     include( $$VLIBS_DIR/vcat/vcat.pri )
+    include( $$VLIBS_DIR/vmacroses/vmacroses.pri )
     #>>> Stop your code here ------------------------------------------------------------
 
     INCLUDEPATH += $$VLIBS_DIR/vchrono

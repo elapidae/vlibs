@@ -57,6 +57,8 @@ namespace vposix
         //  Сбрасывает флаг O_NONBLOCK.
         static void close( int fd );
 
+        static bool exists( cstr fname );
+
         //-------------------------------------------------------------------------------
         static void _ioctl( int fd, unsigned long ctl );
         static int  _ioctl_or_err( int fd, unsigned long ctl );

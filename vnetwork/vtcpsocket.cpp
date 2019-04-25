@@ -61,7 +61,6 @@ VTcpSocket::Pimpl::Pimpl( int fd_, VTcpSocket *owner_ )
     : fd( fd_ )
     , owner( owner_ )
 {
-    vdeb << "VTcpSocket::Pimpl::Pimpl" << this;
     if ( fd < 0 )
         throw verror( "VTcpSocket fd < 0" );
 

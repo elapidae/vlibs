@@ -343,16 +343,6 @@ VString::Vector VString::split( char splitter ) const
         next = std::find( cur, end(), splitter );
     }
     return res;
-
-//    auto cur2 = begin();
-//    do
-//    {
-//        auto next2 = std::find( cur2, end(), splitter );
-//        res.push_back( {cur2, next2} );
-//        if ( next2 == end() ) break;
-//        cur2 = next2 + 1;
-//    } while(1);
-//    return res;
 }
 //=======================================================================================
 VString::Vector VString::split_without_empties( char splitter ) const

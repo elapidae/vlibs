@@ -27,6 +27,9 @@
 
 #include <fcntl.h>
 
+// remove
+#include <cstdio>
+
 
 using namespace tr1;
 
@@ -54,6 +57,19 @@ int VFile::helpers::mode_readwrite( VFile::Mode_ReadWrite mode )
 //    }
 //    assert( false && "Bad Mode_Exclusive." );
 //}
+//=======================================================================================
+
+
+//=======================================================================================
+bool VFile::exists( cstr fname )
+{
+    return vposix::Files::exists( fname );
+}
+//=======================================================================================
+bool VFile::remove( cstr fname )
+{
+    return 0 == std::remove( fname.c_str() );
+}
 //=======================================================================================
 
 

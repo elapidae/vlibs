@@ -24,6 +24,7 @@
 #include <sys/time.h>
 
 #include <stdexcept>
+#include <assert.h>
 
 
 
@@ -38,6 +39,27 @@ const char *_vtimepoint_helper::fmt_datetime()
 const char *_vtimepoint_helper::fmt_datetime_for_filename()
 {
     return "%Y-%m-%d_T_%H_%M_%S";
+}
+//=======================================================================================
+time_t _vtimepoint_helper::_from_utc( int year, int month, int day,
+                                      int hour, int minute, int sec )
+{
+    assert( year   >= 1900 );
+    assert( month  >= 1 && month  <= 12 );
+    assert( day    >= 1 && day    <= 31 );
+    assert( hour   >= 0 && hour   <= 23 );
+    assert( minute >= 0 && minute <= 59 );
+    assert( sec    >= 0 && sec    <= 59 );
+
+    tm t{};
+    t.tm_year = year - 1900;
+    t.tm_mon  = month - 1;
+    t.tm_mday = day;
+    t.tm_hour = hour;
+    t.tm_min  = minute;
+    t.tm_sec  = sec;
+
+    return std::mktime(&t) - timezone;
 }
 //=======================================================================================
 const char *_vtimepoint_helper::fmt_date()
@@ -197,3 +219,4 @@ std::chrono::nanoseconds operator "" _nanosec( unsigned long long ns )
     return std::chrono::nanoseconds( ns );
 }
 //=======================================================================================
+
