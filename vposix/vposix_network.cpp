@@ -439,9 +439,10 @@ ssize_t Socket::_send( int fd, const void *buf, size_t n, int flags )
     return Core::linux_call( ::send, "::send", fd, buf, n, flags );
 }
 //=======================================================================================
-ssize_t Socket::send( int fd, const std::string &buf, int flags )
+//  MSG_NOSIGNAL надо добавлеять, чтобы под киль не прилетело KILL сигналов.
+ssize_t Socket::send( int fd, const void *buf, size_t n, int flags )
 {
-    return _send( fd, buf.c_str(), buf.size(), flags | MSG_NOSIGNAL );
+    return _send( fd, buf, n, flags | MSG_NOSIGNAL );
 }
 //=======================================================================================
 

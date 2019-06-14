@@ -40,6 +40,13 @@ if ( NOT  VNETWORK_INCLUDED )
     message( "Include vnetwork..." )
 
     #<<< Start your code here -----------------------------------------------------------
+    include( "${VLIBS_DIR}/vsignal/vsignal.cmake" )
+    include( "${VLIBS_DIR}/vstring/vstring.cmake" )
+    include( "${VLIBS_DIR}/vposix/vposix.cmake" )
+
+    include( "${VLIBS_DIR}/vapplication/vpoll/vpoll.cmake" )
+    include_directories( "${VLIBS_DIR}/vapplication/")
+
     #>>> Stop your code here ------------------------------------------------------------
 
     include_directories( "${VLIBS_DIR}/vnetwork/")
