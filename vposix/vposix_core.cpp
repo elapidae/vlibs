@@ -24,8 +24,6 @@
 #include <string.h>
 #include <assert.h>
 
-#include "vposix_alloca.h"
-
 #include <unistd.h> // Здесь живет getpid(), правда логично?
 
 
@@ -54,7 +52,8 @@ std::string Errno::str() const
 {
     //  TS версия.
     constexpr auto buf_size = 1024;
-    auto buf = Alloca::allocate<char>( buf_size );
+    // auto buf = Alloca::allocate<char>( buf_size );
+    char buf[buf_size];
     return  strerror_r( _err, buf, buf_size );
 }
 //=======================================================================================
