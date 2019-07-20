@@ -24,7 +24,6 @@
 
 #include "vposix_core.h"
 #include "vposix_files.h"
-#include "vposix_alloca.h"
 
 #include "vlog.h"
 #include "verror.h"
@@ -178,7 +177,7 @@ void VTcpSocket::send( const std::string& data )
 //=======================================================================================
 VString VTcpSocket::receive_all()
 {
-    auto buf = vposix::Alloca::allocate<char>( Buffer_Size );
+    char buf[ Buffer_Size ];
     VString res;
 
     while(1)
