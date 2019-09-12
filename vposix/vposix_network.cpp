@@ -439,9 +439,10 @@ ssize_t Socket::_send( int fd, const void *buf, size_t n, int flags )
     return Core::linux_call( ::send, "::send", fd, buf, n, flags );
 }
 //=======================================================================================
-ssize_t Socket::send( int fd, const std::string &buf, int flags )
+//  MSG_NOSIGNAL надо добавлеять, чтобы под киль не прилетело KILL сигналов.
+ssize_t Socket::send( int fd, const void *buf, size_t n, int flags )
 {
-    return _send( fd, buf.c_str(), buf.size(), flags | MSG_NOSIGNAL );
+    return _send( fd, buf, n, flags | MSG_NOSIGNAL );
 }
 //=======================================================================================
 
@@ -454,7 +455,7 @@ int Socket::_getsockname( int fd, sockaddr* addr, my_socklen_t* len )
 //=======================================================================================
 void Socket::get_sock_addr( int fd, my_ip_addr* addr, uint16_t *port )
 {
-    sockaddr_in6 sa6;
+    sockaddr_in6 sa6{};
     auto v_ptr = static_cast<void*>(&sa6);
     auto *sa_ptr = static_cast<sockaddr*>( v_ptr );
     my_socklen_t len = sizeof( sa6 );

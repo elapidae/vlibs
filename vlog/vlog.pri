@@ -50,7 +50,6 @@ isEmpty(qi_vlog) {
     INCLUDEPATH += $$VLIBS_DIR/vlog
     
     HEADERS     += $$VLIBS_DIR/vlog/vlog.h 
-    #HEADERS     += $$VLIBS_DIR/vlog/vlog_pretty.h
 
     HEADERS     += $$VLIBS_DIR/vlog/verror.h
     SOURCES     += $$VLIBS_DIR/vlog/verror.cpp
@@ -60,6 +59,11 @@ isEmpty(qi_vlog) {
 
     HEADERS     += $$VLIBS_DIR/vlog/vlogentry.h
     SOURCES     += $$VLIBS_DIR/vlog/vlogentry.cpp
+
+    contains( CONFIG, qt ) {
+        HEADERS += $$VLIBS_DIR/vlog/vlog_qt.h
+        SOURCES += $$VLIBS_DIR/vlog/vlog_qt.cpp
+    }
 
     #>>> Stop your code here ------------------------------------------------------------
 

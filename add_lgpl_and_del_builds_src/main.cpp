@@ -86,17 +86,26 @@ void process_entry( const QFileInfo& info )
 
     //-----------------------------------------------------------------------------------
     // text files -- exclude
-    if ( rel_name == "LICENSE.LGPL3"                ||
+    if ( rel_name.contains("LICENSE")               ||
          rel_name.toUpper().startsWith("README")    ||
          suffix == "txt"                            ||
          suffix == "sh"                             ||          //  Scripts
          suffix == "qrc"                            ||          //  Qt resources
          suffix == "pro"                            ||          //  Qt projects
          suffix == "ui"                             ||          //  Qt forms
+         suffix == "qdoc"                           ||          //  Qt docs
+         suffix == "png"                            ||          //
+         suffix == "conf"                           ||          //
+         suffix == "so"                             ||          //
+         suffix == "py"                             ||          //
+         suffix == "zcm"                            ||          //
          rel_name == "CMakeLists.txt"               ||          //  cmake projects
          rel_name == "add_lgpl_and_del_builds"      ||          //  self $)
          rel_name.startsWith("qcustomplot")         ||
-         rel_name.startsWith("sqlite3pp")
+         rel_name.startsWith("sqlite3pp")           ||
+         abs_name.contains("/omit_it/")             ||
+         rel_name.contains("changes")               ||
+         abs_name.contains("/qtserialport/")                // about to copy-paste
        )
     {
         append_log_excluded( abs_name );
@@ -116,19 +125,24 @@ void process_entry( const QFileInfo& info )
         return;
     }
     //-----------------------------------------------------------------------------------
-    if ( suffix == "h" || suffix == "hpp" || suffix == "cpp" )
+    bool in_sandbox = abs_name.contains("SANDBOX");
+    if ( suffix == "h" || suffix == "hpp" || suffix == "c" || suffix == "cpp" )
     {
+        if ( in_sandbox ) return;
         process_plus_file( abs_name );
         return;
     }
     //-----------------------------------------------------------------------------------
     if ( suffix == "cmake" || suffix == "pri" )
     {
+        if ( in_sandbox ) return;
         process_build_file( abs_name );
         return;
     }
     //-----------------------------------------------------------------------------------
     //append_log_info( abs_name, "NOT APPROVED", Qt::black, Qt::red );
+    auto cmd = vcat("caja ", info.absolutePath().toStdString()).str();
+    (void)system( cmd.c_str() );
     vdeb << "NOT APPROVED";
     exit(42);
     //-----------------------------------------------------------------------------------

@@ -38,6 +38,9 @@ namespace tr1
     public:
         using cstr = const std::string&;
 
+        static bool exists( cstr fname );
+        static bool remove( cstr fname );
+
         enum class Mode_ReadWrite { ReadOnly, WriteOnly, ReadWrite };
         //enum class Mode_Exclusive { Yes, No };
 

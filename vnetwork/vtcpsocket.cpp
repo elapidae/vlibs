@@ -24,7 +24,6 @@
 
 #include "vposix_core.h"
 #include "vposix_files.h"
-#include "vposix_alloca.h"
 
 #include "vlog.h"
 #include "verror.h"
@@ -61,7 +60,6 @@ VTcpSocket::Pimpl::Pimpl( int fd_, VTcpSocket *owner_ )
     : fd( fd_ )
     , owner( owner_ )
 {
-    vdeb << "VTcpSocket::Pimpl::Pimpl" << this;
     if ( fd < 0 )
         throw verror( "VTcpSocket fd < 0" );
 
@@ -122,7 +120,8 @@ VTcpSocket::VTcpSocket()
 VTcpSocket::VTcpSocket( VTcpSocket::Peer* peer )
     : p( new Pimpl(peer->take_fd(),this) )
 {
-    vdeb << "Connected as server socket..." << p->fd;
+    std::function<int()> ff;
+    //vdeb << "Connected as server socket..." << p->fd;
     p->is_connected = true;
 }
 //=======================================================================================
@@ -155,16 +154,30 @@ void VTcpSocket::connect_to_host( const VIpAddress& addr, uint16_t port )
     }
 }
 //=======================================================================================
-bool VTcpSocket::send( const std::string& data )
+//  UPD 2019-06-14 -- https://www.rsdn.org/article/unix/sockets.xml
+//  Функция send может вернуть меньшее количество байт, тогда надо посылать до победного.
+void VTcpSocket::send( const std::string& data )
 {
-    if ( !is_connected() ) return false;
-    auto res = Socket::send( p->fd, data );
-    return res == ssize_t(data.size());
+    if ( !is_connected() )
+        throw verror << "Socket has not connected.";
+
+    auto ptr  = data.c_str();
+    auto size = data.size();
+    while (size)
+    {
+        auto received = Socket::send( p->fd, ptr, size );
+
+        if (size_t(received) == size) return;
+
+        assert( size_t(received) < size && received >= 0 );
+        ptr  += received;
+        size -= size_t(received);
+    }
 }
 //=======================================================================================
 VString VTcpSocket::receive_all()
 {
-    auto buf = vposix::Alloca::allocate<char>( Buffer_Size );
+    char buf[ Buffer_Size ];
     VString res;
 
     while(1)
@@ -184,6 +197,12 @@ VString VTcpSocket::receive_all()
         if ( has_read < Buffer_Size )
             return res;
     }
+}
+//=======================================================================================
+void VTcpSocket::disconnect_from_host()
+{
+    if ( !p ) return;
+    p->close();
 }
 //=======================================================================================
 

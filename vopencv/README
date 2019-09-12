@@ -1,0 +1,26 @@
+2019-03-01 by Elapidae
+vopencv
+Призван сделать работу с этой библиотекой простой и приятной.
+
+Первая задача: сделать GpuImage так, чтобы, при наличии CUDA она использовалась, при 
+отсутствии можно было бы переключаться на cv::Mat. 
+Реализация в vcv_image -- плоха тем, что архитектура сделана не с той стороны. Следует 
+использовать type_traits подход, как в STL. Надо конструкторы и одинаковые части вынести
+в шаблонный класс, передавать ему traits вызовов, а потом просто расширить Image
+что-то типа:
+
+template <typename MatType, typename Traits>
+BaseImage
+{
+    ctors/ops/dtor
+    resize() { Traits::resize(...); }
+};
+
+using GpuImage = BaseImage<cv::cuda::Mat,CudaTraits>;
+
+class Image: public<cv::Mat, MatTraits>
+{
+    extended_posiibilities();
+};
+
+

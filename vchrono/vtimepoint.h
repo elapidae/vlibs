@@ -103,6 +103,9 @@ public:
     static const char *fmt_datetime_for_filename();
 
 protected:
+    static time_t  _from_utc( int year, int month,  int day,
+                              int hour, int minute, int sec );
+
     static time_t  _tm_to_time_t( std::tm *tm );
     static std::tm _time_t_to_tm( time_t tt   );
     static std::tm _from_format( const std::string &dt, const std::string &fmt );
@@ -124,6 +127,8 @@ public:
 
     static Derived from_format  ( const std::string &dt, const std::string &fmt );
     static Derived from_datetime( const std::string &dt ); // From "yyyy-MM-dd hh:mm:ss".
+
+    static Derived from_utc(int year, int month, int day, int hour, int minute, int sec);
 
     explicit _vTimePoint();
     explicit _vTimePoint( const timepoint_type &tp );
@@ -378,6 +383,13 @@ Derived _vTimePoint<Clk,Derived>::from_datetime( const std::string &dt )
 }
 //=======================================================================================
 template<typename Clk, typename Derived>
+Derived _vTimePoint<Clk,Derived>::from_utc( int year, int month, int day,
+                                            int hour, int minute, int sec )
+{
+    return Derived(std::chrono::seconds(_from_utc(year, month, day, hour, minute, sec)));
+}
+//=======================================================================================
+template<typename Clk, typename Derived>
 _vTimePoint<Clk,Derived>::_vTimePoint()
 {}
 //=======================================================================================
@@ -565,7 +577,7 @@ template<typename Duration>
 Derived &_vTimePoint<Clk,Derived>::operator -= ( const Duration &rhs )
 {
     _tp -= rhs;
-    return *this;
+    return static_cast<Derived&>(*this);
 }
 //---------------------------------------------------------------------------------------
 template<typename Clk, typename Derived>

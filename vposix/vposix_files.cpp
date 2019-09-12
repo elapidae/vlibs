@@ -36,6 +36,8 @@
 //  Here: ioctl -- awfull function what do everything.
 #include <sys/ioctl.h>
 
+// Here: stat
+#include <sys/stat.h>
 
 
 using namespace vposix;
@@ -109,6 +111,12 @@ void Files::close( int fd )
 
     auto res = Core::linux_call( ::close, "::close", fd );
     assert( res == 0 );
+}
+//=======================================================================================
+bool Files::exists( cstr fname )
+{
+    struct stat buffer;
+    return 0 == Core::linux_call_or_err( ::stat, fname.c_str(), &buffer );
 }
 //=======================================================================================
 void Files::_ioctl(int fd, unsigned long ctl)

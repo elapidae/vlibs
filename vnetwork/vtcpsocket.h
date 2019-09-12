@@ -49,9 +49,11 @@ public:
 
     void connect_to_host(const VIpAddress &addr, uint16_t port );
 
-    bool send( const std::string& data );
+    void send( const std::string& data );
 
     VString receive_all();
+
+    void disconnect_from_host();
 
 private:
     class Pimpl; std::unique_ptr<Pimpl> p;

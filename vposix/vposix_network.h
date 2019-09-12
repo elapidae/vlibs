@@ -190,7 +190,7 @@ namespace vposix
 //                               int flags = 0 );
 
         // Добавляет флаг MSG_NOSIGNAL, см. интернет.
-        static ssize_t send( int fd, const std::string& buf, int flags = 0 );
+        static ssize_t send(int fd, const void *buf, size_t n, int flags = 0 );
         //===============================================================================
 
         //===============================================================================

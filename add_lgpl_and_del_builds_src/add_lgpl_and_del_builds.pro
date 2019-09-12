@@ -35,7 +35,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 VLIBS_DIR = $$PWD/../../vlibs
 include( $$VLIBS_DIR/vlog/vlog_qt.pri )
-Main_Dir = $$PWD
+MAIN_DIR = $$PWD
 include( $$VLIBS_DIR/vgit/vgit.pri )
 
 RESOURCES += \
