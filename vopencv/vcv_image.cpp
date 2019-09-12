@@ -175,6 +175,13 @@ static void cuda_resize( const cv::cuda::GpuMat &src, cv::cuda::GpuMat *dst,
 {
     cv::cuda::resize( src, *dst, sz, fx, fy, i );
 }
+//---------------------------------------------------------------------------------------
+static void cuda_cvtColor( const cv::cuda::GpuMat &src, cv::cuda::GpuMat *dst,
+                           int code, int dcn = 0 )
+{
+    cv::cuda::cvtColor( src, *dst, code, dcn );
+}
+//---------------------------------------------------------------------------------------
 static Image cuda_download( const cv::cuda::GpuMat &mat )
 {
     cv::Mat res;
@@ -201,6 +208,11 @@ static void cuda_resize( const cv::Mat &src, cv::Mat *dst,
                          Size sz, double fx, double fy, Interpolation i )
 {
     cv::resize( src, *dst, sz, fx, fy, i );
+}
+//---------------------------------------------------------------------------------------
+static void cuda_cvtColor( const cv::Mat &src, cv::Mat *dst, int code, int dcn = 0 )
+{
+    cv::cvtColor( src, *dst, code, dcn );
 }
 //---------------------------------------------------------------------------------------
 static Image cuda_download( const cv::Mat& mat )
@@ -269,6 +281,13 @@ GpuImage GpuImage::resize( double fx, double fy, Interpolation i ) const
 GpuImage GpuImage::resize( Size dsize, Interpolation i ) const
 {
     return _resize( dsize, 0, 0, i );
+}
+//=======================================================================================
+GpuImage GpuImage::cvtColor( int code ) const
+{
+    GpuImage dst;
+    cuda_cvtColor( p->mat, &dst.p->mat, code );
+    return dst;
 }
 //=======================================================================================
 GpuImage GpuImage::_resize( Size dsize, double fx, double fy, Interpolation i ) const
