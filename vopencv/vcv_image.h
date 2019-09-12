@@ -131,6 +131,11 @@ namespace vcv
         GpuImage resize( double fx, double fy, Interpolation i = cv::INTER_LINEAR) const;
         GpuImage resize( Size dsize, Interpolation i = cv::INTER_LINEAR) const;
 
+        // Делаю в лоб, пока так.
+        // https://docs.opencv.org/4.1.1/db/d8c/group__cudaimgproc__color.html#
+        // ga48d0f208181d5ca370d8ff6b62cbe826
+        GpuImage cvtColor( int code ) const;
+
         Image download() const;
 
         int channels() const;
