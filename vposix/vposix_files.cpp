@@ -88,7 +88,9 @@ int Files::_remove(  const char* pathname )
 {
     if ( do_trace() ) vtrace << "V::remove(" << pathname << ");";
 
-    return Core::linux_call( std::remove, "std::remove", pathname );
+    int (*remove_ptr)(const char*) = std::remove;
+
+    return Core::linux_call( remove_ptr, "std::remove", pathname );
 }
 //=======================================================================================
 void Files::remove( cstr pathname )
