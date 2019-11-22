@@ -60,6 +60,8 @@ namespace vposix
         static bool exists( cstr fname );
 
         //-------------------------------------------------------------------------------
+        static int _ioctl_ret_int( int fd, unsigned long ctl );
+
         static void _ioctl( int fd, unsigned long ctl );
         static int  _ioctl_or_err( int fd, unsigned long ctl );
 

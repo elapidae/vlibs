@@ -143,6 +143,10 @@ namespace vposix
         //===============================================================================
 
         //===============================================================================
+        //  http://man7.org/linux/man-pages/man7/socket.7.html
+        //  Задержка для отправки перед закрытием.
+        static void set_linger( int fd, int on_off, int seconds );
+
         static void set_out_of_band_data( int fd );
         static void set_reuse_address( int fd );
         static void set_broadcast( int fd );
@@ -161,6 +165,8 @@ namespace vposix
         static void _bind_ip4( int fd, const sockaddr_in& addr );
         static void _bind_ip6( int fd, const sockaddr_in6& addr );
         static void bind( int fd, const my_ip_addr& addr, uint16_t port );
+
+        static void shutdown_rw( int fd );
         //===============================================================================
 
         //===============================================================================

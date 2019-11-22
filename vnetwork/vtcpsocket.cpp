@@ -71,12 +71,21 @@ VTcpSocket::Pimpl::~Pimpl()
     close();
 }
 //=======================================================================================
+//#include <sys/ioctl.h>
+//#include <linux/sockios.h>
 void VTcpSocket::Pimpl::close()
 {
+    //  Размер буффера.
+    //    vdeb << Socket::_getsockopt_int32( fd, SOL_SOCKET, SO_SNDBUF );
+    //  Получить сколько байт не отправлено.
+    //    vdeb << vposix::Files::_ioctl_ret_int( fd, SIOCOUTQ );
+
     is_connected = false;
     if ( fd < 0 ) return;
 
     VPoll::del_fd( fd );
+
+    vposix::Socket::shutdown_rw( fd );
     vposix::Files::close( fd );
     fd = -1;
 
@@ -88,17 +97,17 @@ void VTcpSocket::Pimpl::event_received( VPoll::EventFlags flags )
     //vdeb << "err" << (flags.take_ERR() ? "Need to see in Qt" : "");
     //vdeb << "hup" << flags.take_HangUp();
 
-    if ( flags.take_RD_HangUp() )
-    {
-        close();
-        return;
-    }
-
     if ( flags.take_OUT() )
         connection_ok();
 
     if ( flags.take_IN() )
         owner->ready_read();
+
+    if ( flags.take_RD_HangUp() )
+    {
+        close();
+        return;
+    }
 
     flags.throw_not_empty();
     //vdeb.hex() << flags.raw();
@@ -138,6 +147,7 @@ void VTcpSocket::connect_to_host( const VIpAddress& addr, uint16_t port )
     p.reset();
     auto fd = Socket::tcp_socket( addr._addr() );
     Socket::set_out_of_band_data( fd );
+    Socket::set_linger( fd, 1, 1 ); // перед закрытием отправлять данные.
     p.reset( new Pimpl(fd, this) );
 
     auto res = Socket::connect_or_err( fd, addr._addr(), port );

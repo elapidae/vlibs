@@ -269,6 +269,11 @@ void Socket::bind( int fd, const my_ip_addr& addr, uint16_t port )
     throw verror("Bind to unknown address.");
 }
 //=======================================================================================
+void Socket::shutdown_rw( int fd )
+{
+    auto res = Core::linux_call( ::shutdown, "::shutdown", fd, SHUT_RDWR );
+    assert( res == 0 );
+}
 //=======================================================================================
 //int Socket::_getsockname( int fd, sockaddr_in* addr )
 //{
@@ -484,17 +489,11 @@ void Socket::get_sock_addr( int fd, my_ip_addr* addr, uint16_t *port )
 
 
 //=======================================================================================
-//int Socket::_socket( IpType ip_type, int type, Cloexec ce, Nonblock nb )
-//{
-//    int domain = ip_type == IpType::Ip4 ? AF_INET
-//               : ip_type == IpType::Ip6 ? AF_INET6
-//               : (throw verror("Bad ip type"));
-
-//    if ( ce == Cloexec::Yes  ) typ |= SOCK_CLOEXEC;
-//    if ( nb == Nonblock::Yes ) typ |= SOCK_NONBLOCK;
-
-//    return _socket( domain, typ, 0 );
-//}
+void Socket::set_linger( int fd, int on_off, int seconds )
+{
+    linger opts{ on_off, seconds };
+    _setsockopt( fd, SOL_SOCKET, SO_LINGER, &opts, sizeof(opts) );
+}
 //=======================================================================================
 void Socket::set_out_of_band_data( int fd )
 {

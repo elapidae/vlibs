@@ -119,7 +119,15 @@ bool Files::exists( cstr fname )
     return 0 == Core::linux_call_or_err( ::stat, fname.c_str(), &buffer );
 }
 //=======================================================================================
-void Files::_ioctl(int fd, unsigned long ctl)
+int Files::_ioctl_ret_int( int fd, unsigned long ctl )
+{
+    int val = -1;
+    auto ret = Core::linux_call( ::ioctl, "::ioctl(&int)", fd, ctl, &val );
+    assert( ret == 0 );
+    return val;
+}
+//=======================================================================================
+void Files::_ioctl( int fd, unsigned long ctl )
 {
     auto res = Core::linux_call( ::ioctl, "::ioctl", fd, ctl );
     assert( res == 0 );
