@@ -164,6 +164,12 @@ void VTcpSocket::connect_to_host( const VIpAddress& addr, uint16_t port )
     }
 }
 //=======================================================================================
+void VTcpSocket::set_keep_alive( int idle, int intvl, int cnt )
+{
+    if ( !p ) throw verror << "set keep alive on empty socket.";
+    Socket::set_keep_alive( p->fd, idle, intvl, cnt );
+}
+//=======================================================================================
 //  UPD 2019-06-14 -- https://www.rsdn.org/article/unix/sockets.xml
 //  Функция send может вернуть меньшее количество байт, тогда надо посылать до победного.
 void VTcpSocket::send( const std::string& data )

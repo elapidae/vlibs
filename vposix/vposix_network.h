@@ -167,6 +167,8 @@ namespace vposix
         static void bind( int fd, const my_ip_addr& addr, uint16_t port );
 
         static void shutdown_rw( int fd );
+
+        static void set_keep_alive( int fd, int idle, int intvl, int cnt );
         //===============================================================================
 
         //===============================================================================

@@ -29,6 +29,7 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/tcp.h>
 
 #include "vposix_core.h"
 #include "vposix_network_ip.h"
@@ -273,6 +274,16 @@ void Socket::shutdown_rw( int fd )
 {
     auto res = Core::linux_call( ::shutdown, "::shutdown", fd, SHUT_RDWR );
     assert( res == 0 );
+}
+//=======================================================================================
+void Socket::set_keep_alive( int fd, int idle, int intvl, int cnt )
+{
+    int yes = 1;
+    _setsockopt( fd, SOL_SOCKET, SO_KEEPALIVE, &yes, sizeof(yes) );
+
+    _setsockopt( fd, IPPROTO_TCP, TCP_KEEPIDLE,  &idle,  sizeof(idle)  );
+    _setsockopt( fd, IPPROTO_TCP, TCP_KEEPINTVL, &intvl, sizeof(intvl) );
+    _setsockopt( fd, IPPROTO_TCP, TCP_KEEPCNT,   &cnt,   sizeof(cnt)   );
 }
 //=======================================================================================
 //int Socket::_getsockname( int fd, sockaddr_in* addr )

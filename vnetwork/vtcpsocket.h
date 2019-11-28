@@ -47,7 +47,9 @@ public:
 
     bool is_connected() const;
 
-    void connect_to_host(const VIpAddress &addr, uint16_t port );
+    void connect_to_host( const VIpAddress &addr, uint16_t port );
+
+    void set_keep_alive( int idle, int intvl, int cnt );
 
     void send( const std::string& data );
 
