@@ -72,11 +72,22 @@ void VTcpServer::Pimpl::event_received( VPoll::EventFlags flags )
     assert( flags.take_IN() );
     flags.throw_not_empty();
 
-    uint32_t host;
-    uint16_t port;
-    auto peer_fd = Socket::accept( fd, &host, &port );
+    while (1)
+    {
+        uint32_t host;
+        uint16_t port;
+        auto peer_fd = Socket::accept_or_err( fd, &host, &port );
 
-    owner->peer_connected( peer_fd );
+        if ( peer_fd < 0 )
+        {
+            Errno err;
+            if ( !err.again_or_wouldblock() )
+                err.throw_verror( "VTcpServer::Pimpl::event_received" );
+            break;
+        }
+
+        owner->peer_connected( peer_fd );
+    }
 }
 //=======================================================================================
 
