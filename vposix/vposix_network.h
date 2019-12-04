@@ -166,7 +166,8 @@ namespace vposix
         static void _bind_ip6( int fd, const sockaddr_in6& addr );
         static void bind( int fd, const my_ip_addr& addr, uint16_t port );
 
-        static void shutdown_rw( int fd );
+        //static void shutdown_rw( int fd );
+        static void shutdown_rw_no_err( int fd );
 
         static void set_keep_alive( int fd, int idle, int intvl, int cnt );
         //===============================================================================

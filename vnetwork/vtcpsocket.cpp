@@ -85,7 +85,7 @@ void VTcpSocket::Pimpl::close()
 
     VPoll::del_fd( fd );
 
-    vposix::Socket::shutdown_rw( fd );
+    vposix::Socket::shutdown_rw_no_err( fd );
     vposix::Files::close( fd );
     fd = -1;
 

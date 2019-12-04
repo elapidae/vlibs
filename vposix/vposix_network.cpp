@@ -270,10 +270,12 @@ void Socket::bind( int fd, const my_ip_addr& addr, uint16_t port )
     throw verror("Bind to unknown address.");
 }
 //=======================================================================================
-void Socket::shutdown_rw( int fd )
+//void Socket::shutdown_rw( int fd )
+//{
+//}
+void Socket::shutdown_rw_no_err( int fd )
 {
-    auto res = Core::linux_call( ::shutdown, "::shutdown", fd, SHUT_RDWR );
-    assert( res == 0 );
+    Core::linux_call_or_err( ::shutdown, fd, SHUT_RDWR );
 }
 //=======================================================================================
 void Socket::set_keep_alive( int fd, int idle, int intvl, int cnt )
