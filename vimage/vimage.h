@@ -119,7 +119,8 @@ public:
         Invalid,
         Gray_8,
         RGB_888,
-        BGR_888
+        BGR_888,
+        Bayer_RGGB
     };
 
     static std::string format_to_string( Format f );
