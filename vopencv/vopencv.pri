@@ -44,7 +44,7 @@ isEmpty(qi_vopencv) {
     # NB! use 'DEFINES += V_OPENCV_USE_CUDA' before including for activate cuda section.
 
     CONFIG    *= link_pkgconfig
-    PKGCONFIG *= opencv
+    PKGCONFIG *= opencv4
     CONFIG *= c++11
 
     # Check and control this var, please...
@@ -70,7 +70,7 @@ isEmpty(qi_vopencv) {
     OTHER_FILES += $$PWD/vopencv.cmake
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vopencv
+    INCLUDEPATH += $$VLIBS_DIR/vopencv4
 
 
     HEADERS     += $$VLIBS_DIR/vopencv/vcv_includes.h
