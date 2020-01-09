@@ -80,6 +80,9 @@ static speed_t tio_normal_speed_to_speedcode( int speed )
     case 115200: return B115200;
     case 230400: return B230400;
     case 460800: return B460800;
+    case 500000: return B500000;
+    case 921600: return B921600;
+    case 1000000: return B1000000;
     }
     throw verror( "Bad serial speed: ", speed );
 }
