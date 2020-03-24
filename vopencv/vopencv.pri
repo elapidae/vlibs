@@ -70,7 +70,7 @@ isEmpty(qi_vopencv) {
     OTHER_FILES += $$PWD/vopencv.cmake
     #>>> Stop your code here ------------------------------------------------------------
 
-    INCLUDEPATH += $$VLIBS_DIR/vopencv4
+    INCLUDEPATH += $$VLIBS_DIR/vopencv
 
 
     HEADERS     += $$VLIBS_DIR/vopencv/vcv_includes.h
